@@ -1,0 +1,22 @@
+Google Play 제출 전 체크리스트 (FC Helper)
+==========================================
+
+[빌드]
+□ AAB: android/app/build/outputs/bundle/release/app-release.aab 생성됨
+□ 패키지명: com.fchelper.app
+□ versionCode: 1 / versionName: 1.0.0 (다음 출시 시 code만 증가)
+□ 릴리즈 서명: debug 키 아님 (keystore.properties + play-upload.jks)
+
+[정책·콘텐츠]
+□ 개인정보처리방침 URL 동작 (웹 /privacy)
+□ 앱 내 «개인정보처리방침» 링크로 접근 가능
+□ 광고 없음 (해당 시 콘솔에 맞게 표시)
+□ 로그인 필요 여부 및 테스트 계 정확
+
+[품질]
+□ Internal testing 트랙에 먼저 업로드 후 기기에서 설치 테스트
+□ 뒤로가기·WebView·개인정보 화면·크래시 없음 확인
+
+[스토어 그래픽]
+□ 휴대전화 스크린샷 최소 2장 (1080×1920 권장)
+□ 고해상도 아이콘(512px) — Expo adaptive/icon 에서 생성

@@ -1,0 +1,299 @@
+/*
+ * Final mobile UI stabilization layer.
+ * This file intentionally overrides only the recent polish rules that caused
+ * duplicated icons, oversized action buttons, and centered workspace modals.
+ * No API, route, or data behavior is changed here.
+ */
+
+@media (max-width: 767px) {
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority,
+  .mobile-root .customer-detail-feature-actions--mobile-priority {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px 8px !important;
+    margin: 8px 0 10px !important;
+    padding: 8px 8px 10px !important;
+    /* 상·하 테두리 제거: 목록 카드 펼침에서 `.customer-mobile-expanded-app-link` border-bottom 과 겹쳐 두 줄로 보일 수 있음. 하단 구분은 index.css 에서 필요 시만 지정 */
+    background: transparent !important;
+  }
+
+  /* Icons are intentionally removed from the mobile customer action buttons (text-only grid). */
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority button::before,
+  .mobile-root .customer-detail-feature-actions--mobile-priority button::before,
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn__icon,
+  .mobile-root .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn__icon {
+    content: none !important;
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn,
+  .mobile-root .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn,
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority button.customer-mobile-action-btn,
+  .mobile-root .customer-detail-feature-actions--mobile-priority button.customer-mobile-action-btn {
+    min-height: 42px !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: row !important;
+    gap: 0 !important;
+    font-size: var(--customer-mobile-font-button-strong, 15px) !important;
+    font-weight: 800 !important;
+    line-height: var(--customer-mobile-line-button, 1.22) !important;
+    letter-spacing: var(--customer-mobile-letter-button, 0.012em) !important;
+    color: #fff !important;
+    background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important;
+    border: 1px solid color-mix(in srgb, #60a5fa 22%, transparent) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+    white-space: normal !important;
+  }
+
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn:disabled,
+  .mobile-root .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn:disabled,
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority button.customer-mobile-action-btn:disabled,
+  .mobile-root .customer-detail-feature-actions--mobile-priority button.customer-mobile-action-btn:disabled {
+    opacity: 0.55 !important;
+  }
+
+  .customers-page--mobile .customer-mobile-action-btn__text,
+  .mobile-root .customer-mobile-action-btn__text {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+    word-break: keep-all !important;
+    line-height: var(--customer-mobile-line-button, 1.22) !important;
+    text-align: center !important;
+  }
+
+  .customers-page--mobile .customer-detail-toggle-btn,
+  .mobile-root .customer-detail-toggle-btn {
+    min-height: 32px !important;
+    height: 32px !important;
+    margin-top: 8px !important;
+    border-radius: 999px !important;
+    font-size: var(--customer-mobile-font-button, 14px) !important;
+    line-height: var(--customer-mobile-line-button, 1.22) !important;
+    letter-spacing: var(--customer-mobile-letter-button, 0.012em) !important;
+  }
+}
+
+/* Existing mobile modals: files, consultations, auto form, and GA data. */
+@media (max-width: 767px) {
+  .mobile-modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 12000 !important;
+    display: block !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    background: rgba(0, 0, 0, 0.55) !important;
+    pointer-events: auto !important;
+  }
+
+  .mobile-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 12001 !important;
+    width: 100% !important;
+    max-width: 430px !important;
+    height: 100dvh !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    background: var(--app-bg, var(--bg-main, #0b0f14)) !important;
+    color: var(--app-text, var(--text-primary, #fff)) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .mobile-modal-header {
+    flex: 0 0 56px !important;
+    height: 56px !important;
+    display: grid !important;
+    grid-template-columns: 64px minmax(0, 1fr) 64px !important;
+    align-items: center !important;
+    gap: 0 !important;
+    padding: 0 12px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: var(--app-bg, var(--bg-main, #0b0f14)) !important;
+  }
+
+  .mobile-modal-header__spacer {
+    display: block !important;
+  }
+
+  .mobile-modal-header__title {
+    grid-column: 2 !important;
+    text-align: center !important;
+    font-size: 1rem !important;
+    font-weight: 900 !important;
+    color: var(--text-primary, #fff) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .mobile-btn.mobile-btn--close,
+  .mobile-modal-header .mobile-btn--close {
+    grid-column: 3 !important;
+    justify-self: end !important;
+    min-width: 48px !important;
+    min-height: 36px !important;
+    height: 36px !important;
+    padding: 0 10px !important;
+    border-radius: 10px !important;
+  }
+
+  .mobile-modal-body {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    background: var(--app-bg, var(--bg-main, #0b0f14)) !important;
+  }
+
+  .mobile-modal-content {
+    min-height: 100% !important;
+    padding: 12px 10px calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Confirm dialogs opened from inside a mobile modal must sit above that modal. */
+  .customer-ui-modal-backdrop:not(:has(.workspace-mobile-outlet-modal)):not(:has(.claim-requests-page__detail-section)) {
+    z-index: 14000 !important;
+  }
+}
+
+/* Make route-based mobile workspace screens behave like the existing full-screen mobile modals. */
+@media (max-width: 767px) {
+  .customer-ui-modal-backdrop:has(.workspace-mobile-outlet-modal) {
+    padding: 0 !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    background: rgba(0, 0, 0, 0.55) !important;
+  }
+
+  .customer-ui-modal-panel.workspace-mobile-outlet-modal {
+    width: 100% !important;
+    max-width: 430px !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    min-height: 100dvh !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    background: var(--m-bg, var(--app-bg, var(--bg-main, #0b0f14))) !important;
+    color: var(--m-text, var(--app-text, var(--text-primary, #fff))) !important;
+    box-shadow: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  .workspace-mobile-outlet-modal__header {
+    flex: 0 0 auto !important;
+    min-height: 48px !important;
+    height: auto !important;
+    display: grid !important;
+    grid-template-columns: 48px minmax(0, 1fr) 48px !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 12px 16px !important;
+    border-bottom: 1px solid var(--border-default, rgba(148, 163, 184, 0.22)) !important;
+    background: var(--m-bg, var(--app-bg, var(--bg-main, #0b0f14))) !important;
+  }
+
+  .workspace-mobile-outlet-modal__spacer {
+    display: block !important;
+    width: 48px !important;
+    min-width: 48px !important;
+  }
+
+  .workspace-mobile-outlet-modal__title {
+    grid-column: 2 !important;
+    margin: 0 !important;
+    text-align: center !important;
+    font-size: var(--customer-mobile-font-title, 18px) !important;
+    font-weight: 900 !important;
+    line-height: var(--customer-mobile-line-tight, 1.32) !important;
+    letter-spacing: var(--customer-mobile-letter-readable, 0.01em) !important;
+    color: var(--m-text, var(--text-primary, #fff)) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .workspace-mobile-outlet-modal__close {
+    grid-column: 3 !important;
+    justify-self: end !important;
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 6px 2px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--m-text-sub, var(--text-secondary, #aeb8c5)) !important;
+    font-size: var(--customer-mobile-font-subtitle, 15px) !important;
+    font-weight: 700 !important;
+    line-height: var(--customer-mobile-line-button, 1.22) !important;
+    letter-spacing: var(--customer-mobile-letter-button, 0.012em) !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    font-family: inherit !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .workspace-mobile-outlet-modal__close:hover {
+    color: var(--m-text, var(--text-primary, #fff)) !important;
+    background: color-mix(in srgb, var(--m-text, #e6ecf2) 8%, transparent) !important;
+  }
+
+  .workspace-mobile-outlet-modal__close:focus-visible {
+    color: var(--m-text, var(--text-primary, #fff)) !important;
+    background: color-mix(in srgb, var(--m-text, #e6ecf2) 8%, transparent) !important;
+    outline: 2px solid var(--border-focus, #3b82f6) !important;
+    outline-offset: 2px !important;
+  }
+
+  .workspace-mobile-outlet-modal__body {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 0 !important;
+    background: var(--m-bg, var(--app-bg, var(--bg-main, #0b0f14))) !important;
+  }
+
+  .workspace-mobile-outlet-modal__body > .content-wrapper,
+  .workspace-mobile-outlet-modal__body > .page-shell,
+  .workspace-mobile-outlet-modal__body > main.content-wrapper,
+  .workspace-mobile-outlet-modal__body > main.page,
+  .workspace-mobile-outlet-modal__body > .storage-workspace {
+    background: transparent !important;
+  }
+
+  .workspace-mobile-outlet-modal__body .claim-requests-page--mobile,
+  .workspace-mobile-outlet-modal__body .claim-requests-page {
+    min-height: 100% !important;
+    width: 100% !important;
+    padding: 12px 10px calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+    background: transparent !important;
+  }
+}

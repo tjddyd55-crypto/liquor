@@ -1,0 +1,208 @@
+/* 관리자 GA·유저 화면 공통: 반응형 테이블 / 카드 / 모달 입력 */
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-data-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-data-table th,
+.admin-data-table td {
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.admin-data-table th {
+  padding: 12px 10px;
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-default);
+  color: var(--text-primary);
+  background: var(--table-header-bg, var(--bg-soft));
+}
+
+.admin-data-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border-default);
+  color: var(--text-primary);
+}
+
+.admin-data-table td.admin-table-cell--actions,
+.admin-data-table th.admin-table-cell--actions {
+  white-space: normal;
+}
+
+.admin-data-table .admin-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* 데스크톱: 카드 숨김 */
+.admin-responsive-card-list {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 모바일: 테이블 숨기고 카드만 */
+@media (max-width: 768px) {
+  .admin-user-management .table-container--desktop,
+  .admin-ga-management .table-container--desktop {
+    display: none;
+  }
+
+  .admin-user-management .admin-responsive-card-list,
+  .admin-ga-management .admin-responsive-card-list {
+    display: flex;
+  }
+}
+
+.admin-user-card,
+.admin-ga-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-elevated);
+}
+
+.admin-user-card__row,
+.admin-ga-card__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.admin-user-card__label,
+.admin-ga-card__label {
+  flex-shrink: 0;
+  color: var(--text-sub);
+  font-size: 13px;
+}
+
+.admin-user-card__value,
+.admin-ga-card__value {
+  text-align: right;
+  word-break: break-all;
+}
+
+.admin-user-card__actions,
+.admin-ga-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-default);
+}
+
+/* GA·관리 모달 공통 입력 (라이트/다크) */
+.admin-form-input,
+.admin-ga-management .admin-modal-panel input,
+.admin-ga-management .admin-modal-panel select,
+.admin-ga-management .admin-toolbar select,
+.admin-user-management .admin-modal-panel select {
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 15px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-form-input::placeholder {
+  color: var(--placeholder, var(--text-sub));
+}
+
+.admin-form-input:focus,
+.admin-ga-management .admin-modal-panel input:focus,
+.admin-ga-management .admin-modal-panel select:focus,
+.admin-ga-management .admin-toolbar select:focus,
+.admin-user-management .admin-modal-panel select:focus {
+  border-color: var(--brand-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-primary) 25%, transparent);
+}
+
+.admin-form-input:disabled,
+.admin-ga-management .admin-modal-panel input:disabled,
+.admin-ga-management .admin-modal-panel select:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* 관리 모달 레이아웃 */
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--overlay-backdrop);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 480px) {
+  .admin-modal-backdrop {
+    align-items: center;
+  }
+}
+
+.admin-modal-panel {
+  width: 90%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow: auto;
+  margin-bottom: env(safe-area-inset-bottom, 0);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-modal);
+}
+
+.admin-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-modal-panel .admin-modal-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+  gap: 6px;
+}
+
+.admin-modal-panel .admin-modal-field .field__label {
+  margin-bottom: 0;
+}
+
+.admin-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}

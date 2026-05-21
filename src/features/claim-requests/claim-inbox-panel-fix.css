@@ -1,0 +1,54 @@
+.claim-inbox__list-panel,
+.claim-inbox__detail-panel {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  background: #1e2633 !important;
+  background-clip: padding-box !important;
+}
+
+.claim-inbox__list,
+.claim-inbox__detail {
+  position: relative;
+  min-height: 0;
+  border-radius: 12px;
+  background: #1e2633;
+}
+
+.claim-inbox__detail {
+  padding-bottom: 2px;
+}
+
+.claim-inbox__detail-section {
+  min-width: 0;
+}
+
+.claim-inbox__history-list {
+  padding: 2px 0 0;
+}
+
+@media (max-width: 767px) {
+  .claim-inbox__list-panel,
+  .claim-inbox__detail-panel {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: #1e2633 !important;
+  }
+
+  .claim-inbox__list,
+  .claim-inbox__detail {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    background: #1e2633;
+  }
+
+  .claim-inbox__list {
+    padding-bottom: 2px;
+  }
+
+  .claim-inbox__list-item:last-child {
+    margin-bottom: 0;
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "DB손해보험": "NON_LIFE",
+  "DB손해보험사": "NON_LIFE",
+  "KB손해보험": "NON_LIFE",
+  "MG손해보험": "NON_LIFE",
+  "한화손해보험": "NON_LIFE",
+  "삼성생명": "LIFE",
+  "한화생명": "LIFE",
+  "교보생명": "LIFE",
+  "삼성화재": "NON_LIFE",
+  "현대해상": "NON_LIFE"
+}

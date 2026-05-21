@@ -1,0 +1,174 @@
+---
+description: UI 아키텍처 규칙 — Container/View, 로직 훅, 상태 위치, 공통 컴포넌트, API/설정 분리, 스타일 스코프, 1파일 1역할
+globs: src/**/*.{ts,tsx,css}
+alwaysApply: true
+---
+
+# UI 아키텍처 규칙
+
+> 이 규칙은 PC/Mobile 파일 분리(`ui-pc-mobile-separation.mdc`)와 **짝**이다.
+> 파일 분리만으로는 같은 로직이 복붙되어 한쪽만 수정되는 사고가 나므로,
+> "로직은 훅으로 공유, UI만 분리" 패턴을 강제한다.
+
+---
+
+## A. 컨테이너 / 뷰 / 훅 분리
+
+### A-1. Container / View / State-Hook 삼분(三分)
+
+복잡도가 있는 페이지는 반드시 아래 3요소로 나눈다.
+
+```
+features/<feature>/pages/<Page>.tsx                ← Container: 데이터/라우팅/상태 훅 호출만
+features/<feature>/pages/<page>/<Page>PCView.tsx   ← View (PC): 프레젠테이션 전용
+features/<feature>/pages/<page>/<Page>MobileView.tsx ← View (Mobile): 프레젠테이션 전용
+features/<feature>/hooks/use<Page>State.ts         ← 상태/비즈니스 로직 훅 (PC/Mobile 공유)
+```
+
+- **Container**: `ResponsiveLayout`으로 View를 선택하고, 상태 훅을 호출해 두 View에 동일한 props를 넘긴다.
+- **View**: props만 받아 그린다. `useState` / `useEffect` / `fetch` 금지.
+- **State Hook**: 도메인 상태·파생 값·핸들러만 담당. JSX/className 금지.
+
+### A-2. 복잡도 기준 (언제 3분할을 강제하는가)
+
+다음 중 **하나라도** 해당하면 A-1을 강제한다.
+
+- 파일이 150줄을 넘길 때
+- `useState`/`useReducer`가 3개 이상일 때
+- PC/Mobile 둘 다 렌더하는 페이지일 때
+- 외부 API 호출(비동기 fetch/mutation)이 있는 페이지일 때
+
+단순한 정적 페이지(폼 없음, 상태 1-2개, 단일 플랫폼)는 단일 파일 허용.
+
+### A-3. 공유 로직은 훅으로만 공유
+
+- `XXXPCView`와 `XXXMobileView`에서 **같은 로직을 복붙하지 말 것**.
+- 공유가 필요하면 `useXXXState.ts`로 추출해 Container에서 호출한 뒤 props로 양쪽 View에 동일하게 주입한다.
+
+---
+
+## B. 상태 소유권
+
+### B-1. 도메인 상태는 Container/Hook에서만
+
+- 고객 목록·필터·로딩 플래그·API 응답 캐시 등 **화면 전환이 있어도 살아야 하는 상태**는 Container/Hook 소유.
+- View는 props로만 읽고, 변경은 Container가 넘긴 `on*` 콜백으로만 한다.
+
+### B-2. 일회용 UI 상태는 View 로컬 허용
+
+- 호버/포커스/모달 열림·닫힘/드롭다운 오픈 같은 **이 컴포넌트가 사라지면 같이 사라져도 되는** 상태는 View 내부 `useState` 허용.
+- 단, View의 `useState`는 **순수 UI 상태 전용**이며 외부 API 호출/라우팅 변경에는 쓰지 않는다.
+
+### B-3. cross-cutting 상태는 Context
+
+Auth / Theme / Router / Feature Flags 같은 전역 관심사는 Context/Provider 사용. Props Drilling 3단계를 넘기지 않는다.
+
+---
+
+## C. 데이터 / API 경계
+
+### C-1. API 호출은 전용 모듈에서만
+
+```
+features/<feature>/api/<xxx>Api.ts   ← fetch/axios 호출은 전부 여기서
+```
+
+- View / Container / Hook / 공통 컴포넌트에서 `fetch(...)` 직접 호출 금지.
+- API 함수는 입출력 타입을 명시한다.
+
+### C-2. 설정·상수·좌표는 외부화
+
+```
+features/<feature>/config/*.ts      ← 화면 상수, 기본값, enum
+config/ 또는 constants/              ← 전역 상수
+```
+
+- 매직 넘버·하드코딩 색상/픽셀/URL 금지.
+- 설정이 DB에서 오는 값이면 서버 API로 감싸 C-1 경로를 따른다.
+
+---
+
+## D. 공통 컴포넌트
+
+### D-1. 공통 입력 컴포넌트 재사용 (신규 제작 금지)
+
+다음은 **이미 있다**. 페이지마다 새로 만들지 않는다.
+
+- `FormButton`, `FormInput`, `FormSelect`, `FormCheckbox`, `FormRadio` (실명은 `src/components/form/`에서 확인)
+- 없을 때만 같은 디렉토리에 새로 추가하되, 최소 2곳 이상 쓰일 때만 승격.
+
+### D-2. 선택형과 입력형 분리
+
+`radio` / `checkbox` 같은 선택형 컴포넌트와 `text` / `number` 같은 입력형은 **같은 컴포넌트로 합치지 않는다**. Props 표면이 섞이면 재사용성이 깨진다.
+
+---
+
+## E. 스타일 스코프
+
+### E-1. 루트 스코프 필수
+
+모든 페이지 스코프 CSS는 최소 1단계의 스코프를 가진다.
+
+- ✅ `.customers-page--pc .customer-card__actions { ... }`
+- ✅ `.customers-page .favorite-btn { ... }`
+- ❌ `.favorite-btn { ... }` (전역 오염)
+- ❌ `.customer-card__actions { ... }` (전역 오염)
+
+스코프 지정 규칙은 `ui-pc-mobile-separation.mdc` 2번 절 참조.
+
+### E-2. `!important` / Tailwind `!`-utility 금지
+
+- CSS `!important` 금지. 기존 쓰이던 블록은 발견 시 점진 제거.
+- Tailwind `!bg-red-500`, `!text-white` 같은 `!`-유틸 금지. 상태 표현이 필요하면 `--on`, `--active` 같은 BEM modifier 클래스로 한다.
+- 예외: 써드파티 위젯의 `!important`를 이길 방법이 없을 때만 주석으로 사유 남기고 허용.
+
+### E-3. Container가 자식 className 계산은 허용
+
+상태에 따른 조건부 스타일은 Container가 `className="foo foo--active"` 형태로 **문자열만** 계산해 넘겨도 된다. 그 외 `style={{...}}` 인라인으로 도메인 스타일을 넣는 것은 금지.
+
+---
+
+## F. 파일 원칙
+
+### F-1. 1파일 = 1역할
+
+한 파일에 "페이지 + 폼 + 리스트 + 모달"이 같이 있으면 분리 대상이다. 파일 이름이 역할을 그대로 드러나게 한다.
+
+### F-2. 네이밍 컨벤션
+
+| 역할 | 파일명 |
+|------|--------|
+| Container | `<Page>Page.tsx` |
+| PC View | `<Page>PCView.tsx` |
+| Mobile View | `<Page>MobileView.tsx` |
+| 상태 훅 | `use<Page>State.ts` |
+| API | `<resource>Api.ts` |
+| 타입 | `<page>.types.ts` 또는 같은 파일의 `export type` |
+| 상수 | `<page>.config.ts` |
+
+### F-3. import 순서
+
+1. 외부 라이브러리 (`react`, `react-router-dom`, ...)
+2. 같은 기능 내부 (`../api`, `../hooks`)
+3. 공통 (`../../components`, `../../hooks`)
+4. 스타일
+
+---
+
+## G. 체크리스트 (PR 전 자가 점검)
+
+- [ ] View에 `useState`/`useEffect`/`fetch` 없음
+- [ ] 공유 로직이 훅으로 분리됨 (PC/Mobile 양쪽 복붙 없음)
+- [ ] API 호출이 `*Api.ts`에만 있음
+- [ ] 공통 입력 컴포넌트 재사용 (새로 만들지 않음)
+- [ ] CSS는 루트 스코프 필수 (전역 `.favorite-btn` 형태 없음)
+- [ ] `!important` / Tailwind `!`-utility 없음
+- [ ] 파일이 150줄 넘으면 A-1 삼분(三分) 적용됨
+
+---
+
+## H. 점진 이관 원칙
+
+- 모놀리식 기존 파일(예: 2000줄 `CustomersPage.tsx`)은 **한 PR = 한 책임** 단위로 이관.
+- 순서: (1) API 분리 → (2) 상태 훅 추출 → (3) PC/Mobile View 분리 → (4) 스타일 스코프 이관 → (5) 구 코드 삭제.
+- 기능 변경과 리팩터링은 **같은 PR에 섞지 않는다**(리뷰/롤백 리스크).

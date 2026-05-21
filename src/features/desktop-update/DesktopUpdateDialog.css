@@ -1,0 +1,133 @@
+/* 전역 업데이트 다이얼로그 전용 스타일.
+   네임스페이스: desktop-update-dialog- 로 고정해 다른 모달/레이아웃과 충돌 없음. */
+
+.desktop-update-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.desktop-update-dialog__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.desktop-update-dialog__panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.3);
+  padding: 24px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.desktop-update-dialog__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.desktop-update-dialog__subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.desktop-update-dialog__body {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #1f2937;
+}
+
+.desktop-update-dialog__hint {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.desktop-update-dialog__notes {
+  background: #f1f5f9;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.desktop-update-dialog__notes pre {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+  max-height: 160px;
+  overflow: auto;
+}
+
+.desktop-update-dialog__progress {
+  height: 10px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.desktop-update-dialog__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  transition: width 180ms ease-out;
+}
+
+.desktop-update-dialog__progress-text {
+  margin: 2px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.desktop-update-dialog__actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 실제 버튼은 공용 FormButton (Button) 을 쓰므로 여기서는 모양을 오버라이드하지 않는다.
+   (프로젝트 규칙: 버튼 모양은 SSOT 에서만 관리) */
+
+@media (prefers-color-scheme: dark) {
+  .desktop-update-dialog__panel {
+    background: #0f172a;
+    color: #e2e8f0;
+  }
+  .desktop-update-dialog__body {
+    color: #cbd5e1;
+  }
+  .desktop-update-dialog__subtitle,
+  .desktop-update-dialog__hint {
+    color: #94a3b8;
+  }
+  .desktop-update-dialog__notes {
+    background: #1e293b;
+    color: #cbd5e1;
+  }
+  .desktop-update-dialog__progress {
+    background: #1e293b;
+  }
+  .desktop-update-dialog__progress-text {
+    color: #e2e8f0;
+  }
+}

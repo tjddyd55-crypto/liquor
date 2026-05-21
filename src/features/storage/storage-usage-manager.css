@@ -1,0 +1,319 @@
+.storage-usage-manager {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto 14px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: #1e2633;
+  color: #e6ecf2;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+}
+
+.storage-usage-manager__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.storage-usage-manager__header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.storage-usage-manager__header p {
+  margin: 4px 0 0;
+  color: #aeb8c5;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.storage-usage-manager__actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.storage-usage-manager__error {
+  margin: 12px 0 0;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(127, 29, 29, 0.22);
+  color: #fecaca;
+  font-size: 0.84rem;
+}
+
+.storage-usage-manager__summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.storage-usage-manager__summary-card {
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(15, 23, 42, 0.22);
+}
+
+.storage-usage-manager__summary-card span,
+.storage-usage-manager__summary-card small {
+  display: block;
+  color: #aeb8c5;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  font-weight: 750;
+}
+
+.storage-usage-manager__summary-card strong {
+  display: block;
+  margin: 4px 0 2px;
+  font-size: 1rem;
+  line-height: 1.25;
+  font-weight: 900;
+}
+
+.storage-usage-manager__summary-card--total strong {
+  color: #93c5fd;
+}
+
+.storage-usage-manager__filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(140px, auto) minmax(130px, auto) auto;
+  gap: 8px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.storage-usage-manager__filters input,
+.storage-usage-manager__filters select,
+.storage-usage-manager__filter-reset {
+  min-height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(15, 23, 42, 0.34);
+  color: #e6ecf2;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.storage-usage-manager__filters input {
+  min-width: 0;
+  padding: 0 11px;
+}
+
+.storage-usage-manager__filters input::placeholder {
+  color: #94a3b8;
+}
+
+.storage-usage-manager__filters select {
+  padding: 0 30px 0 10px;
+  cursor: pointer;
+}
+
+.storage-usage-manager__filter-reset {
+  padding: 0 12px;
+  cursor: pointer;
+  background: rgba(30, 41, 59, 0.82);
+}
+
+.storage-usage-manager__count {
+  margin: 8px 0 0;
+  color: #aeb8c5;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  font-weight: 800;
+}
+
+.storage-usage-manager__empty {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px dashed rgba(148, 163, 184, 0.22);
+  background: rgba(15, 23, 42, 0.22);
+  color: #aeb8c5;
+  text-align: center;
+  font-size: 0.86rem;
+}
+
+.storage-usage-manager__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.storage-usage-manager__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(15, 23, 42, 0.22);
+}
+
+.storage-usage-manager__item-main {
+  min-width: 0;
+}
+
+.storage-usage-manager__item-main strong {
+  display: block;
+  margin-top: 5px;
+  color: #e6ecf2;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.storage-usage-manager__item-main p {
+  margin: 4px 0 0;
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.storage-usage-manager__item-main small {
+  display: block;
+  margin-top: 4px;
+  color: #94a3b8;
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.storage-usage-manager__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(148, 163, 184, 0.14);
+  color: #e2e8f0;
+  font-size: 0.68rem;
+  line-height: 1;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.storage-usage-manager__badge--personal-storage {
+  border-color: rgba(96, 165, 250, 0.35);
+  background: rgba(96, 165, 250, 0.12);
+  color: #bfdbfe;
+}
+
+.storage-usage-manager__badge--customer-storage {
+  border-color: rgba(52, 211, 153, 0.35);
+  background: rgba(52, 211, 153, 0.12);
+  color: #a7f3d0;
+}
+
+.storage-usage-manager__badge--claim-file {
+  border-color: rgba(251, 191, 36, 0.35);
+  background: rgba(251, 191, 36, 0.12);
+  color: #fde68a;
+}
+
+.storage-usage-manager__badge--customer-news {
+  border-color: rgba(244, 114, 182, 0.35);
+  background: rgba(244, 114, 182, 0.12);
+  color: #fbcfe8;
+}
+
+.storage-usage-manager__item-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.storage-usage-manager__actions button,
+.storage-usage-manager__item-actions button {
+  cursor: pointer;
+}
+
+.storage-usage-manager__item-actions button {
+  min-height: 30px;
+  padding: 0 9px;
+  border-radius: 9px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(30, 41, 59, 0.82);
+  color: #e6ecf2;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.storage-usage-manager__item-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.storage-usage-manager__item-actions .storage-usage-manager__danger {
+  border-color: rgba(248, 113, 113, 0.35);
+  background: rgba(127, 29, 29, 0.26);
+  color: #fecaca;
+}
+
+@media (max-width: 767px) {
+  .storage-usage-manager {
+    margin: 0 10px 12px;
+    width: auto;
+    padding: 12px;
+  }
+
+  .storage-usage-manager__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .storage-usage-manager__actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .storage-usage-manager__actions .button,
+  .storage-usage-manager__actions button {
+    width: 100%;
+  }
+
+  .storage-usage-manager__summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .storage-usage-manager__summary-card--total {
+    grid-column: 1 / -1;
+  }
+
+  .storage-usage-manager__filters {
+    grid-template-columns: 1fr;
+  }
+
+  .storage-usage-manager__filters input,
+  .storage-usage-manager__filters select,
+  .storage-usage-manager__filter-reset {
+    width: 100%;
+  }
+
+  .storage-usage-manager__item {
+    grid-template-columns: 1fr;
+  }
+
+  .storage-usage-manager__item-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .storage-usage-manager__item-actions button {
+    width: 100%;
+  }
+}

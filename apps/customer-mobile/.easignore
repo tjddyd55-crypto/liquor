@@ -1,0 +1,9 @@
+# EAS 업로드 아카이브 축소 (로컬 빌드 산출물·캐시는 서버에서 재생성)
+# 주의: android/ 또는 ios/ 전체를 제외하면 원격 prebuild만 쓰게 되어,
+# 커밋된 네이티브 커스텀(예: lint, manifest)이 빌드에 반영되지 않을 수 있음.
+node_modules/
+android/app/build/
+android/build/
+android/.gradle/
+.expo/
+**/.DS_Store

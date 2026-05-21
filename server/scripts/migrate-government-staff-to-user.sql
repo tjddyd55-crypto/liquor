@@ -1,0 +1,27 @@
+-- develop DB 수동 보정용 (실행 전 반드시 백업)
+-- 기관 코드(tenant_registration_codes)로 가입한 government_staff 만 government_user 로 변경.
+-- 대행사 관리자가 사용자 관리 화면에서 만든 government_staff 는 변경하지 않음.
+--
+-- 1) 영향 건수 확인
+-- SELECT m.user_id, m.role, m.tenant_id, u.username
+-- FROM user_memberships m
+-- INNER JOIN users u ON u.id = m.user_id
+-- WHERE m.role = 'government_staff'
+--   AND NOT EXISTS (
+--     SELECT 1 FROM user_memberships m2
+--     WHERE m2.user_id = m.user_id
+--       AND m2.role IN ('government_agency_admin', 'government_industry_admin')
+--   );
+--
+-- 2) 보정 (staff 단독 멤버십만)
+-- UPDATE user_memberships m
+-- SET role = 'government_user',
+--     membership_type = 'user',
+--     customer_access = 'own'
+-- WHERE m.role = 'government_staff'
+--   AND NOT EXISTS (
+--     SELECT 1 FROM user_memberships m2
+--     WHERE m2.user_id = m.user_id
+--       AND m2.role IN ('government_agency_admin', 'government_industry_admin', 'government_staff')
+--       AND m2.id <> m.id
+--   );

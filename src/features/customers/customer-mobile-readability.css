@@ -1,0 +1,188 @@
+/**
+ * 모바일 고객관리 가독성: 글자 크기·행간·자간만 정리 (버튼 박스 높이·레이아웃 유지).
+ * PC·전역 body·전역 .button 변경 없음.
+ */
+@media (max-width: 767px) {
+  .customers-page--mobile,
+  .workspace-mobile-outlet-modal,
+  .customer-recent-mobile-modal {
+    --customer-mobile-font-base: 16px;
+    --customer-mobile-font-small: 14px;
+    --customer-mobile-font-title: 18px;
+    --customer-mobile-font-subtitle: 15px;
+    --customer-mobile-font-button: 14px;
+    --customer-mobile-font-button-strong: 15px;
+
+    --customer-mobile-line-base: 1.45;
+    --customer-mobile-line-tight: 1.32;
+    --customer-mobile-line-button: 1.22;
+
+    --customer-mobile-letter-base: 0.005em;
+    --customer-mobile-letter-readable: 0.01em;
+    --customer-mobile-letter-button: 0.012em;
+  }
+
+  /* 상세 시트 본문 기본 (기능 카드·폼 내부는 각 컴포넌트 규칙 유지) */
+  .workspace-mobile-outlet-modal__body {
+    font-size: var(--customer-mobile-font-base);
+    line-height: var(--customer-mobile-line-base);
+    letter-spacing: var(--customer-mobile-letter-base);
+  }
+
+  .workspace-mobile-outlet-modal__body input,
+  .workspace-mobile-outlet-modal__body textarea,
+  .workspace-mobile-outlet-modal__body select {
+    letter-spacing: var(--customer-mobile-letter-base);
+  }
+
+  /* 고객 카드 펼침 본문 */
+  .customers-page--mobile .customer-expand-detail,
+  .mobile-root .customer-expand-detail {
+    font-size: var(--customer-mobile-font-base);
+    line-height: var(--customer-mobile-line-base);
+    letter-spacing: var(--customer-mobile-letter-base);
+  }
+
+  .customers-page--mobile .customer-expand-detail p,
+  .mobile-root .customer-expand-detail p {
+    font-size: inherit;
+    line-height: var(--customer-mobile-line-base);
+  }
+
+  .customers-page--mobile .customer-detail-read__info-label,
+  .workspace-mobile-outlet-modal .customer-detail-read__info-label {
+    font-size: var(--customer-mobile-font-small);
+    line-height: var(--customer-mobile-line-base);
+    letter-spacing: var(--customer-mobile-letter-readable);
+  }
+
+  .customers-page--mobile .customer-detail-read__info-value,
+  .workspace-mobile-outlet-modal .customer-detail-read__info-value {
+    font-size: var(--customer-mobile-font-subtitle);
+    line-height: var(--customer-mobile-line-base);
+    letter-spacing: var(--customer-mobile-letter-base);
+  }
+
+  .customers-page--mobile .customer-detail-read__section-title,
+  .workspace-mobile-outlet-modal .customer-detail-read__section-title {
+    font-size: var(--customer-mobile-font-subtitle);
+    line-height: var(--customer-mobile-line-tight);
+    letter-spacing: var(--customer-mobile-letter-readable);
+  }
+
+  .customers-page--mobile .customer-detail-read__api-warn,
+  .customers-page--mobile .customer-detail-read__info-hint,
+  .workspace-mobile-outlet-modal .customer-detail-read__api-warn,
+  .workspace-mobile-outlet-modal .customer-detail-read__info-hint {
+    font-size: var(--customer-mobile-font-small);
+    line-height: var(--customer-mobile-line-base);
+    letter-spacing: var(--customer-mobile-letter-base);
+  }
+
+  .customers-page--mobile .gov-customer-list-meta-line,
+  .customers-page--mobile .gov-customer-list-summary {
+    font-size: var(--customer-mobile-font-small);
+    line-height: var(--customer-mobile-line-base);
+    letter-spacing: var(--customer-mobile-letter-base);
+  }
+
+  /* 툴바 고객명(라벨) */
+  .customers-page--mobile .customer-detail-toolbar--mobile-actions .customer-info-label,
+  .mobile-root .customer-detail-toolbar--mobile-actions .customer-info-label {
+    font-size: var(--customer-mobile-font-title);
+    font-weight: 800;
+    line-height: var(--customer-mobile-line-tight);
+    letter-spacing: var(--customer-mobile-letter-readable);
+  }
+
+  /* 목록 상단 CTA·검색행 보조 */
+  .customers-page--mobile button.cta-button.customers-page__action-btn,
+  .customers-page--mobile div.cta-button.customers-page__action-btn[role='button'] {
+    font-size: var(--customer-mobile-font-button);
+    line-height: var(--customer-mobile-line-button);
+    letter-spacing: var(--customer-mobile-letter-button);
+  }
+
+  .customers-page--mobile .customer-filter-chip.button.button--small {
+    font-size: var(--customer-mobile-font-button);
+    line-height: var(--customer-mobile-line-button);
+    letter-spacing: var(--customer-mobile-letter-button);
+  }
+
+  .customers-page--mobile .customer-detail-action-button.button {
+    font-size: var(--customer-mobile-font-button);
+    line-height: var(--customer-mobile-line-button);
+    letter-spacing: var(--customer-mobile-letter-button);
+  }
+
+  .customers-page--mobile .customer-detail-action-bar--mobile-save-cancel-row .customer-detail-action-button.button {
+    font-size: var(--customer-mobile-font-button);
+    line-height: var(--customer-mobile-line-button);
+    letter-spacing: var(--customer-mobile-letter-button);
+  }
+
+  .customers-page--mobile .customer-detail-action-bar--edit-delete-row .customer-detail-action-button.button {
+    font-size: var(--customer-mobile-font-button);
+    line-height: var(--customer-mobile-line-button);
+    letter-spacing: var(--customer-mobile-letter-button);
+  }
+
+  .customers-page--mobile .customer-mobile-expanded-app-link .customer-workspace-app-link-bar__pill {
+    font-size: var(--customer-mobile-font-button);
+    line-height: var(--customer-mobile-line-button);
+    letter-spacing: var(--customer-mobile-letter-button);
+  }
+
+  .customers-page--mobile .customer-mobile-expanded-app-link .customer-header-app-link-compact__copy {
+    font-size: var(--customer-mobile-font-button);
+    line-height: var(--customer-mobile-line-button);
+    letter-spacing: var(--customer-mobile-letter-button);
+  }
+
+  .customers-page--mobile .customer-mobile-copy-feedback {
+    font-size: var(--customer-mobile-font-subtitle);
+    line-height: var(--customer-mobile-line-base);
+    letter-spacing: var(--customer-mobile-letter-base);
+  }
+
+  /* 고객 파일(스토리지) 액션 — 높이 36px 유지, 글자만 */
+  .workspace-mobile-outlet-modal .storage-file-list .storage-file-list__action-button.button,
+  .workspace-mobile-outlet-modal .storage-file-list button.storage-file-list__action-button,
+  .workspace-mobile-outlet-modal .storage-file-list a.storage-file-list__action-button,
+  .customers-page--mobile .storage-file-list .storage-file-list__action-button.button,
+  .customers-page--mobile .storage-file-list button.storage-file-list__action-button,
+  .customers-page--mobile .storage-file-list a.storage-file-list__action-button {
+    font-size: var(--customer-mobile-font-button);
+    line-height: 1.2;
+    letter-spacing: var(--customer-mobile-letter-readable);
+  }
+
+  /* 최근 등록 고객 모달 (모바일 뷰포트) */
+  .customer-recent-mobile-modal .customer-recent-mobile-modal__header h2 {
+    font-size: var(--customer-mobile-font-title);
+    line-height: var(--customer-mobile-line-tight);
+    letter-spacing: var(--customer-mobile-letter-readable);
+  }
+
+  .customer-recent-mobile-modal .customer-recent-mobile-modal__header p {
+    font-size: var(--customer-mobile-font-small);
+    line-height: var(--customer-mobile-line-base);
+    letter-spacing: var(--customer-mobile-letter-base);
+  }
+
+  .customer-recent-mobile-modal .customer-recent-mobile-modal__main strong {
+    font-size: var(--customer-mobile-font-subtitle);
+    letter-spacing: var(--customer-mobile-letter-readable);
+  }
+
+  .customer-recent-mobile-modal .customer-recent-mobile-modal__main small {
+    font-size: var(--customer-mobile-font-small);
+    letter-spacing: var(--customer-mobile-letter-base);
+  }
+
+  .customer-recent-mobile-modal .customer-recent-mobile-modal__action {
+    font-size: var(--customer-mobile-font-small);
+    line-height: var(--customer-mobile-line-button);
+    letter-spacing: var(--customer-mobile-letter-button);
+  }
+}

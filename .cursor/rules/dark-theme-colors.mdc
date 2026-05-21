@@ -1,0 +1,209 @@
+---
+description: 다크 테마 색상 SSOT — 배경/텍스트/입력/버튼/링크 팔레트 고정, 신규·수정 UI 시 혼선 방지
+globs: src/**/*.{ts,tsx,css}
+alwaysApply: true
+---
+
+# 다크 테마 색상 규칙
+
+이 프로젝트의 기본 UI는 다크 테마를 기준으로 한다.
+신규 화면 또는 기존 화면 수정 시, 배경/글자/입력칸/버튼 색상은 아래 값을 우선 사용한다.
+
+스코프 전용 구현 예: `main.insurance-dark-forms`, `src/styles/dark-application-pdf-scope.css` 등. 공통 토큰은 `theme-tokens.css`·`index.css`와 맞출 때 **이 문서의 hex를 우선** 한다.
+
+## 기본 색상
+
+페이지 전체 배경:
+
+`#0B111A`
+
+상단/섹션/카드 배경:
+
+`#111827`
+
+카드보다 살짝 밝은 입력 영역/패널:
+
+`#1F2937`
+
+입력칸 배경:
+
+`#020617`
+
+기본 border:
+
+`#1E293B`
+
+입력칸 border:
+
+`#334155`
+
+focus border:
+
+`#3B82F6`
+
+focus shadow:
+
+`rgba(59, 130, 246, 0.28)`
+
+기본 제목 텍스트:
+
+`#F8FAFC`
+
+본문 텍스트:
+
+`#E5E7EB`
+
+라벨 텍스트:
+
+`#CBD5E1`
+
+보조 설명 텍스트:
+
+`#94A3B8`
+
+placeholder:
+
+`#64748B`
+
+비활성 텍스트:
+
+`#64748B`
+
+링크/강조 텍스트:
+
+`#60A5FA`
+
+primary 버튼 배경:
+
+`#2563EB`
+
+primary 버튼 hover:
+
+`#1D4ED8`
+
+primary 버튼 텍스트:
+
+`#FFFFFF`
+
+secondary 버튼 배경:
+
+`#111827`
+
+secondary 버튼 hover:
+
+`#1F2937`
+
+secondary 버튼 border:
+
+`#334155`
+
+secondary 버튼 텍스트:
+
+`#E5E7EB`
+
+danger 색상:
+
+`#EF4444`
+
+danger hover 배경:
+
+`rgba(239, 68, 68, 0.12)`
+
+## 적용 원칙
+
+1. 다크 배경 위에 어두운 글자색을 쓰지 않는다.
+2. input, textarea, select는 반드시 어두운 배경 + 밝은 글자 조합으로 쓴다.
+3. placeholder는 `#64748B`를 기준으로 한다.
+4. label은 `#CBD5E1` 이상 밝기로 표시한다.
+5. 제목은 `#F8FAFC`를 기준으로 한다.
+6. 본문은 `#E5E7EB`를 기준으로 한다.
+7. 설명/보조문구는 `#94A3B8`를 기준으로 한다.
+8. primary 버튼은 `#2563EB` 배경 + `#FFFFFF` 텍스트를 기준으로 한다.
+9. secondary 버튼은 어두운 배경 + 밝은 텍스트 + `#334155` border를 기준으로 한다.
+10. 흰색 카드(`#FFFFFF`)는 특별한 이유 없이는 사용하지 않는다.
+11. 페이지마다 임의 색상값을 새로 만들지 말고 이 규칙을 먼저 따른다.
+12. 기능 수정 중 색상 문제가 발견되면 이 규칙에 맞춰 함께 보정한다.
+
+## 기본 CSS 예시
+
+```css
+.page-dark {
+  background: #0b111a;
+  color: #e5e7eb;
+}
+
+.dark-card {
+  background: #111827;
+  border: 1px solid #1e293b;
+  color: #e5e7eb;
+}
+
+.dark-panel {
+  background: #1f2937;
+  border: 1px solid #334155;
+  color: #e5e7eb;
+}
+
+.dark-input,
+.dark-textarea,
+.dark-select {
+  background: #020617;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  outline: none;
+}
+
+.dark-input::placeholder,
+.dark-textarea::placeholder {
+  color: #64748b;
+}
+
+.dark-input:focus,
+.dark-textarea:focus,
+.dark-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.28);
+}
+
+.dark-label {
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.dark-muted {
+  color: #94a3b8;
+}
+
+.dark-link {
+  color: #60a5fa;
+}
+
+.dark-button-primary {
+  background: #2563eb;
+  color: #ffffff;
+  border: 1px solid #2563eb;
+}
+
+.dark-button-primary:hover {
+  background: #1d4ed8;
+}
+
+.dark-button-secondary {
+  background: #111827;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+.dark-button-secondary:hover {
+  background: #1f2937;
+}
+```
+
+## 하면 안 되는 것
+
+- 다크 배경 위에 `#111827`, `#0F172A`, `#020617` 같은 어두운 글자색 사용 금지
+- input 배경과 input 글자색을 둘 다 어둡게 두는 것 금지
+- 흰색 카드/흰색 배경을 다크 화면 중간에 섞는 것 금지
+- 인라인 스타일로 임시 색상 땜질 금지
+- 페이지마다 제각각 색상값 새로 만드는 것 금지

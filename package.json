@@ -1,0 +1,130 @@
+{
+  "name": "insurance",
+  "private": true,
+  "version": "1.0.7",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0",
+    "npm": ">=10"
+  },
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "concurrently \"node server/index.js\" \"vite\"",
+    "electron": "wait-on http://localhost:3000 http://localhost:3001 && electron .",
+    "dev:desktop": "concurrently \"npm run dev\" \"npm run electron\"",
+    "build": "vite build",
+    "build:web": "vite build",
+    "build:desktop": "npm run build:web -- --base ./ && electron-builder",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint src --fix",
+    "lint:lock": "node scripts/check-ui-lock.mjs",
+    "preview": "node server/index.js",
+    "preview:vite": "vite preview",
+    "start": "node server/index.js",
+    "test": "node --test \"server/**/*.test.js\"",
+    "seed:insurance": "node server/runSeedInsurance.js",
+    "import:partner-excel": "node server/scripts/runPartnerExcelImport.mjs",
+    "import:cleaned-excel": "node server/scripts/runCleanedExcelImport.mjs",
+    "import:cleaned-excel:railway": "railway run -- node server/scripts/runCleanedExcelImport.mjs",
+    "cleanup:company-directory": "node server/scripts/runCompanyDirectoryCleanup.mjs",
+    "cleanup:company-directory:railway": "railway run -- node server/scripts/runCompanyDirectoryCleanup.mjs",
+    "verify:multitenant-db": "node server/scripts/runMultitenantDbCheck.mjs",
+    "purge:sms-verification-logs": "node server/scripts/runPurgeSmsVerificationLogs.mjs",
+    "purge:sms-verification-logs:railway": "railway run -- node server/scripts/runPurgeSmsVerificationLogs.mjs",
+    "recover:insurer-managers": "node server/scripts/runInsurerManagerCompanyRecovery.mjs",
+    "recover:insurer-managers:apply": "node server/scripts/runInsurerManagerCompanyRecovery.mjs --apply",
+    "recover:insurer-managers:railway": "railway run -- node server/scripts/runInsurerManagerCompanyRecovery.mjs --apply",
+    "recover:insurer-managers:cron": "node server/scripts/runInsurerManagerCompanyRecovery.mjs --fail-on-broken",
+    "analytics:aggregate": "node server/scripts/runAnalyticsAggregation.mjs --yesterday",
+    "cleanup:storage-upload-staging": "node server/scripts/runStorageOrphanStagingCleanupCron.mjs",
+    "cleanup:storage-upload-staging:railway": "railway run -- node server/scripts/runStorageOrphanStagingCleanupCron.mjs",
+    "download:insurer-logos": "node scripts/download-insurer-logos.mjs",
+    "backfill:insurer-bundled-logos": "node server/scripts/runBackfillInsurerBundledLogos.mjs",
+    "check:claim-deploy": "node server/scripts/checkClaimAppDeploy.mjs",
+    "check:claim-deploy:railway": "railway run -- node server/scripts/checkClaimAppDeploy.mjs",
+    "e2e:government:operations": "node server/scripts/e2eGovernmentOperationsHttp.mjs",
+    "e2e:government:user-workspace": "node server/scripts/e2eGovernmentUserWorkspaceHttp.mjs",
+    "e2e:government:signatures": "node server/scripts/e2eGovernmentSignaturesHttp.mjs",
+    "e2e:government:operations:db": "node server/scripts/e2eGovernmentOperationsDevelop.mjs",
+    "e2e:government:seed-program-users": "node server/scripts/e2eSeedProgramUsers.mjs",
+    "e2e:government:reset-admin-password": "node server/scripts/e2eResetAdminPassword.mjs"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1023.0",
+    "@aws-sdk/s3-request-presigner": "^3.1023.0",
+    "@pdf-lib/fontkit": "^1.1.1",
+    "@tanstack/react-query": "^5.96.2",
+    "axios": "^1.14.0",
+    "bcryptjs": "^3.0.3",
+    "concurrently": "^9.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.1",
+    "electron-updater": "^6.8.3",
+    "express": "^5.2.1",
+    "file-saver": "^2.0.5",
+    "html-to-image": "^1.11.13",
+    "ioredis": "^5.8.2",
+    "jsonwebtoken": "^9.0.3",
+    "jspdf": "^4.2.0",
+    "multer": "^2.1.1",
+    "pdf-lib": "^1.17.1",
+    "pdf-poppler": "^0.2.3",
+    "pdfjs-dist": "^5.6.205",
+    "pg": "^8.20.0",
+    "pino": "^10.3.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.13.1",
+    "semver": "^7.7.4",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/file-saver": "^2.0.7",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "tailwindcss": "^4.2.2",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.48.0",
+    "vite": "^7.3.1",
+    "electron": "^35.0.0",
+    "electron-builder": "^25.1.8",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "com.insurance.app",
+    "productName": "InsuranceApp",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "electron/assets/app-icon.ico",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "tjddyd55-crypto",
+        "repo": "insurance",
+        "releaseType": "release"
+      }
+    ]
+  }
+}

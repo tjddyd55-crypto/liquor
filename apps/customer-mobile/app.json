@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "Insurance Customer",
+    "slug": "insurance-customer",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "icon": "../mobile/assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "scheme": "insurancecustomer",
+    "splash": {
+      "image": "../mobile/assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.insurance.customer"
+    },
+    "android": {
+      "package": "com.insurance.customer",
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "foregroundImage": "../mobile/assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "../mobile/assets/favicon.png"
+    },
+    "runtimeVersion": "production",
+    "updates": {
+      "url": "https://u.expo.dev/c774705b-e9b2-44d3-b5d7-6ba9968e4c70",
+      "fallbackToCacheTimeout": 0,
+      "checkAutomatically": "NEVER"
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 24
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c774705b-e9b2-44d3-b5d7-6ba9968e4c70"
+      }
+    },
+    "owner": "tjddyd55"
+  }
+}

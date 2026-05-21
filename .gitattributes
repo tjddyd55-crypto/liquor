@@ -1,0 +1,61 @@
+# ----------------------------------------------------------------------
+# 레포 개행 정책 — LF 통일
+#
+# 배경:
+#   - 운영 서버(Railway) 는 Linux 이므로 LF 가 정답.
+#   - 개발 환경은 Windows 가 섞여 있어 `core.autocrlf=true` 전역 설정에
+#     의한 유령 M 상태가 반복 발생했다.
+#   - 이 파일로 레포 수준에서 바이트 결과를 고정해 OS/도구 차이를 무력화한다.
+#
+# 규칙:
+#   1) 텍스트 파일은 전부 LF(커밋+체크아웃 모두)
+#   2) Windows 전용 쉘 스크립트만 CRLF 유지(Windows 가 아니면 실행되지 않음)
+#   3) 바이너리는 text 처리하지 않도록 명시
+# ----------------------------------------------------------------------
+
+# 기본값: 텍스트로 인식되는 모든 파일은 LF 저장·LF 체크아웃
+* text=auto eol=lf
+
+# 소스 코드 — 명시적으로 LF 고정(자동 감지 실패 대비)
+*.js         text eol=lf
+*.cjs        text eol=lf
+*.mjs        text eol=lf
+*.ts         text eol=lf
+*.tsx        text eol=lf
+*.jsx        text eol=lf
+*.json       text eol=lf
+*.css        text eol=lf
+*.scss       text eol=lf
+*.html       text eol=lf
+*.md         text eol=lf
+*.yml        text eol=lf
+*.yaml       text eol=lf
+*.sh         text eol=lf
+*.sql        text eol=lf
+*.toml       text eol=lf
+*.env*       text eol=lf
+Dockerfile   text eol=lf
+.dockerignore text eol=lf
+.gitignore   text eol=lf
+.gitattributes text eol=lf
+
+# Windows 전용 스크립트만 CRLF 유지(Linux 에서 실행되지 않으므로 안전)
+*.bat        text eol=crlf
+*.cmd        text eol=crlf
+*.ps1        text eol=crlf
+
+# 바이너리 — diff/merge 에서 텍스트로 취급하지 않도록 명시
+*.png        binary
+*.jpg        binary
+*.jpeg       binary
+*.gif        binary
+*.webp       binary
+*.ico        binary
+*.pdf        binary
+*.zip        binary
+*.woff       binary
+*.woff2      binary
+*.ttf        binary
+*.otf        binary
+*.mp4        binary
+*.mp3        binary

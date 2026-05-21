@@ -1,0 +1,304 @@
+/**
+ * 라이트: :root / 다크: :root[data-theme='dark'] (colorScheme.ts가 동기화)
+ * 컴포넌트·레이아웃 규칙에서는 var(--*) 만 사용합니다.
+ */
+
+:root {
+  --bg-main: #ffffff;
+  --bg-card: #f5f6f8;
+  --bg-soft: #f1f5f9;
+
+  --text-main: #111111;
+  --text-sub: #555555;
+  --text-secondary: var(--text-sub);
+
+  --primary: #2563eb;
+  --brand: var(--primary);
+  --success: #16a34a;
+  --danger: #dc2626;
+
+  --border: #e5e7eb;
+  --border-default: var(--border);
+
+  --shadow: 0 2px 8px rgb(0 0 0 / 0.08);
+  --shadow-dark: 0 2px 8px rgb(0 0 0 / 0.4);
+  --shadow-elevated: var(--shadow);
+  --shadow-card: rgb(0 0 0 / 0.08);
+  --shadow-modal: var(--shadow-dark);
+
+  --primary-hover: #1d4ed8;
+  --text-on-primary: #ffffff;
+  --link: var(--primary);
+
+  --overlay-backdrop: rgb(15 23 42 / 0.55);
+
+  /* 하위호환 별칭 */
+  --bg: var(--bg-main);
+  --card: var(--bg-card);
+  --text: var(--text-main);
+  --subtext: var(--text-sub);
+  --text-primary: var(--text-main);
+  --bg-elevated: var(--bg-card);
+  --input-bg: var(--bg-main);
+  --placeholder: var(--text-sub);
+
+  --tab-inactive-bg: var(--bg-soft);
+  --tab-inactive-text: var(--text-sub);
+
+  --btn-surface: var(--bg-card);
+  --btn-border: var(--border);
+  --btn-text: var(--text-main);
+  --btn-hover-bg: var(--bg-soft);
+  --btn-hover-border: var(--text-sub);
+
+  --btn-secondary-surface: var(--bg-soft);
+  --btn-secondary-text: var(--text-main);
+
+  --hint-bg: rgb(34 197 94 / 0.12);
+  --hint-border: rgb(34 197 94 / 0.35);
+  --hint-text: #166534;
+
+  --edit-banner-bg: var(--primary);
+  --edit-banner-text: var(--text-on-primary);
+
+  --status-warn: #d97706;
+  --status-error: var(--danger);
+
+  --secondary-bg: rgb(251 191 36 / 0.18);
+  --secondary-border: #d97706;
+  --secondary-text: #b45309;
+  --secondary-hover-bg: rgb(251 191 36 / 0.26);
+
+  --danger-bg: rgb(239 68 68 / 0.1);
+  --danger-border: var(--danger);
+  --danger-text: #b91c1c;
+  --danger-hover-bg: rgb(239 68 68 / 0.18);
+
+  --disabled-bg: var(--bg-soft);
+  --disabled-text: var(--text-sub);
+
+  --checkbox-bg: var(--bg-soft);
+
+  --sticky-bar-bg: rgb(248 250 252 / 0.97);
+  --sticky-actions-edge-border: #ccd5e2;
+
+  --focus-ring: var(--primary);
+
+  /* 고객·대시보드 서브 UI */
+  --surface-expand: var(--bg-soft);
+  --surface-list-row: var(--bg-main);
+  --border-muted: var(--border);
+  --text-meta: var(--text-sub);
+
+  --accent-kakao-bg: rgb(254 243 199);
+  --accent-kakao-text: #92400e;
+  --accent-car-bg: rgb(219 234 254);
+  --accent-car-text: #1e40af;
+  --accent-delete-bg: rgb(254 226 226);
+  --accent-delete-text: #991b1b;
+
+  --dday-bg: var(--bg-soft);
+  --dday-text: var(--text-main);
+  --dday-warn-bg: rgb(254 243 199);
+  --dday-warn-text: var(--secondary-text);
+  --dday-urgent-bg: rgb(254 226 226);
+  --dday-urgent-text: var(--danger-text);
+
+  --expiry-danger-bg: rgb(254 226 226);
+  --expiry-danger-text: #b91c1c;
+  --expiry-warning-bg: rgb(254 243 199);
+  --expiry-warning-text: var(--secondary-text);
+
+  --dashboard-empty-bg: var(--bg-soft);
+  --dashboard-empty-text: var(--text-sub);
+  --dashboard-empty-border: var(--border);
+
+  --table-header-bg: var(--bg-soft);
+  --table-border: var(--border);
+
+  --divider-auth: var(--border);
+  --auth-input-border: #cbd5e1;
+
+  /* 폼·관리 화면 공통 의미 토큰 (별칭) */
+  --bg-input: var(--input-bg);
+  --brand-primary: var(--primary);
+  --brand-soft: rgb(37 99 235 / 0.14);
+  --text-default: var(--text-main);
+
+  /* 인쇄·결과 양식(종이 느낌 유지 — 변수로만 참조) */
+  --result-paper-bg: #ffffff;
+  --result-paper-text: #121212;
+  --result-ink: #000000;
+  --result-mark: #c40000;
+  --result-section-bg: #f1f5f9;
+  --insurance-note: var(--danger);
+
+  --print-paper-bg: #ffffff;
+  --print-border-strong: #2f4776;
+  --print-section-header-bg: #e5ecf8;
+  --print-table-header-bg: #f0f4fb;
+  --print-sheet-border: #c6ced9;
+
+  --contacts-accent-phone: #102a63;
+  --contacts-title-text: var(--text-main);
+
+  --registry-pick-hover-border: var(--primary);
+  --registry-pick-hover-bg: var(--bg-soft);
+
+  /* 차트·중복 표시 등 구분 색 (TS에서는 var(--distinct-hue-N)만 참조) */
+  --distinct-hue-0: #c62828;
+  --distinct-hue-1: #1565c0;
+  --distinct-hue-2: #2e7d32;
+  --distinct-hue-3: #ef6c00;
+  --distinct-hue-4: #6a1b9a;
+  --distinct-hue-5: #00838f;
+
+  font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  line-height: 1.4;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root[data-theme='dark'] {
+  /* 카드(bg-card)를 바닥보다 한 단 올려 대비; 호버용 bg-soft는 더 밝게 */
+  --bg-main: #0f1115;
+  --bg-card: #1e232c;
+  --bg-soft: #2a313c;
+
+  --text-main: #ffffff;
+  --text-sub: #c4cad4;
+  --text-secondary: var(--text-sub);
+
+  --primary: #3b82f6;
+  --brand: var(--primary);
+  --success: #22c55e;
+  --danger: #ef4444;
+
+  --border: #3d4654;
+  --border-default: var(--border);
+
+  --shadow: 0 2px 8px rgb(0 0 0 / 0.35);
+  --shadow-dark: 0 2px 8px rgb(0 0 0 / 0.5);
+  --shadow-elevated: var(--shadow);
+  --shadow-card: rgb(0 0 0 / 0.35);
+  --shadow-modal: var(--shadow-dark);
+
+  --primary-hover: #93c5fd;
+  --text-on-primary: #0f1115;
+  --link: var(--primary);
+
+  --overlay-backdrop: rgb(0 0 0 / 0.65);
+
+  --bg: var(--bg-main);
+  --card: var(--bg-card);
+  --text: var(--text-main);
+  --subtext: var(--text-sub);
+  --input-bg: var(--bg-card);
+  --placeholder: var(--text-sub);
+
+  --tab-inactive-bg: var(--bg-soft);
+  --tab-inactive-text: var(--text-sub);
+
+  --btn-surface: var(--bg-soft);
+  --btn-border: var(--border);
+  --btn-text: var(--text-main);
+  --btn-hover-bg: rgb(51 65 85 / 0.85);
+  --btn-hover-border: var(--text-sub);
+
+  --btn-secondary-surface: var(--bg-soft);
+  --btn-secondary-text: var(--text-main);
+
+  --hint-bg: rgb(74 222 128 / 0.12);
+  --hint-border: rgb(74 222 128 / 0.35);
+  --hint-text: #86efac;
+
+  --edit-banner-bg: var(--primary);
+  --edit-banner-text: var(--text-on-primary);
+
+  --status-warn: #fb923c;
+  --status-error: var(--danger);
+
+  --secondary-bg: rgb(251 191 36 / 0.12);
+  --secondary-border: #d97706;
+  --secondary-text: #fde68a;
+  --secondary-hover-bg: rgb(251 191 36 / 0.2);
+
+  --danger-bg: rgb(248 113 113 / 0.12);
+  --danger-border: var(--danger);
+  --danger-text: #fecaca;
+  --danger-hover-bg: rgb(248 113 113 / 0.22);
+
+  --disabled-bg: var(--bg-soft);
+  --disabled-text: var(--text-sub);
+
+  --checkbox-bg: var(--bg-soft);
+
+  --sticky-bar-bg: rgb(15 23 42 / 0.96);
+  --sticky-actions-edge-border: #475569;
+
+  --focus-ring: var(--primary);
+
+  --surface-expand: var(--bg-soft);
+  --surface-list-row: var(--bg-card);
+  --border-muted: var(--border);
+  --text-meta: var(--text-sub);
+
+  --accent-kakao-bg: rgb(120 53 15 / 0.4);
+  --accent-kakao-text: #fde68a;
+  --accent-car-bg: rgb(30 58 138 / 0.5);
+  --accent-car-text: #bfdbfe;
+  --accent-delete-bg: rgb(127 29 29 / 0.45);
+  --accent-delete-text: #fecaca;
+
+  --dday-bg: var(--bg-soft);
+  --dday-text: var(--text-main);
+  --dday-warn-bg: rgb(251 191 36 / 0.15);
+  --dday-warn-text: #fde68a;
+  --dday-urgent-bg: rgb(248 113 113 / 0.18);
+  --dday-urgent-text: #fecaca;
+
+  --expiry-danger-bg: rgb(248 113 113 / 0.18);
+  --expiry-danger-text: #fecaca;
+  --expiry-warning-bg: rgb(251 191 36 / 0.12);
+  --expiry-warning-text: #fde68a;
+
+  --dashboard-empty-bg: var(--bg-soft);
+  --dashboard-empty-text: var(--text-sub);
+  --dashboard-empty-border: var(--border);
+
+  --table-header-bg: var(--bg-soft);
+  --table-border: var(--border);
+
+  --divider-auth: var(--border);
+  --auth-input-border: rgb(255 255 255 / 0.22);
+
+  --bg-input: var(--input-bg);
+  --text-primary: var(--text-main);
+  --bg-elevated: var(--bg-card);
+  --brand-primary: var(--primary);
+  --brand-soft: rgb(59 130 246 / 0.22);
+  --text-default: var(--text-main);
+
+  /* 다크에서도 인쇄 미리보기는 밝은 종이 유지 */
+  --result-paper-bg: #ffffff;
+  --result-paper-text: #121212;
+  --result-ink: #000000;
+  --result-mark: #c40000;
+  --result-section-bg: #f3f3f3;
+  --insurance-note: #d10000;
+
+  --print-paper-bg: #ffffff;
+  --print-border-strong: #2f4776;
+  --print-section-header-bg: #e5ecf8;
+  --print-table-header-bg: #f0f4fb;
+  --print-sheet-border: #c6ced9;
+
+  --contacts-accent-phone: #93c5fd;
+  --contacts-title-text: var(--text-main);
+
+  --registry-pick-hover-border: var(--primary);
+  --registry-pick-hover-bg: var(--bg-soft);
+}

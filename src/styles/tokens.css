@@ -1,0 +1,87 @@
+/**
+ * Phase 3 — Figma·코드 공통 SSOT (핵심 토큰)
+ * 다크 모드: document.documentElement[data-theme='dark']
+ * 상세·레거시 토큰은 theme-tokens.css → 이 파일에서 동일 이름 덮어씀
+ */
+
+:root {
+  /* 디자인 시스템 토큰 (global) */
+  --bg-base: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-elevated: #f1f5f9;
+
+  --border-subtle: #d7dee8;
+  --border-strong: #bcc7d6;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: rgb(37 99 235 / 0.14);
+
+  --accent: #f59e0b;
+  --accent-hover: #d97706;
+  --accent-soft: rgb(245 158 11 / 0.14);
+
+  --danger: #dc2626;
+  --success: #16a34a;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  /* legacy alias */
+  --bg-main: var(--bg-base);
+  --border-default: var(--border-subtle);
+  --brand-primary: var(--primary);
+  --brand-secondary: var(--primary-hover);
+  --brand: var(--primary);
+  --text-main: var(--text-primary);
+  --text-sub: var(--text-secondary);
+  --border: var(--border-default);
+}
+
+:root[data-theme='dark'] {
+  --bg-base: #0f141b;
+  --bg-surface: #161d27;
+  --bg-card: #1e2633;
+  --bg-elevated: #232d3a;
+
+  --border-subtle: #2b3544;
+  --border-strong: #3a4658;
+
+  --text-primary: #e6ecf2;
+  --text-secondary: #9aa5b1;
+  --text-muted: #6b7785;
+
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-soft: rgb(59 130 246 / 0.16);
+
+  --accent: #f59e0b;
+  --accent-hover: #d97706;
+  --accent-soft: rgb(245 158 11 / 0.14);
+
+  --danger: #ef4444;
+  --success: #10b981;
+
+  /* legacy alias */
+  --bg-main: var(--bg-base);
+  --border-default: var(--border-subtle);
+  --brand-primary: var(--primary);
+  --brand-secondary: var(--primary-hover);
+  --brand: var(--primary);
+  --text-main: var(--text-primary);
+  --text-sub: var(--text-secondary);
+  --border: var(--border-default);
+}

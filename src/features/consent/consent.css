@@ -1,0 +1,516 @@
+/* 동의서 발송 UI — 요구 스펙 색상 (#0f1115 / #14171c). 메인 앱 테마와 독립 */
+
+.consent-flow {
+  --consent-bg: #0f1115;
+  --consent-card: #14171c;
+  --consent-text: #ffffff;
+  --consent-sub: #94a3b8;
+  --consent-brand: #3b82f6;
+  --consent-brand-active: #2563eb;
+  --consent-border: #2a3038;
+  --consent-signature-bg: #1a1f26;
+  --consent-signature-ink: #ffffff;
+  --consent-gap-section: 16px;
+  --consent-gap-list: 12px;
+  --consent-touch-min: 44px;
+
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--consent-bg);
+  color: var(--consent-text);
+  box-sizing: border-box;
+}
+
+.consent-flow *,
+.consent-flow *::before,
+.consent-flow *::after {
+  box-sizing: border-box;
+}
+
+.consent-flow__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 16px 32px;
+}
+
+.consent-flow__title {
+  margin: 0 0 var(--consent-gap-section);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--consent-text);
+}
+
+.consent-flow__ga-context {
+  margin: -8px 0 var(--consent-gap-section);
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #1a1f26;
+  border: 1px solid var(--consent-border);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--consent-sub);
+}
+
+.consent-flow__ga-context strong {
+  color: var(--consent-text);
+  font-weight: 700;
+}
+
+.consent-card {
+  background: var(--consent-card);
+  border: 1px solid var(--consent-border);
+  border-radius: 12px;
+  padding: var(--consent-gap-section);
+}
+
+.consent-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--consent-touch-min);
+  padding: 0 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  color: #ffffff;
+  background: var(--consent-brand);
+}
+
+.consent-btn:active {
+  opacity: 0.8;
+}
+
+.consent-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.consent-btn--secondary {
+  background: var(--btn-secondary-surface);
+  color: var(--btn-secondary-text);
+  border: 1px solid var(--border);
+}
+
+.consent-btn--full {
+  width: 100%;
+}
+
+.consent-company-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--consent-gap-section);
+  min-height: min(70vh, 640px);
+}
+
+@media (max-width: 720px) {
+  .consent-company-columns {
+    grid-template-columns: 1fr;
+    min-height: unset;
+  }
+}
+
+.consent-company-column {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--consent-card);
+  border: 1px solid var(--consent-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.consent-company-list__heading {
+  margin: 0;
+  padding: 14px var(--consent-gap-section);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--consent-text);
+  border-bottom: 1px solid var(--consent-border);
+  flex-shrink: 0;
+}
+
+.consent-company-list__scroll {
+  flex: 1;
+  min-height: 200px;
+  max-height: min(60vh, 520px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--consent-gap-section);
+  display: flex;
+  flex-direction: column;
+  gap: var(--consent-gap-list);
+}
+
+.consent-company-list__btn {
+  width: 100%;
+  min-height: var(--consent-touch-min);
+  padding: 12px 16px;
+  border: 1px solid var(--consent-border);
+  border-radius: 10px;
+  background: #1a1f26;
+  color: var(--consent-text);
+  font-size: 16px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: opacity 0.15s ease, border-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.consent-company-list__btn:active {
+  opacity: 0.8;
+  border-color: var(--consent-brand);
+}
+
+.consent-form-header {
+  margin-bottom: var(--consent-gap-section);
+}
+
+.consent-form-header__company {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.consent-form-header__meta {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--consent-sub);
+}
+
+.consent-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: var(--consent-gap-section);
+}
+
+.consent-field:last-of-type {
+  margin-bottom: 0;
+}
+
+.consent-field__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--consent-sub);
+}
+
+.consent-field__input {
+  min-height: var(--consent-touch-min);
+  padding: 12px 14px;
+  border: 1px solid var(--consent-border);
+  border-radius: 10px;
+  background: #1a1f26;
+  color: var(--consent-text);
+  font-size: 16px;
+}
+
+.consent-field__input::placeholder {
+  color: #64748b;
+}
+
+.consent-field__input:focus {
+  outline: 2px solid var(--consent-brand);
+  outline-offset: 1px;
+}
+
+.consent-section {
+  margin-top: var(--consent-gap-section);
+}
+
+.consent-section__label {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--consent-sub);
+}
+
+.consent-signature-status {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--consent-sub);
+}
+
+.consent-signature-preview-wrap {
+  margin-top: 10px;
+  border: 1px solid var(--consent-border);
+  border-radius: 10px;
+  background: #1a1f26;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.consent-signature-preview-image {
+  width: 100%;
+  max-width: 420px;
+  max-height: 170px;
+  object-fit: contain;
+  display: block;
+}
+
+.consent-preview-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: var(--consent-gap-list);
+  max-height: 360px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 2px 8px;
+}
+
+.consent-preview-page {
+  flex-shrink: 0;
+  aspect-ratio: 210 / 297;
+  max-height: 280px;
+  border-radius: 8px;
+  border: 1px dashed var(--consent-border);
+  background: linear-gradient(145deg, #1e242c 0%, #14171c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--consent-sub);
+  font-size: 14px;
+  text-align: center;
+  padding: 16px;
+}
+
+/* 서명 모달 — 중앙 고정 다이얼로그(iOS·카카오 인앱: 풀스크린·body fixed 회피) */
+.consent-signature-backdrop {
+  --consent-gap-section: 16px;
+  --consent-gap-list: 12px;
+  --consent-touch-min: 44px;
+  --consent-signature-bg: var(--result-paper-bg);
+  --consent-signature-ink: var(--result-ink);
+  position: fixed;
+  inset: 0;
+  z-index: 100040;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(16px, env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+  background: var(--overlay-backdrop);
+  color: var(--text-main);
+  animation: consent-fade-in 0.2s ease;
+  overscroll-behavior: contain;
+}
+
+.consent-signature-dialog {
+  width: min(92vw, 560px);
+  max-height: calc(100svh - 32px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-modal);
+}
+
+.consent-signature-dialog .consent-signature-modal-desc {
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
+.consent-signature-dialog .consent-signature-header {
+  padding: 10px 12px 10px 14px;
+}
+
+.consent-signature-dialog .consent-signature-canvas-wrap {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  padding: 12px;
+  max-height: none;
+  overflow: visible;
+}
+
+.consent-signature-dialog .consent-signature-canvas-surface {
+  width: 100%;
+  max-width: none;
+  height: 300px;
+  min-height: 260px;
+  max-height: 320px;
+}
+
+@media (min-width: 640px) {
+  .consent-signature-dialog .consent-signature-canvas-surface {
+    height: 340px;
+    min-height: 320px;
+    max-height: 360px;
+  }
+}
+
+.consent-signature-dialog .consent-signature-error {
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+.consent-signature-modal-desc {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0 16px 8px;
+  font-size: 14px;
+  color: var(--text-sub);
+  line-height: 1.4;
+  text-align: center;
+}
+
+@keyframes consent-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.consent-signature-header {
+  flex-shrink: 0;
+  padding: 12px 12px 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: minmax(44px, 1fr) minmax(0, 3fr) minmax(44px, 1fr);
+  align-items: center;
+  gap: 4px;
+}
+
+.consent-signature-header__spacer {
+  grid-column: 1;
+}
+
+.consent-signature-header__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  grid-column: 2;
+  color: var(--text-main);
+}
+
+.consent-signature-header__close {
+  grid-column: 3;
+  justify-self: end;
+  min-height: var(--consent-touch-min);
+  padding: 0 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-sub);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.consent-signature-header__close:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.consent-signature-header__close:not(:disabled):active {
+  opacity: 0.85;
+}
+
+.consent-signature-canvas-wrap {
+  flex: 1;
+  min-height: 0;
+  padding: var(--consent-gap-section);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.consent-signature-canvas {
+  width: 100%;
+  max-width: 640px;
+  height: min(48dvh, 440px);
+  min-height: 280px;
+  max-height: min(48dvh, 440px);
+  flex-shrink: 0;
+  touch-action: none;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: crosshair;
+  box-sizing: border-box;
+}
+
+/* 실제 화면 배경은 CSS(픽셀 알파와 분리). PNG/PDF에는 포함되지 않음 */
+.consent-signature-canvas-surface {
+  width: 100%;
+  max-width: 640px;
+  height: min(48dvh, 440px);
+  min-height: 280px;
+  max-height: min(48dvh, 440px);
+  flex-shrink: 0;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  /** 표면만 밝게: 검은 서명 선 가독성(PNG는 투명) */
+  background: var(--consent-signature-bg);
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.consent-signature-canvas-surface .consent-signature-canvas {
+  flex: 1;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  border: none;
+  border-radius: 0;
+}
+
+.consent-signature-footer {
+  flex-shrink: 0;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--consent-gap-list);
+}
+
+.consent-signature-error {
+  margin: 0 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--danger-border);
+  border-radius: 8px;
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  font-size: 13px;
+}
+
+.consent-signature-backdrop .consent-btn:not(.consent-btn--secondary) {
+  background: var(--primary);
+  color: var(--text-on-primary);
+}
+
+.consent-form-actions {
+  margin-top: var(--consent-gap-section);
+  display: flex;
+  flex-direction: column;
+  gap: var(--consent-gap-list);
+}
+
+.consent-mock-toast {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-sub);
+}

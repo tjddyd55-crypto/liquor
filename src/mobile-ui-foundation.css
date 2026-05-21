@@ -1,0 +1,258 @@
+@media (max-width: 767px) {
+  :root {
+    --m-bg: var(--app-bg, var(--bg-main, #0b0f14));
+    --m-surface: var(--bg-card, #1e2633);
+    --m-surface-raised: color-mix(in srgb, var(--bg-card, #1e2633) 88%, #334155 12%);
+    --m-border: color-mix(in srgb, var(--border, #2b3544) 82%, #64748b 18%);
+    --m-border-soft: color-mix(in srgb, var(--border, #2b3544) 76%, transparent);
+    --m-primary: var(--brand-primary, #2563eb);
+    --m-primary-strong: #1d4ed8;
+    --m-danger: #ef4444;
+    --m-danger-strong: #dc2626;
+    --m-text: var(--text-primary, #e6ecf2);
+    --m-text-sub: var(--text-secondary, #aeb8c5);
+    --m-text-muted: color-mix(in srgb, var(--text-secondary, #9aa5b1) 75%, transparent);
+    --m-radius-sm: 8px;
+    --m-radius-md: 10px;
+    --m-radius-lg: 14px;
+    --m-header-h: 56px;
+    --m-control-h: 42px;
+    --m-page-max: 430px;
+    --m-page-pad: 10px;
+  }
+
+  /* Mobile page and sheet baseline */
+  .page.claim-requests-page--mobile,
+  .mobile-modal-content {
+    background: var(--m-bg) !important;
+    color: var(--m-text) !important;
+  }
+
+  .workspace-mobile-outlet-modal__body > .page {
+    background: transparent !important;
+    color: var(--m-text) !important;
+  }
+
+  .workspace-mobile-outlet-modal,
+  .mobile-modal,
+  .customer-ui-modal-backdrop:has(.claim-requests-page__detail-section) > .customer-ui-modal-panel {
+    width: 100% !important;
+    max-width: var(--m-page-max) !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    min-height: 100dvh !important;
+    margin: 0 auto !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    background: var(--m-bg) !important;
+    color: var(--m-text) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  .workspace-mobile-outlet-modal__header,
+  .mobile-modal-header,
+  .customer-ui-modal-backdrop:has(.claim-requests-page__detail-section) .modal-header,
+  .customer-ui-modal-backdrop:has(.claim-requests-page__detail-section) .claim-requests-page__modal-header {
+    flex: 0 0 auto !important;
+    min-height: 48px !important;
+    height: auto !important;
+    display: grid !important;
+    grid-template-columns: 48px minmax(0, 1fr) 48px !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 12px 16px !important;
+    border-bottom: 1px solid var(--border-default, rgba(148, 163, 184, 0.22)) !important;
+    background: var(--m-bg) !important;
+  }
+
+  .workspace-mobile-outlet-modal__spacer {
+    width: 48px !important;
+    min-width: 48px !important;
+  }
+
+  .workspace-mobile-outlet-modal__title,
+  .mobile-modal-header__title,
+  .customer-ui-modal-backdrop:has(.claim-requests-page__detail-section) .modal-title,
+  .customer-ui-modal-backdrop:has(.claim-requests-page__detail-section) .claim-requests-page__modal-title {
+    grid-column: 2 !important;
+    margin: 0 !important;
+    text-align: center !important;
+    font-size: var(--customer-mobile-font-title, 18px) !important;
+    font-weight: 900 !important;
+    line-height: var(--customer-mobile-line-tight, 1.32) !important;
+    letter-spacing: var(--customer-mobile-letter-readable, 0.01em) !important;
+    color: var(--m-text) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .workspace-mobile-outlet-modal__close {
+    grid-column: 3 !important;
+    justify-self: end !important;
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 6px 2px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--m-text-sub) !important;
+    font-size: var(--customer-mobile-font-subtitle, 15px) !important;
+    font-weight: 700 !important;
+    line-height: var(--customer-mobile-line-button, 1.22) !important;
+    letter-spacing: var(--customer-mobile-letter-button, 0.012em) !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    font-family: inherit !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .workspace-mobile-outlet-modal__close:hover {
+    color: var(--m-text) !important;
+    background: color-mix(in srgb, var(--m-text) 8%, transparent) !important;
+  }
+
+  .workspace-mobile-outlet-modal__close:focus-visible {
+    color: var(--m-text) !important;
+    background: color-mix(in srgb, var(--m-text) 8%, transparent) !important;
+    outline: 2px solid var(--border-focus, #3b82f6) !important;
+    outline-offset: 2px !important;
+  }
+
+  .mobile-modal-header .mobile-btn--close,
+  .customer-ui-modal-backdrop:has(.claim-requests-page__detail-section) .close-btn,
+  .customer-ui-modal-backdrop:has(.claim-requests-page__detail-section) .claim-requests-page__modal-close {
+    grid-column: 3 !important;
+    justify-self: end !important;
+    min-width: 48px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 10px !important;
+    border-radius: var(--m-radius-md) !important;
+  }
+
+  .workspace-mobile-outlet-modal__body,
+  .mobile-modal-body,
+  .customer-ui-modal-backdrop:has(.claim-requests-page__detail-section) .modal-body,
+  .customer-ui-modal-backdrop:has(.claim-requests-page__detail-section) .claim-requests-page__modal-body,
+  .customer-ui-modal-backdrop:has(.claim-requests-page__detail-section) .claim-requests-page__detail-modal-body {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    background: var(--m-bg) !important;
+  }
+
+  .workspace-mobile-outlet-modal__body > .content-wrapper,
+  .workspace-mobile-outlet-modal__body > .page-shell,
+  .workspace-mobile-outlet-modal__body > main.content-wrapper,
+  .workspace-mobile-outlet-modal__body > main.page,
+  .workspace-mobile-outlet-modal__body > .storage-workspace {
+    background: transparent !important;
+  }
+
+  .workspace-mobile-outlet-modal__body > .page,
+  .mobile-modal-content,
+  .claim-requests-page--mobile {
+    padding: 12px var(--m-page-pad) calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Mobile cards */
+  .claim-requests-page--mobile > section,
+  .claim-requests-page--mobile > article,
+  .claim-requests-page--mobile .claim-requests-page__card,
+  .claim-requests-page--mobile .claim-requests-page__panel,
+  .claim-requests-page--mobile .claim-requests-page__section,
+  .mobile-modal-content > section,
+  .mobile-modal-content > article,
+  .mobile-card {
+    border-radius: var(--m-radius-lg) !important;
+    background: var(--m-surface) !important;
+    border: 1px solid var(--m-border-soft) !important;
+  }
+
+  /* Mobile controls */
+  .claim-requests-page--mobile button,
+  .claim-requests-page--mobile .button,
+  .claim-requests-page--mobile .form-button,
+  .mobile-modal button,
+  .mobile-modal .button,
+  .mobile-modal .form-button,
+  .workspace-mobile-outlet-modal button:not(.workspace-mobile-outlet-modal__close) {
+    min-height: var(--m-control-h);
+    border-radius: var(--m-radius-md);
+    font-weight: 800;
+    touch-action: manipulation;
+  }
+
+  .claim-requests-page--mobile input,
+  .claim-requests-page--mobile select,
+  .claim-requests-page--mobile textarea,
+  .mobile-modal input,
+  .mobile-modal select,
+  .mobile-modal textarea,
+  .workspace-mobile-outlet-modal input,
+  .workspace-mobile-outlet-modal select,
+  .workspace-mobile-outlet-modal textarea {
+    min-height: var(--m-control-h) !important;
+    border-radius: var(--m-radius-md) !important;
+  }
+
+  /* Customer expanded card action buttons: text-only, two columns. */
+  .customer-detail-feature-actions--mobile-priority {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px 8px !important;
+    margin: 8px 0 10px !important;
+    padding: 8px 8px 10px !important;
+  }
+
+  .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn__icon,
+  .customer-detail-feature-actions--mobile-priority button::before,
+  .customer-detail-feature-actions--mobile-priority button::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn,
+  .customer-detail-feature-actions--mobile-priority button.customer-mobile-action-btn {
+    width: 100% !important;
+    min-height: 42px !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 8px 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    color: #fff !important;
+    font-size: var(--customer-mobile-font-button-strong, 15px) !important;
+    font-weight: 800 !important;
+    line-height: var(--customer-mobile-line-button, 1.22) !important;
+    letter-spacing: var(--customer-mobile-letter-button, 0.012em) !important;
+    text-align: center !important;
+    white-space: normal !important;
+    background: linear-gradient(180deg, var(--m-primary) 0%, var(--m-primary-strong) 100%) !important;
+    border: 1px solid color-mix(in srgb, #60a5fa 22%, transparent) !important;
+  }
+
+  .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn:disabled,
+  .customer-detail-feature-actions--mobile-priority button.customer-mobile-action-btn:disabled {
+    opacity: 0.55 !important;
+  }
+
+  .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn__text {
+    width: 100% !important;
+    text-align: center !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+    word-break: keep-all !important;
+    line-height: var(--customer-mobile-line-button, 1.22) !important;
+  }
+}

@@ -1,0 +1,173 @@
+.pc-top-navigation {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .pc-workspace-header--navigation-only {
+    overflow: visible;
+  }
+
+  .pc-workspace-header--navigation-only .pc-top-navigation {
+    display: flex;
+  }
+
+  .pc-top-navigation {
+    position: relative;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 44px;
+    padding: 0 12px;
+    border-top: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--border-default, #2a2a2a) 78%, transparent);
+    background: color-mix(in srgb, var(--bg-elevated, #141b26) 92%, #000 8%);
+    overflow: visible;
+    z-index: 60;
+  }
+
+  .pc-top-navigation__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .pc-top-navigation__groups {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+  }
+
+  .pc-top-navigation__group {
+    flex: 0 0 auto;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: color-mix(in srgb, var(--text-primary, #fff) 84%, transparent);
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .pc-top-navigation__group:hover,
+  .pc-top-navigation__group--open {
+    background: color-mix(in srgb, var(--brand-primary, #60a5fa) 14%, transparent);
+    color: var(--text-primary, #fff);
+  }
+
+  .pc-top-navigation__group--active {
+    background: color-mix(in srgb, var(--brand-primary, #60a5fa) 20%, transparent);
+    color: var(--text-primary, #fff);
+  }
+
+  .pc-top-navigation__group:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-primary, #60a5fa) 42%, transparent);
+  }
+
+  .pc-top-navigation__actions {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-height: 44px;
+    white-space: nowrap;
+  }
+
+  .pc-top-navigation__actions .notification-icon,
+  .pc-top-navigation__logout {
+    min-height: 32px;
+  }
+
+  .pc-top-navigation__dropdown {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    min-height: 52px;
+    padding: 10px 12px;
+    border-top: 1px solid color-mix(in srgb, var(--border-default, #2a2a2a) 72%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--border-default, #2a2a2a) 82%, transparent);
+    background: color-mix(in srgb, var(--bg-card, #111827) 94%, #000 6%);
+    box-shadow: 0 16px 28px rgba(0, 0, 0, 0.28);
+    z-index: 80;
+  }
+
+  .pc-top-navigation__dropdown-title {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    margin-right: 12px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--brand-primary, #60a5fa) 16%, transparent);
+    color: color-mix(in srgb, var(--brand-primary, #60a5fa) 82%, #fff 18%);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    vertical-align: middle;
+  }
+
+  .pc-top-navigation__dropdown-items {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    vertical-align: middle;
+  }
+
+  .pc-top-navigation__item {
+    flex: 0 0 auto;
+    min-height: 32px;
+    height: 32px;
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 11px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .pc-top-navigation__item[aria-current='page'],
+  .pc-top-navigation__item--active {
+    background: color-mix(in srgb, var(--brand-primary, #60a5fa) 24%, transparent);
+    color: var(--text-primary, #fff);
+  }
+
+  .pc-top-navigation__item:disabled {
+    opacity: 0.58;
+    cursor: not-allowed;
+  }
+
+  .pc-top-navigation__item-label {
+    white-space: nowrap;
+  }
+
+  .pc-top-navigation__item-badge {
+    flex: 0 0 auto;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--warning, #f59e0b) 18%, transparent);
+    color: color-mix(in srgb, var(--warning, #f59e0b) 78%, #fff 22%);
+    font-size: 0.66rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+}

@@ -1,0 +1,82 @@
+---
+description: 정부지원 CRM — 보험 CRM 마스터 복제 원칙. 새 UI/UX 설계 금지. government-support·전자서명 작업 시 필수.
+globs: src/features/government-support/**,server/**/government*,server/registerGovernment*.js,docs/**/government*
+alwaysApply: true
+---
+
+# 정부지원 CRM = 보험 CRM 복제 (마스터 복사)
+
+> SSOT: `docs/architecture/government-crm-architecture.md` §0  
+> 정부지원 CRM은 **보험 CRM을 마스터**로 본다. 바뀌는 것은 **데이터명·API·DB·권한·R2 경로·문구**뿐이다.
+
+---
+
+## 1. 절대 금지
+
+- **새 UI 설계** · **새 화면 흐름** · **독자적 UX**
+- 보험 CRM과 **다른 레이아웃**(카드형 홈, 단일 컬럼 placeholder 위주 화면 등 **신규** 추가)
+- 보험 contract/고객관리 **원본 파일 수정**으로 정부 기능 끼워 넣기
+- 보험 DB·API·R2·템플릿과 **정부 데이터 혼합**
+- 관리자(staff/agency/industry)에게 **유저 소유 데이터 전체 목록** 노출
+- production ENV·main push·보험 DB 접근·secret 출력
+
+---
+
+## 2. 반드시 따를 복제 절차
+
+1. **먼저** 보험 CRM 해당 기능의 파일·화면·라우트·API·DB 구조를 찾는다.
+2. **그대로 복사**해 `src/features/government-support/` · `server/.../government*` 등 **정부 전용 경로**에 둔다.
+3. **이름·연결만** 정부 데이터에 맞게 치환한다 (아래 매핑).
+4. 공통 유틸(PDF 엔진, R2 presign, `SignatureModal`, `ResponsiveLayout` 등)은 **재사용** 가능. **화면/API/DB scope는 분리**.
+5. PC/Mobile 분리는 보험과 동일하게 `ResponsiveLayout` + `*-page--pc/--mobile` ( `AGENTS.md` §8 ).
+
+---
+
+## 3. UI·레이아웃 (보험 고객관리 = 정부 워크스페이스 목표)
+
+보험 `CustomersPage` / `CustomerWorkspaceLayout` 기준 **그대로**:
+
+| 보험 CRM | 정부지원 CRM |
+|----------|--------------|
+| 상단·대분류/소분류 메뉴 | 동일 구조 |
+| **좌측 리스트** | 사업장/신청 대상 리스트 |
+| **우측 상세** | 선택 항목 상세 |
+| 상세 **탭/섹션** | 메모·상담·진행·서류·전자서명 **동일 배치** |
+| PC 좌측+우측 / 모바일 | 보험과 동일 반응형 |
+
+---
+
+## 4. 데이터·역할 매핑
+
+| 보험 | 정부지원 |
+|------|----------|
+| 고객 | 사업장/고객/신청 대상 (`gov_support_profiles` 등) |
+| GA | 대행사 (tenant) |
+| GA 관리자 / 직원 / 유저 | `government_agency_admin` / `government_staff` / `government_user` |
+| contract 전자서명 | `gov_signature_*` (전용 DB/API/R2) |
+| 고객 선택(발송) | **사업장(profile) 선택** |
+
+---
+
+## 5. 구현 우선순위 (고정)
+
+1. **전자서명** — 보험 `src/features/contracts` + contract API **전체 복사 이식** (진행 중: `government-support/signatures` 등)
+2. **UI 전체 재정렬** — 이용자 화면을 보험 고객관리와 **동일 좌측 리스트 + 우측 상세**로 이관
+3. **기능 순차 복제** — 접수/진행상황, 메모, 상담, 서류, 신청 (보험 기능 파일 복사 → API/DB만 정부용)
+
+---
+
+## 6. 전자서명 작업 체크
+
+- PDF 업로드 → 좌표 → 템플릿 → 발송 → 공개서명 → 완료 PDF → 다운로드/출력 **보험과 동일 흐름**
+- `npm run build` · `npm test` · 보험 contract **회귀 없음** 확인
+- develop만 commit/push (Railway CRM-government / develop)
+
+---
+
+## 7. PR/커밋 전 자가 점검
+
+- [ ] 보험 동일 화면/흐름에서 **복사**했는가? (처음부터 만든 UI 없음)
+- [ ] 정부 전용 API prefix·테이블·R2 prefix인가?
+- [ ] `owner_user_id` / program user 가드인가?
+- [ ] 보험 원본 feature 파일 **미변경**인가?

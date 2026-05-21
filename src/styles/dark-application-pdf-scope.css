@@ -1,0 +1,564 @@
+/**
+ * 신청서(application) + PDF 엔진(사용자/관리자) 전용 다크 UI.
+ * 전역 테마를 바꾸지 않고 `<main class="insurance-dark-forms …">` 가 붙은 페이지만 적용된다.
+ */
+
+main.insurance-dark-forms {
+  /* 토큰: 이 범위 안에서 var(--*) 를 쓰는 기존 컴포넌트가 함께 맞춰진다 */
+  --bg-main: #0b111a;
+  --bg-card: #111827;
+  --bg-soft: #1f2937;
+  --bg-elevated: #1f2937;
+  --input-bg: #020617;
+
+  --text-main: #e5e7eb;
+  --text-sub: #94a3b8;
+  --text-secondary: #94a3b8;
+  --text: #e5e7eb;
+  --subtext: #94a3b8;
+  --text-meta: #94a3b8;
+  --text-primary: #e5e7eb;
+  --placeholder: #64748b;
+
+  --border: #1e293b;
+  --border-default: #1e293b;
+  --table-border: #1e293b;
+  --table-header-bg: #1f2937;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --text-on-primary: #ffffff;
+  --link: #60a5fa;
+  --focus-ring: #3b82f6;
+
+  --secondary-bg: #111827;
+  --secondary-border: #334155;
+  --secondary-text: #e5e7eb;
+  --secondary-hover-bg: #1f2937;
+
+  --btn-surface: #111827;
+  --btn-border: #334155;
+  --btn-text: #e5e7eb;
+  --btn-hover-bg: #1f2937;
+  --btn-hover-border: #334155;
+
+  --danger: #ef4444;
+  --danger-text: #ef4444;
+  --danger-border: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.12);
+  --danger-hover-bg: rgba(239, 68, 68, 0.12);
+  --status-error: #ef4444;
+
+  /* 경고 · 주의 (테스트 콘솔 등, amber 계열) */
+  --warning: #f59e0b;
+  --warning-text: #fcd34d;
+  --warning-bg: rgba(245, 158, 11, 0.14);
+  --warning-border: rgba(245, 158, 11, 0.4);
+
+  --checkbox-bg: #1f2937;
+  --surface-list-row: #1f2937;
+  --sticky-bar-bg: #111827;
+  --sticky-actions-edge-border: #1e293b;
+
+  --dashboard-empty-bg: #1f2937;
+  --dashboard-empty-text: #94a3b8;
+  --dashboard-empty-border: #1e293b;
+
+  background-color: #0b111a;
+  color: #e5e7eb;
+}
+
+/* ─── 신청서 / 공통 페이지 chrome ───────────────────────────────── */
+
+main.insurance-dark-forms .page-header h1 {
+  color: #f8fafc;
+}
+
+main.insurance-dark-forms .page-header h2,
+main.insurance-dark-forms .page-header h3 {
+  color: #f8fafc;
+}
+
+main.insurance-dark-forms .page-header p {
+  color: #94a3b8;
+}
+
+main.insurance-dark-forms .list-section h2,
+main.insurance-dark-forms .dashboard-section-title,
+main.insurance-dark-forms .form-section__title {
+  color: #f8fafc;
+}
+
+main.insurance-dark-forms .form-section__title {
+  font-weight: 700;
+}
+
+main.insurance-dark-forms a {
+  color: #60a5fa;
+}
+
+main.insurance-dark-forms a:hover {
+  color: #93c5fd;
+}
+
+main.insurance-dark-forms .card,
+main.insurance-dark-forms .record-card,
+main.insurance-dark-forms .form-section {
+  background: #111827;
+  border: 1px solid #1e293b;
+  color: #e5e7eb;
+}
+
+main.insurance-dark-forms .record-card__title {
+  color: #f8fafc;
+}
+
+main.insurance-dark-forms .record-card__meta {
+  color: #94a3b8;
+}
+
+main.insurance-dark-forms .field__label {
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+main.insurance-dark-forms .field__helper {
+  color: #94a3b8;
+}
+
+main.insurance-dark-forms .field__required {
+  color: #ef4444;
+}
+
+/* index.css 가 하드코딩한 입력칸 — 요구사항 팔레트로 통일 */
+main.insurance-dark-forms .field__control,
+main.insurance-dark-forms .form-input,
+main.insurance-dark-forms .form-select,
+main.insurance-dark-forms .form-textarea {
+  background-color: #020617;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  outline: none;
+}
+
+main.insurance-dark-forms .field__control::placeholder,
+main.insurance-dark-forms .form-input::placeholder,
+main.insurance-dark-forms .form-textarea::placeholder {
+  color: #64748b;
+}
+
+main.insurance-dark-forms .field__control:focus,
+main.insurance-dark-forms .field__control:focus-visible,
+main.insurance-dark-forms .form-input:focus,
+main.insurance-dark-forms .form-input:focus-visible,
+main.insurance-dark-forms .form-select:focus,
+main.insurance-dark-forms .form-select:focus-visible,
+main.insurance-dark-forms .form-textarea:focus,
+main.insurance-dark-forms .form-textarea:focus-visible {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.28);
+  outline: none;
+}
+
+main.insurance-dark-forms .field__control:disabled,
+main.insurance-dark-forms .field__control[readonly],
+main.insurance-dark-forms .field__control.field--readonly,
+main.insurance-dark-forms .form-input:disabled,
+main.insurance-dark-forms .form-select:disabled,
+main.insurance-dark-forms .form-textarea:disabled {
+  background-color: #111827;
+  color: #64748b;
+  border-color: #334155;
+  cursor: not-allowed;
+}
+
+main.insurance-dark-forms .field__control.field--editable {
+  background-color: #020617;
+  color: #f8fafc;
+  border: 1px solid #334155;
+}
+
+main.insurance-dark-forms .checkbox-field {
+  background: #1f2937;
+  border: 1px solid #1e293b;
+  color: #e5e7eb;
+}
+
+main.insurance-dark-forms .checkbox-field__content {
+  color: #e5e7eb;
+}
+
+main.insurance-dark-forms .empty-state,
+main.insurance-dark-forms .empty-state--inline,
+main.insurance-dark-forms .empty-box {
+  background: #1f2937;
+  border: 1px solid #1e293b;
+  color: #94a3b8;
+}
+
+main.insurance-dark-forms .customer-hit-list__item {
+  background: #111827;
+  border: 1px solid #1e293b;
+}
+
+main.insurance-dark-forms .customer-hit-list__meta {
+  color: #e5e7eb;
+}
+
+main.insurance-dark-forms .dashboard-empty {
+  background: #1f2937;
+  border: 1px dashed #1e293b;
+  color: #94a3b8;
+}
+
+main.insurance-dark-forms .dashboard-table th,
+main.insurance-dark-forms .dashboard-table td {
+  border-color: #1e293b;
+  color: #e5e7eb;
+}
+
+main.insurance-dark-forms .dashboard-table th {
+  background: #1f2937;
+  color: #f8fafc;
+}
+
+main.insurance-dark-forms .dashboard-recent-item {
+  background: #111827;
+  border: 1px solid #1e293b;
+}
+
+main.insurance-dark-forms .dashboard-recent-item strong {
+  color: #f8fafc;
+}
+
+main.insurance-dark-forms .dashboard-recent-item span {
+  color: #94a3b8;
+}
+
+main.insurance-dark-forms .sticky-actions {
+  background-color: #111827;
+  border-top: 1px solid #1e293b;
+}
+
+main.insurance-dark-forms .button--primary {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main.insurance-dark-forms .button--primary:hover:not(:disabled):not(:active) {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+  }
+}
+
+main.insurance-dark-forms .button--secondary {
+  background-color: #111827;
+  color: #e5e7eb;
+  border-color: #334155;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main.insurance-dark-forms .button--secondary:hover:not(:disabled):not(:active) {
+    background-color: #1f2937;
+    border-color: #334155;
+  }
+}
+
+/* variant=action: 기본 .button — 보조 버튼과 동일 톤 */
+main.insurance-dark-forms .button:not(.button--primary):not(.button--secondary):not(.button--danger) {
+  background-color: #111827;
+  color: #e5e7eb;
+  border-color: #334155;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main.insurance-dark-forms
+    .button:not(.button--primary):not(.button--secondary):not(.button--danger):hover:not(:disabled):not(:active) {
+    background-color: #1f2937;
+    border-color: #334155;
+  }
+}
+
+main.insurance-dark-forms .button--danger {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.45);
+  background-color: rgba(239, 68, 68, 0.12);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main.insurance-dark-forms .button--danger:hover:not(:disabled):not(:active) {
+    background-color: rgba(239, 68, 68, 0.18);
+    border-color: #ef4444;
+  }
+}
+
+main.insurance-dark-forms .status--error {
+  color: #ef4444;
+}
+
+main.insurance-dark-forms .result-file-name {
+  color: #94a3b8;
+}
+
+/* 결과 미리보기 종이 영역은 인쇄 대비로 밝게 유지 (변수 미변경) */
+
+/* ─── PDF 엔진 (pdf-engine.css 라이트 하드코딩 덮어쓰기) ───────── */
+
+main.insurance-dark-forms.pdf-engine-page,
+main.insurance-dark-forms .pdf-engine-page {
+  color: #e5e7eb;
+}
+
+main.insurance-dark-forms .pdf-engine-page__title,
+main.insurance-dark-forms .pdf-engine-page__header .pdf-engine-page__title {
+  color: #f8fafc;
+}
+
+main.insurance-dark-forms .pdf-engine-page__hint,
+main.insurance-dark-forms .pdf-engine-editor__hint,
+main.insurance-dark-forms .pdf-engine-editor__field-meta,
+main.insurance-dark-forms .pdf-engine-form__header p,
+main.insurance-dark-forms .pdf-engine-form__mapping-hint,
+main.insurance-dark-forms .pdf-engine-preview__header p {
+  color: #94a3b8;
+}
+
+main.insurance-dark-forms .pdf-engine-page__error,
+main.insurance-dark-forms .pdf-engine-editor__error {
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+main.insurance-dark-forms .pdf-engine-editor__error-code {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fecaca;
+}
+
+main.insurance-dark-forms .pdf-engine-table th,
+main.insurance-dark-forms .pdf-engine-table td {
+  border-color: #1e293b;
+  color: #e5e7eb;
+}
+
+main.insurance-dark-forms .pdf-engine-table th {
+  background: #1f2937;
+  color: #f8fafc;
+}
+
+main.insurance-dark-forms .pdf-engine-table tr:hover td {
+  background: #1f2937;
+}
+
+main.insurance-dark-forms .pdf-engine-badge {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+}
+
+main.insurance-dark-forms .pdf-engine-badge--muted {
+  background: #1f2937;
+  color: #94a3b8;
+}
+
+main.insurance-dark-forms .pdf-engine-badge--danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+}
+
+main.insurance-dark-forms .pdf-engine-editor__panel {
+  border: 1px solid #1e293b;
+  background: #111827;
+  color: #e5e7eb;
+}
+
+main.insurance-dark-forms .pdf-engine-editor__panel-title {
+  color: #f8fafc;
+}
+
+main.insurance-dark-forms .pdf-engine-editor__label {
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+main.insurance-dark-forms .pdf-engine-editor__label input,
+main.insurance-dark-forms .pdf-engine-editor__label select,
+main.insurance-dark-forms .pdf-engine-editor__label textarea {
+  border: 1px solid #334155;
+  border-radius: 10px;
+  color: #f8fafc;
+  background: #020617;
+  outline: none;
+}
+
+main.insurance-dark-forms .pdf-engine-editor__label input::placeholder,
+main.insurance-dark-forms .pdf-engine-editor__label textarea::placeholder {
+  color: #64748b;
+}
+
+main.insurance-dark-forms .pdf-engine-editor__label input:focus,
+main.insurance-dark-forms .pdf-engine-editor__label input:focus-visible,
+main.insurance-dark-forms .pdf-engine-editor__label select:focus,
+main.insurance-dark-forms .pdf-engine-editor__label select:focus-visible,
+main.insurance-dark-forms .pdf-engine-editor__label textarea:focus,
+main.insurance-dark-forms .pdf-engine-editor__label textarea:focus-visible {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.28);
+  outline: none;
+}
+
+main.insurance-dark-forms .pdf-engine-editor__field-item {
+  border: 1px solid #1e293b;
+  background: #111827;
+  color: #e5e7eb;
+}
+
+main.insurance-dark-forms .pdf-engine-editor__field-item--active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.28);
+}
+
+main.insurance-dark-forms .pdf-engine-editor__field-key {
+  color: #60a5fa;
+}
+
+main.insurance-dark-forms .pdf-engine-editor__overlay {
+  border: 1px solid #1e293b;
+  background: #111827;
+}
+
+main.insurance-dark-forms .pdf-engine-editor__btn {
+  border: 1px solid #334155;
+  background: #111827;
+  color: #e5e7eb;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main.insurance-dark-forms .pdf-engine-editor__btn:hover:not(:disabled) {
+    background: #1f2937;
+  }
+}
+
+main.insurance-dark-forms .pdf-engine-editor__btn--primary {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main.insurance-dark-forms .pdf-engine-editor__btn--primary:hover:not(:disabled) {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+  }
+}
+
+main.insurance-dark-forms .pdf-engine-editor__btn--danger {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.12);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main.insurance-dark-forms .pdf-engine-editor__btn--danger:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.18);
+  }
+}
+
+main.insurance-dark-forms .pdf-engine-form__header h2,
+main.insurance-dark-forms .pdf-engine-preview__header h3 {
+  color: #f8fafc;
+}
+
+main.insurance-dark-forms .pdf-engine-form__label,
+main.insurance-dark-forms .pdf-engine-form__radio-item {
+  color: #cbd5e1;
+}
+
+main.insurance-dark-forms .pdf-engine-form__input,
+main.insurance-dark-forms .pdf-engine-form__textarea,
+main.insurance-dark-forms .pdf-engine-form__select {
+  border: 1px solid #334155;
+  border-radius: 10px;
+  background: #020617;
+  color: #f8fafc;
+  outline: none;
+}
+
+main.insurance-dark-forms .pdf-engine-form__input::placeholder,
+main.insurance-dark-forms .pdf-engine-form__textarea::placeholder {
+  color: #64748b;
+}
+
+main.insurance-dark-forms .pdf-engine-form__input:focus,
+main.insurance-dark-forms .pdf-engine-form__input:focus-visible,
+main.insurance-dark-forms .pdf-engine-form__textarea:focus,
+main.insurance-dark-forms .pdf-engine-form__textarea:focus-visible,
+main.insurance-dark-forms .pdf-engine-form__select:focus,
+main.insurance-dark-forms .pdf-engine-form__select:focus-visible {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.28);
+  outline: none;
+}
+
+main.insurance-dark-forms .pdf-engine-form__primary {
+  background: #2563eb;
+  color: #ffffff;
+  border: 1px solid #2563eb;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main.insurance-dark-forms .pdf-engine-form__primary:hover:not(:disabled) {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+  }
+}
+
+main.insurance-dark-forms .pdf-engine-form__mapping-badge {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+}
+
+main.insurance-dark-forms .pdf-engine-issuance-list {
+  border: 1px solid #1e293b;
+}
+
+main.insurance-dark-forms .pdf-engine-issuance-list__head {
+  background: #1f2937;
+  color: #cbd5e1;
+  border-bottom: 1px solid #1e293b;
+}
+
+main.insurance-dark-forms .pdf-engine-issuance-list__row {
+  background: #111827;
+  border-bottom: 1px solid #1e293b;
+  color: #e5e7eb;
+}
+
+main.insurance-dark-forms .pdf-engine-doc-list__item {
+  border: 1px solid #1e293b;
+  background: #111827;
+}
+
+main.insurance-dark-forms .pdf-engine-doc-list__item:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+main.insurance-dark-forms .pdf-engine-doc-list__link {
+  color: inherit;
+}
+
+main.insurance-dark-forms .pdf-engine-doc-list__link strong {
+  color: #f8fafc;
+}
+
+main.insurance-dark-forms .pdf-engine-preview__frame-wrap {
+  border: 1px solid #1e293b;
+  background: #1f2937;
+}
+
+main.insurance-dark-forms .pdf-engine-preview__frame {
+  background: #fff;
+}

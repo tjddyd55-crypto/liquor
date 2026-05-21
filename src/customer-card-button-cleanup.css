@@ -1,0 +1,58 @@
+@media (max-width: 767px) {
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority,
+  .mobile-root .customer-detail-feature-actions--mobile-priority {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px 8px !important;
+    margin: 8px 0 10px !important;
+    padding: 8px 8px 10px !important;
+    border-top: 1px solid color-mix(in srgb, var(--border, #2b3544) 78%, transparent) !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--border, #2b3544) 78%, transparent) !important;
+    background: transparent !important;
+  }
+
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority button::before,
+  .mobile-root .customer-detail-feature-actions--mobile-priority button::before,
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn__icon,
+  .mobile-root .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn__icon {
+    content: none !important;
+    display: none !important;
+  }
+
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn,
+  .mobile-root .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn,
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority button.customer-mobile-action-btn,
+  .mobile-root .customer-detail-feature-actions--mobile-priority button.customer-mobile-action-btn {
+    width: 100% !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    max-height: 34px !important;
+    padding: 0 10px !important;
+    border-radius: 7px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: row !important;
+    gap: 0 !important;
+    font-size: 0.86rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    color: #fff !important;
+    background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important;
+    border: 1px solid color-mix(in srgb, #60a5fa 22%, transparent) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+    white-space: nowrap !important;
+  }
+
+  .customers-page--mobile .customer-mobile-action-btn__text,
+  .mobile-root .customer-mobile-action-btn__text {
+    display: block !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    line-height: 1 !important;
+  }
+}

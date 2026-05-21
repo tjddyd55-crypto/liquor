@@ -1,0 +1,365 @@
+---
+description: 라우팅 단일 진실 원천(SSOT) — URL path 기준, 쿼리↔path 양방향 sync 금지
+globs: src/**/*.{ts,tsx}
+alwaysApply: true
+---
+
+# 라우팅 단일 진실 원천(SSOT) 규칙
+
+> **배경**
+> 과거에 "query → path" 방향으로 동기화하는 `useLayoutEffect`가 도입되었다가,
+> 좌측 리스트가 이미 path를 직접 `replace` 하는 코드와 충돌하여
+> **선택 즉시 이전 고객으로 되돌아가는 회귀**가 발생했다.
+> 이 규칙은 같은 회귀가 재발하지 않도록 박아둔 가드레일이다.
+
+---
+
+## 1. URL path를 단일 진실 원천으로 삼는다
+
+**선택된 리소스 id는 URL path 하나에서만 파생한다.**
+
+- ✅ 허용: `const id = parseFromPath(pathname)`
+- ✅ 보조: path에 id가 없을 때만 `?customerId=`, `?id=` 같은 쿼리를 **fallback**으로 읽는다.
+- ❌ 금지: path와 query를 **둘 다 primary**로 간주하고 서로 맞추는 양방향 sync.
+
+### 올바른 패턴
+
+```ts
+const selectedId = useMemo(() => {
+  const fromPath = parseIdFromPath(location.pathname)
+  if (fromPath != null) return fromPath
+  return parseId(searchParams.get('id'))
+}, [location.pathname, searchParams])
+```
+
+---
+
+## 2. 쿼리 ↔ path 양방향 sync effect 금지
+
+**금지 패턴**:
+
+```tsx
+// ❌ 금지: query 가 path 를 바꾸려 함
+useLayoutEffect(() => {
+  if (queryId !== pathId) {
+    navigate(`/customers/${queryId}/...`, { replace: true })
+  }
+}, [queryId, pathId])
+
+// ❌ 금지: path 가 query 를 바꾸려 함 (반대 방향도 동일하게 금지)
+useEffect(() => {
+  if (pathId !== queryId) {
+    setSearchParams({ id: String(pathId) }, { replace: true })
+  }
+}, [pathId, queryId])
+```
+
+두 방향이 동시에 존재하면 **무한 replace 루프** 또는 **사용자 선택을 뒤엎는 덮어쓰기**가 발생한다.
+쿼리가 필요하면 path를 바꿀 때 **같은 `navigate` 호출 안에서 쿼리도 함께 지정**한다.
+
+### 올바른 패턴
+
+```tsx
+// 좌측 리스트 → 고객 선택
+navigate(`/customers/${id}/${currentTab}`, { replace: true })
+// 쿼리와 path 를 분리된 effect 로 맞추지 않는다. 한 번의 navigate 로 끝낸다.
+```
+
+---
+
+## 3. 라우팅을 일으키는 `useEffect` / `useLayoutEffect` 주의
+
+다음 조건을 만족하는 effect는 **금지에 준하는 레드 플래그**다.
+
+- `navigate(...)`를 호출
+- 의존성에 `location` 또는 `searchParams`가 포함
+- 자신이 조건에 따라 URL을 **되돌리거나 덮어쓸 수 있음**
+
+리뷰 시 아래 질문에 대답할 수 있어야 한다.
+
+1. 이 effect가 바꾸려는 URL은 "사용자의 조작 결과"를 덮어쓰지 않는가?
+2. 이 effect가 만드는 URL이 자기 자신의 의존성을 바꿔 **무한 루프**를 만들지 않는가?
+3. 이 effect 없이 **이벤트 핸들러에서 직접 `navigate`** 로 처리할 수 없는가? (보통 가능하다)
+
+---
+
+## 4. 라우팅 변경은 이벤트 핸들러에서
+
+- 사용자의 클릭/입력에 의한 라우팅 변경은 **이벤트 핸들러**에서 직접 `navigate(...)`.
+- effect에서의 `navigate`는 다음 경우로만 제한한다.
+  - **초기 진입 리다이렉트** (예: 미로그인 → `/login`)
+  - **404/권한 없음 처리**
+  - **명백한 잔존 상태 정리**(한 번만 실행되는 cleanup, 무한 루프 불가능해야 함)
+
+---
+
+## 5. `replace` vs `push`
+
+- 리스트에서 상세 선택은 `replace: true` (뒤로가기 히스토리를 오염시키지 않음).
+- 상세 내부의 탭 전환도 `replace: true` 권장.
+- 명시적 네비게이션(메뉴 클릭 등)만 `push`(기본).
+
+---
+
+## 6. path 구조 규약
+
+- 리소스 상세는 `/resource/:id/<tab>` 형식. 예: `/customers/647/consultations`.
+- `:id`는 **정수**이며 파서에서 `> 0` 가드를 둔다.
+- 빈 값/NaN/undefined가 path에 들어가 `//`가 되지 않도록 핸들러에서 **선제 가드**한다.
+
+```tsx
+const handleClick = () => {
+  if (!selectedId) return  // 가드 먼저
+  navigate(`/customers/${selectedId}/files`)
+}
+```
+
+---
+
+## 7. 리소스 identity 는 자식 서브트리 `key` 로 선언한다
+
+레이아웃(Container)은 자식 서브트리에 **"지금 다루는 리소스 id가 무엇인지"** 를 `key` 로 전달한다.
+이는 React 의 key 시맨틱("key 가 바뀌면 완전히 다른 인스턴스") 과 정확히 일치한다.
+
+### 왜 필요한가
+
+`ParentRoute → ChildRoute → DomainComponent → LeafFetcher` 처럼 자식 트리가 여러 단계를 거치면,
+중간 어느 한 컴포넌트라도 `useEffect` 의존성에서 id 를 빠뜨리는 순간 트리 전체가 stale 된다.
+`key={resourceId}` 로 선언해 두면 id 가 바뀔 때 **자식 트리 전체가 재마운트** 되어
+의존성 누락이 있어도 사용자에게 **이전 리소스 데이터가 남아 보이는 회귀**가 원천적으로 차단된다.
+
+### 적용 지점
+
+- 상세/목록 컨테이너가 `<Outlet />` 으로 자식 라우트를 렌더할 때.
+- Container 가 prop 으로 자식 DomainComponent 를 조립할 때.
+
+### 올바른 패턴
+
+```tsx
+// ✅ 리소스 id 를 key 로 선언 (identity 선언)
+<Outlet key={selectedCustomerId ?? 'empty'} context={{ selectedCustomerId }} />
+
+// ✅ Domain 컴포넌트 prop 조립 시도 동일
+{selectedCustomerId ? (
+  <CustomerDetailPanel key={selectedCustomerId} customerId={selectedCustomerId} />
+) : (
+  <EmptyState />
+)}
+```
+
+### 안 되는 패턴
+
+```tsx
+// ❌ key 없이 useParams/props 반응성에만 의존
+// 자식 트리 중 어느 한 컴포넌트라도 deps 를 까먹으면 stale
+<Outlet context={{ selectedCustomerId }} />
+```
+
+### 한계와 보완
+
+- key 가드는 **방어 레이어**이지 근본 해결이 아니다. 자식 컴포넌트는 여전히 props/params 변화에
+  `useEffect` deps 로 반응하도록 작성해야 한다.
+- 같은 리소스 내부의 탭 전환은 key 값이 같고 element 타입만 달라지므로 React 가
+  자연스럽게 교체한다(재마운트 비용 없음).
+- 재마운트 비용이 부담되는 리소스(대규모 캐시·스트림) 는 key 대신 Container 가 명시적으로
+  cache reset 을 수행하는 방식을 고려한다.
+
+---
+
+## 8. 우측 패널·서브 뷰는 로컬 state 토글 금지, 전부 URL 기반
+
+리소스 상세 화면의 "어떤 서브 뷰(탭/패널)를 보고 있는가" 는 **오직 URL path 하나로만** 결정한다.
+
+### 왜 필요한가
+
+과거에 자동차 신청서만 `rightPanelCarForm` 로컬 state 로 토글하고 나머지 우측 메뉴(파일/상담/GA/메모)는
+`navigate` 로 전환하는 **혼합 구조**가 존재했다. 이 혼합 구조는 사용 순서에 따라 URL ↔ state 가 drift 되어
+다음과 같은 회귀를 반복 유발했다.
+
+- "A 고객에서 B 고객으로 전환해도 우측이 A 그대로 남아있음"
+- "메뉴 버튼은 눌리는데 페이지 전환이 안 됨"
+- "되다 안 되다 한다 — 순서에 따라 다름"
+
+### 규칙
+
+- ❌ 금지: 우측 패널·탭 중 **일부만** 로컬 state 토글, 나머지는 navigate.
+- ❌ 금지: URL 과 별개로 "지금 열려 있는 패널이 무엇인가" 를 로컬 state 로 유지.
+- ✅ 필수: 우측 패널은 전부 `/resource/:id/<tab>` path 로 올리고, 클릭 핸들러는 **모두 navigate 하나로 통일**.
+- ✅ 필수: 우측 버튼의 활성 표시(`filter-button--workspace-active` 등)도 path 파생 값만 사용.
+
+### 올바른 패턴
+
+```tsx
+// ✅ 모든 우측 메뉴가 동일 패턴: 선제 가드 → navigate → 끝
+const handleClickMemos = () => {
+  if (!selectedCustomerId) return
+  navigate(`/customers/${selectedCustomerId}/memos`)
+}
+
+// ✅ 우측 body 는 한 갈래만 존재
+<div className="right-body">
+  {selectedCustomerId ? (
+    <Outlet key={selectedCustomerId} />
+  ) : (
+    <EmptyState />
+  )}
+</div>
+```
+
+### 안 되는 패턴
+
+```tsx
+// ❌ 일부 패널만 로컬 state, 나머지는 navigate
+const [rightPanelCarForm, setRightPanelCarForm] = useState(false)
+const activeTab = rightPanelCarForm ? 'auto' : currentPathTab  // 두 source 혼합
+
+<div className="right-body">
+  {rightPanelCarForm ? <AutoForm /> : <Outlet />}               {/* 두 갈래 */}
+</div>
+```
+
+---
+
+## 9. 같은 state 를 복수 source 에서 pull 하지 않는다 (핑퐁 금지)
+
+### 왜 필요한가
+
+하나의 state(예: `selectedCustomerId`) 를 **두 개 이상의 `useEffect`** 가
+각기 다른 source(query, 부모 state, path 등) 로부터 당겨와 `setState` 하면,
+두 source 의 값이 어긋나는 순간 effect 끼리 **번갈아 덮어쓰는 핑퐁**이 발생해
+React 가 `Maximum update depth exceeded` 로 중단한다. 증상은 다음과 같다.
+
+- "클릭이 일부는 되고 일부는 안 된다 — 순서에 따라 다르다"
+- "잠깐 선택이 되었다가 이전 값으로 되돌아간다"
+- 콘솔에 `Maximum update depth exceeded` 경고가 반복
+
+### 규칙
+
+- ❌ 금지: `setSelectedX` 를 호출하는 effect 가 **두 개 이상**이고 각자 다른 source 를 읽는다.
+- ✅ 필수: 동일 state 를 쓰는 effect 가 여럿일 수밖에 없다면
+  - 우선순위를 **명시적으로 guard** 에 박는다 (예: "expandedId 가 유효하면 query pull 스킵").
+  - 또는 state 를 없애고 `useMemo` 로 **derive** 값으로 전환한다(권장).
+
+### 올바른 패턴 (derive)
+
+```ts
+const selectedCustomerId = useMemo(() => {
+  const fromPath = parseIdFromPath(location.pathname)
+  if (fromPath != null) return fromPath
+  if (expandedId != null) return expandedId
+  return selectedCustomerIdFromQuery
+}, [location.pathname, expandedId, selectedCustomerIdFromQuery])
+```
+
+### 안 되는 패턴 (핑퐁)
+
+```ts
+// Effect A: query → state
+useEffect(() => {
+  if (qId != null && qId !== selectedId) setSelectedId(qId)
+}, [qId, selectedId])
+
+// Effect B: expandedId → state  (Effect A 와 동일 state 를 다른 source 로 당김)
+useEffect(() => {
+  if (expId != null && expId !== selectedId) setSelectedId(expId)
+}, [expId, selectedId])
+
+// qId !== expId 인 순간 A↔B 가 무한 덮어쓰기
+```
+
+---
+
+## 10. state → URL 반영은 effect 가 아니라 setter 래퍼에서
+
+### 왜 필요한가
+
+"state 가 바뀐 뒤 URL 을 맞추는" 반영은 전형적으로 `useEffect` 안에서
+`setSearchParams` / `navigate` 를 호출하는 모양이 된다. 그러나 이 패턴은
+§3 의 레드 플래그("effect 가 자기 의존성을 바꿔 URL 을 덮어씀") 와 정확히 겹친다.
+동일 이벤트에서 state 와 URL 이 두 틱에 나뉘어 반영되기 때문에,
+사이에 끼어드는 다른 이벤트/다른 effect 가 URL 을 덮으면 drift 가 발생한다.
+
+### 규칙
+
+- ❌ 금지: `useEffect(() => { setSearchParams(...) }, [someState])` 형태로
+  "state → URL reflect" 를 후행 effect 로 수행한다.
+- ✅ 필수: state 변경과 URL 변경은 **같은 호출에서 같이 수행**한다.
+  가장 간결한 방법은 `useState` 의 raw setter 를 감싼 `useCallback` 래퍼.
+
+### 올바른 패턴
+
+```tsx
+const [expandedId, rawSetExpandedId] = useState<number | null>(null)
+
+const setExpandedId = useCallback<Dispatch<SetStateAction<number | null>>>(
+  (updater) => {
+    const prev = expandedIdRef.current
+    const next = typeof updater === 'function' ? updater(prev) : updater
+    rawSetExpandedId(next)
+    // 같은 호출에서 URL 도 같이 반영 (원자적)
+    syncQuery(next)
+  },
+  [syncQuery],
+)
+```
+
+### 이득
+
+- 호출부(`setExpandedId(id)` · `useExpandableCard` 같은 제네릭 훅 prop 등) 는
+  `useState` setter 시그니처 그대로라 **수정이 필요 없다**.
+- state 와 URL 이 같은 틱에 반영되므로 덮어쓰기 레이스가 사라진다.
+- "URL 반영 전용 effect" 가 사라져서 §3 레드 플래그 스캔이 단순해진다.
+
+---
+
+## 11. side-detail path 에서 부모 리스트는 우측 패널 URL 을 덮어쓰지 않는다
+
+### 왜 필요한가
+
+`/resource` (좌측 목록) 과 `/resource/:id/<tab>` (우측 패널 포함) 이 한 화면에
+공존할 때, 좌측 목록의 로컬 조작(카드 펼침/접힘, 검색, 선택 모드 등) 이
+URL 의 path/query 를 건드리면 우측 패널이 의도치 않게 리셋되거나 다른
+리소스로 점프한다. 이 규칙은 그 drift 를 원천에서 막는다.
+
+### 규칙
+
+- ❌ 금지: 좌측 리스트의 상태 변화(`setExpandedId`, 선택 모드 토글 등) 가
+  **side-detail path 위에서 `?id=` 쿼리나 path 를 건드린다**.
+- ✅ 필수: side-detail path 에서는 좌측 조작이 **로컬 state 만 바꾸고**
+  URL 갱신 권한은 우측 패널에 남긴다.
+
+### 올바른 패턴
+
+```tsx
+const setExpandedId = useCallback((updater) => {
+  rawSetExpandedId(/* ... */)
+  // side-detail path 위에서는 URL 갱신을 패널에 양보한다
+  if (isSideDetailPath(location.pathname)) return
+  setSearchParams(/* ... */, { replace: true })
+}, [/* ... */])
+```
+
+### 안 되는 패턴
+
+```tsx
+// ❌ side-detail path 위에서도 리스트 조작이 쿼리를 덮어씀 → 우측 패널 깨짐
+const setExpandedId = (id) => {
+  rawSetExpandedId(id)
+  setSearchParams({ customerId: String(id) }, { replace: true })
+}
+```
+
+---
+
+## 12. 체크리스트
+
+- [ ] path가 단일 진실 원천이다 (query는 fallback만)
+- [ ] 쿼리 ↔ path 양방향 동기화 effect가 없다
+- [ ] `navigate`는 가능한 한 이벤트 핸들러에서 호출된다
+- [ ] effect에서 navigate하더라도 무한 루프 불가 증명이 가능하다
+- [ ] path 조립 전에 id null 가드가 있다
+- [ ] 상세 레이아웃의 `<Outlet>` 또는 Domain 조립 지점에 `key={resourceId}` 가 있다
+- [ ] 우측 패널·서브 뷰 중 로컬 state 토글로 조건부 렌더되는 것이 없다 (전부 URL 기반)
+- [ ] 동일 state 를 복수 effect 가 서로 다른 source 에서 pull 하지 않는다 (핑퐁 금지)
+- [ ] "state → URL reflect" 를 후행 effect 가 아니라 setter 래퍼에서 동기화한다
+- [ ] side-detail path 위의 리스트 조작은 우측 패널 URL 을 덮어쓰지 않는다

@@ -1,0 +1,573 @@
+/* UI polish layer: mobile customer cards, claim management, and personal-message surfaces.
+ * Scope-only CSS. No API/DB/route behavior changes.
+ */
+
+:root {
+  --ui-polish-card: color-mix(in srgb, var(--bg-card, #1e2633) 88%, #243044 12%);
+  --ui-polish-card-strong: color-mix(in srgb, var(--bg-card, #1e2633) 78%, #2c3850 22%);
+  --ui-polish-border: color-mix(in srgb, var(--border, #2b3544) 78%, #5f789d 22%);
+  --ui-polish-border-soft: color-mix(in srgb, var(--border, #2b3544) 84%, transparent);
+  --ui-polish-primary: var(--brand-primary, #3b82f6);
+  --ui-polish-primary-soft: color-mix(in srgb, var(--brand-primary, #3b82f6) 18%, transparent);
+  --ui-polish-text-muted: color-mix(in srgb, var(--text-secondary, #9aa5b1) 86%, transparent);
+}
+
+@media (max-width: 767px) {
+  .customers-page--mobile,
+  .mobile-root .customers-page,
+  .mobile-root .customer-workspace-layout {
+    --mobile-card-radius: 12px;
+    --mobile-control-radius: 10px;
+  }
+
+  .customers-page--mobile .customers-page__top-actions,
+  .mobile-root .customers-page__top-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 10px 0 10px;
+  }
+
+  .customers-page--mobile .customers-page__top-actions .button,
+  .mobile-root .customers-page__top-actions .button,
+  .customers-page--mobile .customers-page__top-actions button,
+  .mobile-root .customers-page__top-actions button {
+    min-height: 40px;
+    border-radius: var(--mobile-control-radius);
+    font-size: var(--customer-mobile-font-button, 14px);
+    line-height: var(--customer-mobile-line-button, 1.22);
+    letter-spacing: var(--customer-mobile-letter-button, 0.012em);
+    font-weight: 700;
+    padding: 0 10px;
+    white-space: nowrap;
+  }
+
+  .customers-page--mobile .customers-page__filters,
+  .mobile-root .customers-page__filters,
+  .customers-page--mobile .customer-search-row,
+  .mobile-root .customer-search-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .customers-page--mobile .customers-page__filters input,
+  .mobile-root .customers-page__filters input,
+  .customers-page--mobile .customer-search-row input,
+  .mobile-root .customer-search-row input {
+    min-height: 42px;
+    border-radius: var(--mobile-control-radius);
+    font-size: var(--customer-mobile-font-base, 16px);
+    letter-spacing: var(--customer-mobile-letter-base, 0.005em);
+  }
+
+  .customers-page--mobile .customers-page__result-count,
+  .mobile-root .customers-page__result-count,
+  .customers-page--mobile .customer-filter-result,
+  .mobile-root .customer-filter-result {
+    margin: 8px 0 10px;
+    font-size: var(--customer-mobile-font-small, 14px);
+    line-height: var(--customer-mobile-line-base, 1.45);
+    letter-spacing: var(--customer-mobile-letter-base, 0.005em);
+    color: var(--ui-polish-text-muted);
+  }
+
+  .customers-page--mobile .record-card.customer-card,
+  .mobile-root .record-card.customer-card {
+    border-radius: var(--mobile-card-radius);
+    background: var(--ui-polish-card);
+    border: 1px solid var(--ui-polish-border-soft);
+    box-shadow: none;
+    overflow: hidden;
+  }
+
+  .customers-page--mobile .customer-expand-card--focal,
+  .mobile-root .customer-expand-card--focal {
+    border-color: color-mix(in srgb, var(--ui-polish-primary) 76%, var(--ui-polish-border) 24%);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-polish-primary) 28%, transparent);
+  }
+
+  .customers-page--mobile .customer-expand-summary,
+  .mobile-root .customer-expand-summary {
+    padding: 12px 12px 10px;
+  }
+
+  .customers-page--mobile .customer-card-text-name,
+  .mobile-root .customer-card-text-name {
+    line-height: var(--customer-mobile-line-tight, 1.32);
+  }
+
+  .customers-page--mobile .customer-card-name-primary,
+  .mobile-root .customer-card-name-primary {
+    font-size: var(--customer-mobile-font-title, 18px);
+    font-weight: 800;
+    letter-spacing: var(--customer-mobile-letter-readable, 0.01em);
+  }
+
+  .customers-page--mobile .customer-card-summary-meta,
+  .mobile-root .customer-card-summary-meta {
+    margin-top: 3px;
+    font-size: var(--customer-mobile-font-subtitle, 15px);
+    color: var(--ui-polish-text-muted);
+    white-space: normal;
+    line-height: var(--customer-mobile-line-base, 1.45);
+    letter-spacing: var(--customer-mobile-letter-base, 0.005em);
+  }
+
+  .customers-page--mobile .customer-card__actions,
+  .mobile-root .customer-card__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .customers-page--mobile .customer-card__actions .icon-box,
+  .mobile-root .customer-card__actions .icon-box {
+    width: 28px;
+    height: 30px;
+    min-width: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .customers-page--mobile .customer-card__actions .icon-box a,
+  .mobile-root .customer-card__actions .icon-box a,
+  .customers-page--mobile .customer-card__actions .icon-box button,
+  .mobile-root .customer-card__actions .icon-box button {
+    min-width: 28px;
+    min-height: 30px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+  }
+
+  .customers-page--mobile .customer-expand-summary__hint,
+  .mobile-root .customer-expand-summary__hint {
+    width: 28px;
+    min-width: 28px;
+    text-align: center;
+    color: color-mix(in srgb, var(--text-primary, #e6ecf2) 85%, var(--ui-polish-primary) 15%);
+    font-size: var(--customer-mobile-font-subtitle, 15px);
+    letter-spacing: var(--customer-mobile-letter-base, 0.005em);
+  }
+
+  .customers-page--mobile .customer-expand-detail,
+  .mobile-root .customer-expand-detail {
+    padding: 0 10px 10px;
+  }
+
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority,
+  .mobile-root .customer-detail-feature-actions--mobile-priority {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 8px 0 12px;
+    padding: 12px 8px 14px;
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid color-mix(in srgb, var(--border, #2b3544) 78%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--border, #2b3544) 78%, transparent);
+  }
+
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority .button,
+  .mobile-root .customer-detail-feature-actions--mobile-priority .button,
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority button,
+  .mobile-root .customer-detail-feature-actions--mobile-priority button {
+    min-height: 76px;
+    height: 76px;
+    border-radius: 14px;
+    padding: 0 10px;
+    font-size: 1rem;
+    font-weight: 900;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+    border: 1px solid color-mix(in srgb, #60a5fa 28%, transparent);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 8px 18px rgba(37, 99, 235, 0.18);
+  }
+
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority button:nth-child(1)::before,
+  .mobile-root .customer-detail-feature-actions--mobile-priority button:nth-child(1)::before { content: '📁'; }
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority button:nth-child(2)::before,
+  .mobile-root .customer-detail-feature-actions--mobile-priority button:nth-child(2)::before { content: '💬'; }
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority button:nth-child(3)::before,
+  .mobile-root .customer-detail-feature-actions--mobile-priority button:nth-child(3)::before { content: '📝'; }
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority button:nth-child(4)::before,
+  .mobile-root .customer-detail-feature-actions--mobile-priority button:nth-child(4)::before { content: '📊'; }
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority button:nth-child(5)::before,
+  .mobile-root .customer-detail-feature-actions--mobile-priority button:nth-child(5)::before { content: '✉️'; }
+  .customers-page--mobile .customer-detail-feature-actions--mobile-priority button:nth-child(6)::before,
+  .mobile-root .customer-detail-feature-actions--mobile-priority button:nth-child(6)::before { content: '📋'; }
+
+  .customers-page--mobile .customer-detail-toggle-btn,
+  .mobile-root .customer-detail-toggle-btn {
+    width: 100%;
+    min-height: 40px;
+    height: 40px;
+    margin-top: 8px;
+    border-radius: 999px;
+    font-weight: 800;
+    justify-content: center;
+    color: var(--text-primary, #e6ecf2);
+    background: color-mix(in srgb, var(--bg-card, #1e2633) 90%, var(--ui-polish-primary) 10%);
+    border: 1px solid color-mix(in srgb, var(--ui-polish-primary) 46%, var(--ui-polish-border) 54%);
+  }
+}
+
+.customer-workspace-mobile-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 160;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+.customer-workspace-mobile-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.customer-workspace-mobile-modal__sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  height: min(92dvh, 820px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px 18px 0 0;
+  background: var(--bg-main, #0f141b);
+  border: 1px solid var(--ui-polish-border);
+  border-bottom: 0;
+  overflow: hidden;
+  box-shadow: 0 -18px 44px rgba(0, 0, 0, 0.42);
+}
+
+.customer-workspace-mobile-modal__header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid var(--ui-polish-border-soft);
+  background: var(--ui-polish-card);
+}
+
+.customer-workspace-mobile-modal__eyebrow {
+  font-size: 0.78rem;
+  color: var(--ui-polish-text-muted);
+  margin-bottom: 2px;
+}
+
+.customer-workspace-mobile-modal__title {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 900;
+  color: var(--text-primary, #e6ecf2);
+}
+
+.customer-workspace-mobile-modal__close {
+  min-height: 36px;
+  border-radius: 10px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.customer-workspace-mobile-modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 0;
+}
+
+.customer-workspace-mobile-modal__body .claim-requests-page--mobile {
+  min-height: 100%;
+  padding: 12px 12px calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+.claim-requests-page {
+  --claim-card-radius: 14px;
+  --claim-gap: 12px;
+}
+
+.claim-requests-page :is(.button, button) {
+  border-radius: 10px;
+}
+
+.claim-requests-page__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.claim-requests-page__badge--requested {
+  background: color-mix(in srgb, var(--ui-polish-primary) 20%, transparent);
+  color: #8fb9ff;
+}
+
+.claim-requests-page__badge--processing {
+  background: color-mix(in srgb, #f59e0b 20%, transparent);
+  color: #fbbf24;
+}
+
+.claim-requests-page__badge--done {
+  background: color-mix(in srgb, #22c55e 20%, transparent);
+  color: #86efac;
+}
+
+.claim-requests-page__badge--rejected {
+  background: color-mix(in srgb, #ef4444 18%, transparent);
+  color: #fca5a5;
+}
+
+@media (max-width: 767px) {
+  .claim-requests-page--mobile {
+    width: 100%;
+    padding: 12px 12px calc(84px + env(safe-area-inset-bottom, 0px));
+    gap: var(--claim-gap);
+  }
+
+  .claim-requests-page--mobile :is(section, article, .claim-requests-page__card, .claim-requests-page__panel, .claim-requests-page__section) {
+    border-radius: var(--claim-card-radius);
+    border-color: var(--ui-polish-border-soft);
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__header,
+  .claim-requests-page--mobile .claim-requests-page__section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__connection,
+  .claim-requests-page--mobile .claim-requests-page__link-grid,
+  .claim-requests-page--mobile .claim-requests-page__summary-grid,
+  .claim-requests-page--mobile .claim-requests-page__link-status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__link-panel,
+  .claim-requests-page--mobile .claim-requests-page__status-panel,
+  .claim-requests-page--mobile .claim-requests-page__link-card,
+  .claim-requests-page--mobile .claim-requests-page__status-card {
+    padding: 12px;
+    border-radius: var(--claim-card-radius);
+    background: var(--ui-polish-card);
+    border: 1px solid var(--ui-polish-border-soft);
+  }
+
+  .claim-requests-page--mobile input,
+  .claim-requests-page--mobile select,
+  .claim-requests-page--mobile textarea {
+    min-height: 44px;
+    border-radius: 10px;
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__share-actions,
+  .claim-requests-page--mobile .claim-requests-page__link-actions,
+  .claim-requests-page--mobile .claim-requests-page__status-form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__status-form-row .button,
+  .claim-requests-page--mobile .claim-requests-page__status-form-row button {
+    min-height: 44px;
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__tabs,
+  .claim-requests-page--mobile .claim-requests-page__segmented,
+  .claim-requests-page--mobile .claim-requests-page__sub-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 4px;
+    border: 1px solid var(--ui-polish-border-soft);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--bg-card, #1e2633) 82%, transparent);
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__tabs button,
+  .claim-requests-page--mobile .claim-requests-page__segmented button,
+  .claim-requests-page--mobile .claim-requests-page__sub-tabs button {
+    min-height: 40px;
+    border-radius: 9px;
+    font-weight: 800;
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__list,
+  .claim-requests-page--mobile .claim-requests-page__request-list,
+  .claim-requests-page--mobile .claim-requests-page__news-list,
+  .claim-requests-page--mobile .claim-requests-page__comment-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__request-card,
+  .claim-requests-page--mobile .claim-requests-page__list-item,
+  .claim-requests-page--mobile .claim-requests-page__news-item,
+  .claim-requests-page--mobile .claim-requests-page__comment-item {
+    border-radius: 12px;
+    padding: 12px;
+    background: var(--ui-polish-card);
+    border: 1px solid var(--ui-polish-border-soft);
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__request-card--selected,
+  .claim-requests-page--mobile .claim-requests-page__list-item--selected,
+  .claim-requests-page--mobile .is-selected {
+    border-color: var(--ui-polish-primary);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-polish-primary) 45%, transparent);
+    background: color-mix(in srgb, var(--ui-polish-primary) 11%, var(--ui-polish-card) 89%);
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__detail-section,
+  .claim-requests-page--mobile .claim-requests-page__history,
+  .claim-requests-page--mobile .claim-requests-page__messages,
+  .claim-requests-page--mobile .claim-requests-page__composer {
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--ui-polish-card);
+    border: 1px solid var(--ui-polish-border-soft);
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__file-list {
+    display: grid;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__file-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    padding: 9px 10px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--bg-main, #0f141b) 54%, var(--ui-polish-card) 46%);
+    border: 1px solid var(--ui-polish-border-soft);
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__file-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .claim-requests-page--mobile .claim-requests-page__file-actions {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+}
+
+@media (min-width: 768px) {
+  .claim-requests-page--pc .claim-requests-page__link-panel,
+  .claim-requests-page--pc .claim-requests-page__status-panel,
+  .claim-requests-page--pc .claim-requests-page__link-card,
+  .claim-requests-page--pc .claim-requests-page__status-card {
+    padding: 12px 14px;
+  }
+
+  .claim-requests-page--pc .claim-requests-page__link-row,
+  .claim-requests-page--pc .claim-requests-page__status-row {
+    min-height: 34px;
+  }
+
+  .claim-requests-page--pc .claim-requests-page__workspace,
+  .claim-requests-page--pc .claim-requests-page__claims-grid,
+  .claim-requests-page--pc .claim-requests-page__content-grid {
+    gap: 12px;
+  }
+}
+
+.claim-requests-page :is(.claim-requests-page__composer, .claim-requests-page__message-composer, .claim-requests-page__personal-composer) {
+  background: var(--ui-polish-card);
+  border: 1px solid var(--ui-polish-border-soft);
+  border-radius: 14px;
+}
+
+.claim-requests-page :is(.claim-requests-page__message-list, .claim-requests-page__sent-list, .claim-requests-page__comment-list) {
+  display: grid;
+  gap: 8px;
+}
+
+.claim-requests-page :is(.claim-requests-page__message-item, .claim-requests-page__sent-item, .claim-requests-page__comment-item) {
+  border-radius: 12px;
+  border: 1px solid var(--ui-polish-border-soft);
+  background: var(--ui-polish-card);
+}
+
+@media (max-width: 767px) {
+  .claim-requests-page--mobile :is(.claim-requests-page__composer, .claim-requests-page__message-composer, .claim-requests-page__personal-composer) {
+    padding: 12px;
+  }
+
+  .claim-requests-page--mobile textarea {
+    min-height: 138px;
+    line-height: 1.55;
+  }
+
+  .claim-requests-page--mobile :is(.claim-requests-page__template-actions, .claim-requests-page__message-actions, .claim-requests-page__attachment-actions) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .claim-requests-page--mobile :is(.claim-requests-page__send-button, .claim-requests-page__primary-action) {
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .claim-requests-page--pc .claim-requests-page__personal-layout,
+  .claim-requests-page--pc .claim-requests-page__news-personal-layout,
+  .claim-requests-page--pc .claim-requests-page__message-layout {
+    display: grid;
+    grid-template-columns: minmax(360px, 0.42fr) minmax(420px, 0.58fr);
+    gap: 14px;
+    align-items: start;
+  }
+
+  .claim-requests-page--pc :is(.claim-requests-page__composer, .claim-requests-page__message-composer, .claim-requests-page__personal-composer) {
+    padding: 14px;
+    position: sticky;
+    top: 12px;
+  }
+
+  .claim-requests-page--pc textarea {
+    min-height: 190px;
+  }
+
+  .claim-requests-page--pc :is(.claim-requests-page__history-column, .claim-requests-page__message-history, .claim-requests-page__comment-history) {
+    min-height: 0;
+    max-height: calc(100vh - 230px);
+    overflow: auto;
+  }
+}

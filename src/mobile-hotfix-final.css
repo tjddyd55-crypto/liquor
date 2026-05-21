@@ -1,0 +1,146 @@
+/*
+ * Final mobile hotfix loaded last.
+ * Scope: visual cleanup while the customer/claim UI is being consolidated.
+ */
+
+/* Copy/edit/delete action icons must remain visible on PC and mobile. */
+.customer-card__actions .icon-box,
+.customer-card__actions .icon-box a,
+.customer-card__actions .icon-box button,
+.customer-card__actions .icon-box span,
+.customer-card__actions .icon-box svg,
+.customer-card__actions .icon-box img,
+.customer-expand-summary .customer-card__actions,
+.customer-expand-summary .customer-card__actions * {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.customer-card__actions .icon-box {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.customer-card__actions .icon-box a,
+.customer-card__actions .icon-box button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+}
+
+.customer-card__actions .icon-box svg,
+.customer-card__actions .icon-box img,
+.customer-card__actions .icon-box [aria-hidden="true"] {
+  display: inline-flex !important;
+  width: 16px !important;
+  min-width: 16px !important;
+  max-width: 16px !important;
+  height: 16px !important;
+  min-height: 16px !important;
+  max-height: 16px !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 767px) {
+  .customer-detail-feature-actions--mobile-priority {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px 8px !important;
+    margin: 8px 0 10px !important;
+    padding: 8px 8px 10px !important;
+  }
+
+  .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn,
+  .customer-detail-feature-actions--mobile-priority button,
+  button.customer-mobile-action-btn {
+    width: 100% !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    max-height: 34px !important;
+    padding: 0 10px !important;
+    border-radius: 7px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    color: #fff !important;
+    font-size: 0.86rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important;
+    border: 1px solid color-mix(in srgb, #60a5fa 22%, transparent) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+  }
+
+  .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn::before,
+  .customer-detail-feature-actions--mobile-priority button::before,
+  .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn::after,
+  .customer-detail-feature-actions--mobile-priority button::after,
+  .customer-mobile-action-btn__icon,
+  .customer-detail-feature-actions--mobile-priority [aria-hidden="true"]:not(.customer-mobile-action-btn__text),
+  .customer-detail-feature-actions--mobile-priority svg,
+  .customer-detail-feature-actions--mobile-priority img {
+    content: none !important;
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+  }
+
+  .customer-detail-feature-actions--mobile-priority .customer-mobile-action-btn__text,
+  .customer-detail-feature-actions--mobile-priority button > span:last-child,
+  .customer-mobile-action-btn__text {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .customer-expand-detail .customer-info-label__icon,
+  .customer-expand-detail .customer-info-icon,
+  .customer-expand-detail .customer-detail-icon,
+  .customer-expand-detail .customer-detail-row__icon,
+  .customer-expand-detail .customer-detail-field-icon,
+  .customer-expand-detail .customer-detail-label-icon,
+  .customer-expand-detail .customer-detail-line__icon,
+  .customer-expand-detail .customer-field-icon,
+  .customer-expand-detail .customer-field-label__icon,
+  .customer-expand-detail .customer-detail-item__icon,
+  .customer-expand-detail .customer-detail-section-icon,
+  .customer-expand-detail .customer-section-title__icon,
+  .customer-expand-detail .customer-medical-icon,
+  .customer-expand-detail .customer-auto-info-icon,
+  .customer-expand-detail .customer-relations-icon {
+    display: none !important;
+  }
+
+  .customer-ui-modal-backdrop:not(:has(.workspace-mobile-outlet-modal)):not(:has(.claim-requests-page__detail-section)) {
+    z-index: 20000 !important;
+    pointer-events: auto !important;
+  }
+
+  .customer-ui-modal-backdrop:not(:has(.workspace-mobile-outlet-modal)):not(:has(.claim-requests-page__detail-section)) > .customer-ui-modal-panel {
+    pointer-events: auto !important;
+  }
+}

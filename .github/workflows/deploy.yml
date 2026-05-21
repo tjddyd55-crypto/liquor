@@ -1,0 +1,44 @@
+name: Desktop Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set CI desktop version
+        shell: bash
+        run: |
+          node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const [maj='1',min='0']=String(p.version||'1.0.0').split('.'); const patch=Number(process.env.GITHUB_RUN_NUMBER||'0'); p.version=[maj,min,String(patch)].join('.'); fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n');"
+          DESKTOP_VERSION=$(node -p "require('./package.json').version")
+          echo "DESKTOP_VERSION=${DESKTOP_VERSION}" >> "$GITHUB_ENV"
+
+      - name: Build and publish Electron (Windows)
+        run: npm run build:desktop -- --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Electron은 file:// 런타임이라 same-origin API가 없다. 빌드 타임에 prod 호스트를 번들에 박는다.
+          # Web(Railway) 빌드에는 이 변수를 주입하지 않아야 dev/prod 자기 호스트로 자연 라우팅된다.
+          # 정책: AGENTS.md §3-5 "환경변수 주입 원칙".
+          VITE_API_URL: https://insurance-production-7bd8.up.railway.app
+          VITE_BASE_URL: https://insurance-production-7bd8.up.railway.app

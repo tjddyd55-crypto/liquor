@@ -1,0 +1,39 @@
+FC Helper — Google Play 준비 작업 결과 보고
+==========================================
+생성일: 로컬 빌드 완료 시점 기준
+
+1) AAB 파일 경로
+   D:\workspace\insurance-app\android\app\build\outputs\bundle\release\app-release.aab
+
+2) 패키지명
+   com.fchelper.app
+
+3) 버전 정보
+   versionName: 1.0.0
+   versionCode:    1
+   다음 출시 시 app.json 의 expo.android.versionCode / expo.version 과
+   android/app/build.gradle 의 versionCode / versionName 을 함께 올리세요.
+
+4) 테스트 결과 (자동)
+   - .\gradlew.bat bundleRelease : BUILD SUCCESSFUL (서명된 release 번들 생성됨)
+   - minSdk 24, targetSdk / compileSdk 36 (Expo 54 기본)
+   - 수동: 실제 기기 설치·로그인·뒤로가기·개인정보 링크·스크린샷 촬영은 반드시 진행
+
+5) 수정/확인 필요 사항
+   [보안]
+   - android/keystores/play-upload.jks 및 keystore.properties 는 백업 후 안전 보관
+   - 채팅/로그에 노출된 비밀번호가 있다면 Play 업로드용으로 재발급 권장
+
+   [환경]
+   - android/local.properties (sdk.dir) 는 PC마다 다름 — Git 미추적, 다른 머신에서는 Android Studio 경로로 생성
+
+   [번들 크기]
+   - EAS 클라우드 빌드: npx eas-cli build --platform android --profile production
+
+   [스토어 자산]
+   - 1080×1920 스크린샷 2~4장 직접 캡처
+   - Play Console 512px 아이콘: 현재 ./assets/icon.png (1024 권장 시 교체 후 prebuild)
+
+   [콘솔 설정]
+   - google-play/*.txt 문구를 Play Console 양식에 복사
+   - Internal testing 업로드 후 검수

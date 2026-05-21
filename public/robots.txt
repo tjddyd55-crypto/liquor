@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# 심사·공개용 정책 페이지
+Allow: /privacy
+Allow: /privacy-policy

@@ -1,0 +1,47 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+.env
+dist
+release
+dist-ssr
+*.local
+data/*.db
+data/*.db-*
+
+# 로컬 동의서/R2 대체 스토리지
+server-data/
+
+# 수퍼관리자 업로드(로고 등) — 운영 바이너리는 커밋하지 않음
+uploads/*
+!uploads/.gitkeep
+!uploads/system/
+uploads/system/*
+!uploads/system/.gitkeep
+!uploads/system/insurers/
+uploads/system/insurers/*
+!uploads/system/insurers/.gitkeep
+
+# 로컬 개발 지시문(레포에 커밋하지 않음)
+dev/
+
+# Expo (고객 모바일 앱 등)
+apps/customer-mobile/.expo/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

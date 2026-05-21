@@ -1,0 +1,20 @@
+FC Helper — Android 릴리즈 서명 (Play 업로드 키)
+================================================
+
+[파일 위치 — Git에 올리지 마세요]
+- android/keystores/play-upload.jks  (업로드 키스토어)
+- android/keystore.properties        (비밀번호·alias — .gitignore 처리됨)
+
+[현재 워크스페이스에서 생성됨]
+- 초기 keystore 비밀번호는 로컬 생성 시 사용한 값입니다.
+- 팀 공유·원격 저장소에 properties/jks 를 절대 커밋하지 마세요.
+- 분실 시 Google Play App Signing을 쓰고 있어도 동일 키로 재서명할 수 없으므로
+  파일을 안전한 위치에 백업하세요.
+
+[gradle 설정]
+- android/app/build.gradle 의 release 는 keystore.properties 가 있을 때만 서명합니다.
+- 없으면 bundleRelease 가 GradleException 으로 실패합니다 (debug 키로 릴리즈 방지).
+
+[비밀번호 변경]
+1. keytool 로 새 비밀번호 설정 또는 새 keystore 생성 후 Play Console에 업로드 키 재등록
+2. android/keystore.properties 내용을 맞게 수정

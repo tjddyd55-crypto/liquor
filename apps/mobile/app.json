@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "FC Helper",
+    "slug": "fc-helper",
+    "version": "1.0.2",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fchelper.app"
+    },
+    "android": {
+      "package": "com.fchelper.app",
+      "versionCode": 3,
+      "minSdkVersion": 24,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "navigationBar": {
+        "backgroundColor": "#0f1115"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/46c22c3a-0cf3-4a85-b877-908dab8116fe"
+    },
+    "runtimeVersion": "production",
+    "extra": {
+      "eas": {
+        "projectId": "46c22c3a-0cf3-4a85-b877-908dab8116fe"
+      }
+    }
+  }
+}

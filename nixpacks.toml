@@ -1,0 +1,8 @@
+[variables]
+ELECTRON_SKIP_BINARY_DOWNLOAD = "1"
+NPM_CONFIG_ELECTRON_SKIP_BINARY_DOWNLOAD = "true"
+
+# Railway/Nixpacks는 프로덕션 설치 프로파일에서 devDependencies를 생략할 수 있다.
+# Vite 등 빌드 도구는 devDependencies에 있으므로 CI 설치 단계에서 반드시 포함한다.
+[phases.install]
+cmds = ["npm ci --include=dev"]

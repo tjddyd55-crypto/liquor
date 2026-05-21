@@ -1,0 +1,93 @@
+.claim-inbox__mobile-help {
+  margin: 0 0 10px;
+  color: #aeb8c5;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.claim-inbox__status-editor-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.claim-inbox__status-memo {
+  width: 100%;
+  min-height: 82px;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.claim-inbox__modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  background: rgba(0, 0, 0, 0.62);
+}
+
+.claim-inbox__modal-panel {
+  width: 100%;
+  max-width: 430px;
+  height: 100dvh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #111820;
+  color: #e6ecf2;
+}
+
+.claim-inbox__modal-header {
+  flex: 0 0 56px;
+  height: 56px;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 72px;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  background: #202a36;
+}
+
+.claim-inbox__modal-header strong {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.claim-inbox__modal-back,
+.claim-inbox__modal-close {
+  min-width: 54px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(30, 41, 59, 0.72);
+  color: #f8fafc;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.claim-inbox__modal-back {
+  justify-self: start;
+}
+
+.claim-inbox__modal-close {
+  justify-self: end;
+}
+
+.claim-inbox__modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 12px calc(28px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 767px) {
+  .claim-inbox__status-editor-row {
+    grid-template-columns: 1fr;
+  }
+}

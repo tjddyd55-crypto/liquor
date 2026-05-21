@@ -1,0 +1,158 @@
+/*
+ * =============================================================================
+ * PC 고객관리 좌측 목록 패널 — 검색행·필터 칩·카드 인라인 액션 (SSOT)
+ * =============================================================================
+ *
+ * 이 파일은 **.customers-page--pc** class를 기준으로 적용된다.
+ * PC/Mobile 분기는 viewport media query가 아니라 **레이아웃 class**가 담당한다.
+ * DevTools dock, Electron 창 폭, zoom 상태로 viewport가 1024px 아래가 되어도
+ * PC 좌측 패널 규칙은 유지되어야 하므로 **핵심 규칙을 @media(min-width:1024px)에 가두지 않는다.**
+ *
+ * 이 파일이 다음 UI의 **최종 소유**다. `ui-polish-fix.css` / `mobile-ui-foundation.css`
+ * 에서 이 영역을 임시로 덮어쓰지 않는다(회귀 방지).
+ *
+ * 실제 DOM (코드 기준, 추정 금지):
+ * - FormButton `size="sm"` → `src/components/ui/Button.tsx` 가 **`button--small` 만** 붙인다. (`button--sm` 없음)
+ * - 검색행: `div.customers-page__search-row.customer-filter-bar` > `input...customers-page__search-input`
+ *   + `div.customers-page__search-actions`(실제 박스, **inline-flex** 로 칩 그룹) >
+ *   `button...customer-filter-chip`
+ * - `display: contents` 는 쓰지 않는다. 그리드 자식이 input 과 actions div 두 개만 있어야 폭이 안정적이다.
+ * - 고객명 행: `button...customer-detail-action-button` — 높이는 **의미 클래스에 직접** 지정.
+ *
+ * 토큰 구분:
+ * 1) **search-adjacent** — `.customers-page__search-actions` 안 칩, 38px.
+ * 2) **inline card action** — `.customer-expand-detail .customer-detail-action-button`, 32px.
+ *
+ * 하단 필터 패널 칩: `.customers-page--pc .customer-filter-chip.button.button--small` 규칙 유지.
+ * =============================================================================
+ */
+
+/* PC 셸에만 존재하는 루트(.mobile-root 쪽에는 동일 클래스 없음) */
+.app-workspace-layout-root .workspace-main.workspace-main--app .app-main-content.app-main-content--workspace-outlet-host {
+  padding-top: 14px;
+}
+
+.customers-page--pc .customer-filter-bar,
+.customers-page--pc .customer-sort-bar,
+.customers-page--pc .customer-quick-filter-bar,
+.customers-page--pc .customer-filter-panel-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.customers-page--pc .customer-filter-bar,
+.customers-page--pc .customer-sort-bar,
+.customers-page--pc .customer-quick-filter-bar {
+  margin-top: 8px;
+}
+
+.customers-page--pc .customer-filter-chip.button.button--small {
+  min-height: 38px;
+  font-size: 13px;
+}
+
+/* ─── 검색행: [검색 input] | [actions: 중요 고객 + 필터] — 2컬럼 grid, actions 는 실제 박스 ─── */
+.customers-page--pc .customers-page__search-row.customer-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  column-gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+.customers-page--pc .customers-page__search-row.customer-filter-bar > input.customers-page__search-input {
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  flex: none;
+  box-sizing: border-box;
+}
+
+.customers-page--pc .customers-page__search-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: max-content;
+  flex: 0 0 auto;
+}
+
+.customers-page--pc .customers-page__search-actions .customer-filter-chip {
+  height: 38px;
+  min-height: 38px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-sizing: border-box;
+  border-radius: 8px;
+}
+
+/* 고객명 옆 행 */
+.customers-page--pc .customer-detail-toolbar,
+.customers-page--pc .customer-detail-action-bar {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+/* 복사/수정/삭제: 의미 클래스에 직접 박스 높이 */
+.customers-page--pc .customer-expand-detail .customer-detail-action-button {
+  height: 32px;
+  min-height: 32px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-sizing: border-box;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.customers-page--pc .customer-workspace-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.customers-page--pc .customer-workspace-action-button {
+  min-height: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 13px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--border-default, #334155) 82%, transparent);
+  background: color-mix(in srgb, var(--bg-card, #1e293b) 90%, #000 10%);
+  color: color-mix(in srgb, var(--text-primary, #f8fafc) 94%, transparent);
+  font-size: 0.82rem;
+  line-height: 1;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.customers-page--pc .customer-workspace-action-button:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--brand-primary, #60a5fa) 50%, transparent);
+  background: color-mix(in srgb, var(--brand-primary, #60a5fa) 15%, var(--bg-card, #1e293b) 85%);
+  color: var(--text-primary, #fff);
+}
+
+.customers-page--pc .customer-workspace-action-button--active {
+  border-color: color-mix(in srgb, var(--brand-primary, #60a5fa) 64%, transparent);
+  background: color-mix(in srgb, var(--brand-primary, #60a5fa) 24%, transparent);
+  color: var(--text-primary, #fff);
+}

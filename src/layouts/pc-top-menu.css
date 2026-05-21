@@ -1,0 +1,116 @@
+@media (min-width: 1024px) {
+  .pc-root .workspace-root.workspace-root--app-pc {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pc-root .workspace-root.workspace-root--app-pc > .workspace-sidebar {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    height: auto;
+    min-height: 44px;
+    max-height: none;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-default, rgba(148, 163, 184, 0.2));
+    background: var(--bg-elevated, #141b26);
+    overflow: visible;
+  }
+
+  .pc-root .workspace-root.workspace-root--app-pc > .workspace-sidebar.workspace-sidebar--collapsed {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    height: auto;
+    min-height: 44px;
+    padding: 6px 12px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-default, rgba(148, 163, 184, 0.2));
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .pc-root .workspace-sidebar__nav {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0;
+    scrollbar-width: thin;
+  }
+
+  .pc-root .workspace-sidebar__divider {
+    flex: 0 0 auto;
+    width: 1px;
+    height: 22px;
+    margin: 0 4px;
+    background: rgba(148, 163, 184, 0.22);
+  }
+
+  .pc-root .workspace-sidebar__section {
+    flex: 0 0 auto;
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: rgba(96, 165, 250, 0.12);
+    color: #bfdbfe;
+    font-size: 0.72rem;
+    line-height: 1;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .pc-root .workspace-sidebar__menu-item {
+    flex: 0 0 auto;
+    min-height: 30px;
+    height: 30px;
+    width: auto;
+    max-width: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .pc-root .workspace-sidebar__menu-item-label {
+    white-space: nowrap;
+  }
+
+  .pc-root .workspace-sidebar__menu-item-badge {
+    margin-left: 2px;
+  }
+
+  .pc-root .workspace-sidebar__footer {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    border-top: none;
+  }
+
+  .pc-root .workspace-sidebar__logout {
+    min-height: 30px;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .pc-root .workspace-main.workspace-main--app {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+  }
+}

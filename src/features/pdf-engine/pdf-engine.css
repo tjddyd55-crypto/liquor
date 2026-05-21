@@ -1,0 +1,1462 @@
+/**
+ * PDF 자동화 엔진 스타일.
+ *
+ * 범위:
+ *   - 관리자 좌표 에디터(데스크톱 전용)
+ *   - 사용자 폼 / 문서 목록
+ *
+ * 네이밍은 `pdf-engine-*` 네임스페이스로 고정해 다른 feature 와 충돌이 없도록 한다.
+ * 색·간격은 기존 index.css 의 디자인 토큰(var(--color-*) 등) 이 있다면 그대로 쓰고,
+ * 없으면 보수적인 하드코딩으로 시작한다(후속 단계에서 토큰화).
+ */
+
+.pdf-engine-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+  color: #0f172a;
+}
+
+/* 좌표 편집 — 좌우 여백을 줄이고 가로를 최대한 PDF 미리보기에 할당 */
+.pdf-engine-page--editor {
+  max-width: none;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px 12px 48px;
+}
+
+.pdf-engine-page__title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 16px;
+}
+
+.pdf-engine-page__toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.pdf-engine-page__error {
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.pdf-engine-page__hint {
+  color: #475569;
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+
+/* ─── 테이블 (목록) ─────────────────────────────────────────────── */
+
+.pdf-engine-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.pdf-engine-table th,
+.pdf-engine-table td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.pdf-engine-table th {
+  font-weight: 600;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.pdf-engine-table tr:hover td {
+  background: #f8fafc;
+}
+
+.pdf-engine-badge {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: #e0f2fe;
+  color: #075985;
+}
+
+.pdf-engine-badge--muted {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.pdf-engine-badge--danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ─── 에디터 ────────────────────────────────────────────────────── */
+
+.pdf-engine-editor {
+  display: grid;
+  grid-template-columns: 280px 360px minmax(720px, 1fr);
+  gap: 16px;
+  align-items: start;
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+@media (max-width: 1400px) {
+  .pdf-engine-editor {
+    grid-template-columns: 260px 340px minmax(640px, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .pdf-engine-editor {
+    grid-template-columns: 1fr;
+    overflow-x: visible;
+  }
+
+  .pdf-engine-editor__panel--preview {
+    min-width: 0 !important;
+  }
+}
+
+.pdf-engine-editor__panel {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pdf-engine-editor__panel--fields,
+.pdf-engine-editor__panel--config {
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+}
+
+/* 오른쪽: PDF 미리보기 — 남는 폭 사용 */
+.pdf-engine-editor__panel--preview {
+  min-width: min(720px, 100%);
+  min-height: 0;
+}
+
+.pdf-engine-editor__preview-scroll {
+  max-height: min(80vh, calc(100vh - 140px));
+  overflow-x: auto;
+  overflow-y: auto;
+  padding: 10px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+
+.pdf-engine-editor__preview-canvas-host {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* A4 목표(794px)는 JS 래스터 스케일이 담당. 좁은 뷰에서는 호스트 폭에 맞춰 캔버스만 줄어든다. */
+.pdf-engine-editor__overlay--a4-page {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.pdf-engine-editor__preview-hint {
+  margin: 0;
+}
+
+.pdf-engine-editor__field-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pdf-engine-editor__field-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.pdf-engine-editor__field-card:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
+}
+
+.pdf-engine-editor__field-card--active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.pdf-engine-editor__field-card-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.pdf-engine-editor__field-card-title {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.35;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.pdf-engine-editor__field-card-meta {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.pdf-engine-editor__field-card-delete {
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.pdf-engine-editor__define-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdf-engine-editor__define-actions > .pdf-engine-editor__btn {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pdf-engine-editor__panel-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.pdf-engine-editor__row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pdf-engine-editor__label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #334155;
+  flex: 1 1 140px;
+}
+
+/* 타입·필수 한 줄: 라벨과 체크박스가 세로로 깨지지 않게 */
+.pdf-engine-editor__label--checkbox-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  line-height: 1.35;
+  align-self: center;
+}
+
+.pdf-engine-editor__input--checkbox-inline {
+  width: auto;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* 타입 select + 필수: 한 행 고정, 세로 가운데 정렬 */
+.pdf-engine-editor__row--type-required {
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.pdf-engine-editor__label--field-type {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.pdf-engine-editor__config-divider {
+  margin: 16px 0;
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pdf-engine-editor__config-block--add-field .pdf-engine-editor__panel-title,
+.pdf-engine-editor__config-block--selected-field .pdf-engine-editor__panel-title {
+  margin-bottom: 8px;
+}
+
+.pdf-engine-editor__config-selected-name {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.pdf-engine-editor__selected-save-row {
+  margin-bottom: 10px;
+}
+
+.pdf-engine-editor__selected-save-row .pdf-engine-editor__btn {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pdf-engine-editor__hint--muted-block {
+  margin: 0;
+}
+
+.pdf-engine-editor__label input,
+.pdf-engine-editor__label select,
+.pdf-engine-editor__label textarea {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 14px;
+  color: #0f172a;
+  background: #fff;
+}
+
+.pdf-engine-editor__fields {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.pdf-engine-editor__field-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.pdf-engine-editor__field-item--active {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.pdf-engine-editor__field-item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.pdf-engine-editor__field-key {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: #2563eb;
+}
+
+.pdf-engine-editor__field-meta {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.pdf-engine-editor__overlay {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.pdf-engine-editor__pdf-canvas {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: none;
+  cursor: crosshair;
+}
+
+.pdf-engine-editor__mark-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.pdf-engine-editor__hint {
+  color: #475569;
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+.pdf-engine-editor__error {
+  color: #b91c1c;
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+.pdf-engine-editor__error--fatal {
+  color: #991b1b;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.pdf-engine-editor__error--warning {
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+/* 미리보기 보조 메시지 — 렌더 실패가 의심될 때만 노출되며, 치명 오류와 구분해 색을 완화 */
+.pdf-engine-editor__error--soft {
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+/* DEV 빌드에서만 보이는 원인 코드 배지 — UI 에 자리만 잡아준다. */
+.pdf-engine-editor__error-code {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 4px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pdf-engine-editor__btn {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #0f172a;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pdf-engine-editor__btn:hover {
+  background: #f1f5f9;
+}
+
+.pdf-engine-editor__btn--primary {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+.pdf-engine-editor__btn--primary:hover {
+  background: #1d4ed8;
+}
+
+.pdf-engine-editor__btn--danger {
+  color: #b91c1c;
+  border-color: #fecaca;
+  background: #fff;
+}
+
+.pdf-engine-editor__btn--danger:hover {
+  background: #fef2f2;
+}
+
+.pdf-engine-editor__btn--sm {
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+}
+
+.pdf-engine-editor__btn--ghost-danger {
+  color: #94a3b8;
+  border-color: #334155;
+  background: transparent;
+}
+
+.pdf-engine-editor__btn--ghost-danger:hover {
+  color: #fca5a5;
+  border-color: #7f1d1d;
+  background: rgba(127, 29, 29, 0.12);
+}
+
+.pdf-engine-editor__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── 사용자 폼 ────────────────────────────────────────────────── */
+
+.pdf-engine-form {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pdf-engine-form__header h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.pdf-engine-form__header p {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+}
+
+.pdf-engine-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pdf-engine-form__label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.pdf-engine-form__label-required::after {
+  content: ' *';
+  color: #dc2626;
+}
+
+.pdf-engine-form__input,
+.pdf-engine-form__textarea,
+.pdf-engine-form__select {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 15px;
+  width: 100%;
+  background: #fff;
+  color: #0f172a;
+}
+
+.pdf-engine-form__textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.pdf-engine-form__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.pdf-engine-form__primary {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pdf-engine-form__primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── 고객 자동 매핑 배지/힌트 ──────────────────────────────────── */
+
+.pdf-engine-form__mapping-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: #e0e7ff;
+  color: #3730a3;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.pdf-engine-form__mapping-hint {
+  margin: 4px 0 6px;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* ─── 발급 이력 ────────────────────────────────────────────────── */
+
+.pdf-engine-issuance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pdf-engine-issuance-list__head,
+.pdf-engine-issuance-list__row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 0.8fr minmax(220px, 1fr);
+  gap: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  align-items: center;
+}
+
+.pdf-engine-issuance-list__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.pdf-engine-prefill-banner {
+  margin: 12px 0 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #1f2937;
+  color: #e5e7eb;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .pdf-engine-issuance-list__head {
+    display: none;
+  }
+  .pdf-engine-issuance-list__row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .pdf-engine-issuance-list__actions {
+    justify-content: flex-start;
+  }
+}
+
+.pdf-engine-issuance-list__head {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pdf-engine-issuance-list__row {
+  background: white;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.pdf-engine-issuance-list__row:last-child {
+  border-bottom: none;
+}
+
+/* ─── 체크박스 / 라디오 (사용자 폼) ──────────────────────────────── */
+
+.pdf-engine-form__checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pdf-engine-form__checkbox-row input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  accent-color: #2563eb;
+}
+
+.pdf-engine-form__radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.pdf-engine-form__radio-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.pdf-engine-form__radio-item input[type='radio'] {
+  flex-shrink: 0;
+  margin: 0;
+  accent-color: #2563eb;
+}
+
+/* 편집 페이지의 헤더(제목 + 메타) 영역. 목록 제목과 일관된 간격을 유지한다. */
+.pdf-engine-page__header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.pdf-engine-page__header .pdf-engine-page__title {
+  margin: 0;
+}
+
+/* ─── 사용자 문서 목록 ─────────────────────────────────────────── */
+
+.pdf-engine-doc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.pdf-engine-doc-list__item {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.pdf-engine-doc-list__item:hover {
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+}
+
+.pdf-engine-doc-list__link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: inherit;
+}
+
+/*
+ * PDF 신청서 목록은 단독 페이지와 고객 작업영역 embedded에서 같은 컴포넌트를 사용한다.
+ * 고객 작업영역 내부 톤은 .pdf-engine-page--workspace-embedded에서만 조정한다.
+ * 단독 페이지 톤을 바꾸기 위해 이 modifier를 사용하지 않는다.
+ */
+.pdf-engine-page.pdf-engine-page--workspace-embedded {
+  max-width: none;
+  margin: 0;
+  padding: 16px 4px 48px;
+  box-sizing: border-box;
+  background: transparent;
+  color: var(--text-primary, #f8fafc);
+}
+
+.pdf-engine-page.pdf-engine-page--workspace-embedded .pdf-engine-page__title {
+  color: var(--text-primary, #f8fafc);
+}
+
+.pdf-engine-page.pdf-engine-page--workspace-embedded .pdf-engine-page__hint {
+  color: var(--text-secondary, #94a3b8);
+}
+
+.pdf-engine-page.pdf-engine-page--workspace-embedded .pdf-engine-page__hint a {
+  color: var(--link, #60a5fa);
+}
+
+.pdf-engine-page.pdf-engine-page--workspace-embedded .pdf-engine-doc-list {
+  gap: 10px;
+}
+
+.pdf-engine-page.pdf-engine-page--workspace-embedded .pdf-engine-doc-list__item {
+  border: 1px solid var(--border-default, #334155);
+  border-radius: 10px;
+  background: var(--bg-card, #111827);
+}
+
+.pdf-engine-page.pdf-engine-page--workspace-embedded .pdf-engine-doc-list__item:hover {
+  border-color: color-mix(in srgb, var(--primary, #3b82f6) 50%, var(--border-default, #334155));
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.35);
+}
+
+.pdf-engine-page.pdf-engine-page--workspace-embedded .pdf-engine-doc-list__link {
+  color: var(--text-primary, #f8fafc);
+}
+
+.pdf-engine-page.pdf-engine-page--workspace-embedded .pdf-engine-editor__field-meta {
+  color: var(--text-secondary, #94a3b8);
+}
+
+/* ─── 사용자 미리보기 모달 ──────────────────────────────────────── */
+
+.pdf-engine-preview-modal {
+  width: min(96vw, 1100px) !important;
+  max-width: min(96vw, 1100px) !important;
+}
+
+.pdf-engine-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pdf-engine-preview__header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.pdf-engine-preview__filename-chip {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-default, #334155);
+  background: var(--bg-input, #020617);
+  color: var(--text-primary, #f8fafc);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  word-break: break-all;
+}
+
+.pdf-engine-preview__subtitle {
+  margin: 10px 0 0;
+  color: var(--text-sub, #94a3b8);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.pdf-engine-preview__frame-wrap {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.pdf-engine-preview__frame {
+  width: 100%;
+  height: min(72vh, 860px);
+  border: none;
+  background: #fff;
+}
+
+.pdf-engine-preview__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 에디터 상단의 메타(제목/설명/활성) 한 줄 폼. */
+.pdf-engine-form--inline {
+  max-width: 100%;
+  flex-direction: row;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0 0 16px;
+}
+
+/* ─── 사용자 문서 신청(PC/모바일) ───────────────────────────────── */
+
+.insurance-dark-forms.pdf-document-detail-page {
+  background: #0b111a;
+  color: #e5e7eb;
+}
+
+.insurance-dark-forms.pdf-document-detail-page .pdf-engine-page__hint {
+  color: #94a3b8;
+}
+
+.insurance-dark-forms.pdf-document-detail-page.pdf-engine-page {
+  margin: 0 auto;
+}
+
+.insurance-dark-forms.pdf-document-detail-page.pdf-document-detail-page--pc.insurance-dark-forms.pdf-engine-page {
+  max-width: none;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 24px 20px 64px;
+}
+
+.pdf-document-detail-page__split {
+  display: grid;
+  grid-template-columns: minmax(280px, 440px) minmax(340px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  /* PC 뷰는 ResponsiveLayout 에서 폭 필터링 — 협각 창 폴백 */
+  .pdf-document-detail-page--pc .pdf-document-detail-page__split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.pdf-document-detail-page__form-col {
+  min-width: 0;
+}
+
+.pdf-document-detail-page__preview-col {
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.pdf-document-detail-page__preview-title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.pdf-document-detail-page__preview-head .pdf-document-detail-page__preview-title {
+  margin: 0;
+}
+
+.pdf-document-detail-page__preview-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.pdf-applicant-side-zoom {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.pdf-applicant-side-zoom__btn {
+  box-sizing: border-box;
+  min-width: 28px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #e5e7eb;
+  background: #111827;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.pdf-applicant-side-zoom__btn:hover:not(:disabled) {
+  background: #1f2937;
+  border-color: #475569;
+}
+
+.pdf-applicant-side-zoom__btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.pdf-applicant-side-zoom__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pdf-applicant-side-zoom__btn--active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.pdf-applicant-side-zoom__label {
+  min-width: 3.25rem;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.pdf-applicant-side-zoom__label--manual {
+  color: #60a5fa;
+}
+
+.pdf-document-detail-page__preview-scroll {
+  overflow: auto;
+  max-height: min(864px, calc(100vh - 160px));
+  border-radius: 8px;
+  background: #0b111a;
+}
+
+/* 데스크톱 — 좌측 폼만 스크롤, 우측 미리보기는 뷰포트 안에 sticky + 높이 고정 */
+@media (min-width: 1024px) {
+  .insurance-dark-forms.pdf-document-detail-page.pdf-document-detail-page--pc.pdf-engine-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 16px 20px 32px;
+    box-sizing: border-box;
+  }
+
+  .pdf-document-detail-page--pc .pdf-document-detail-page__split--pc-sticky {
+    flex: 1 1 auto;
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  .pdf-document-detail-page--pc .pdf-document-detail-page__form-col {
+    max-height: min(calc(100dvh - 112px), calc(100vh - 112px));
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+  }
+
+  .pdf-document-detail-page--pc .pdf-document-detail-page__preview-col {
+    position: sticky;
+    top: 8px;
+    align-self: start;
+    max-height: min(calc(100dvh - 96px), calc(100vh - 96px));
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .pdf-document-detail-page--pc .pdf-document-detail-page__preview-head {
+    flex-shrink: 0;
+  }
+
+  .pdf-document-detail-page--pc .pdf-document-detail-page__preview-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: min(calc(100dvh - 200px), calc(100vh - 200px));
+    height: min(calc(100dvh - 200px), calc(100vh - 200px));
+    overflow: auto;
+  }
+}
+
+.pdf-document-detail-page--mobile .pdf-document-detail-page__mobile-form {
+  padding-bottom: 86px;
+}
+
+.pdf-document-detail-page__mobile-preview-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(11, 17, 26, 0.92);
+  border-top: 1px solid #1e293b;
+  backdrop-filter: blur(6px);
+  z-index: 900;
+}
+
+.pdf-document-detail-page__mobile-preview-btn {
+  width: 100%;
+}
+
+.pdf-document-detail-page__live-preview-inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.pdf-document-detail-page__live-preview-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.pdf-document-detail-page__live-preview-header h3 {
+  margin: 0;
+  font-size: 17px;
+  color: #f8fafc;
+}
+
+.pdf-document-detail-page__live-preview-body {
+  margin-top: 12px;
+  flex: 1;
+  overflow: auto;
+  max-height: min(92vh - 140px, 900px);
+  background: #0b111a;
+}
+
+.pdf-document-detail-page__live-preview-modal {
+  padding: 16px;
+  border-radius: 12px;
+  background: #111827;
+  border: 1px solid #1e293b;
+}
+
+.insurance-dark-forms .pdf-document-detail-page__live-preview-modal {
+  border-color: #1e293b;
+}
+
+.pdf-applicant-preview-stack .pdf-engine-editor__overlay {
+  box-shadow: none;
+  border: none;
+}
+
+.pdf-applicant-preview__page-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.pdf-applicant-preview__fatal {
+  color: #f87171;
+  font-size: 13px;
+}
+
+.pdf-applicant-form-panel .pdf-engine-form__label-required::after {
+  color: #f87171;
+}
+
+.pdf-applicant-form-panel__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pdf-applicant-form-panel__controls .pdf-engine-form__input,
+.pdf-applicant-form-panel__controls .pdf-engine-form__textarea {
+  flex: 1;
+  min-width: 160px;
+}
+
+.pdf-applicant-form-panel__field--active .pdf-engine-form__label {
+  color: #60a5fa;
+}
+
+.pdf-applicant-form-panel__field--active {
+  border-left: 2px solid #3b82f6;
+  padding-left: 10px;
+  margin-left: -12px;
+  border-radius: 2px;
+}
+
+.pdf-applicant-form-panel__side-tools {
+  flex: 0 0 auto;
+  padding-top: 2px;
+}
+
+.pdf-applicant-font-stepper {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  background: #1f2937;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 4px 6px;
+}
+
+.pdf-applicant-font-stepper__value {
+  font-size: 12px;
+  color: #e5e7eb;
+  padding: 0 4px;
+  min-width: 36px;
+  text-align: center;
+}
+
+.pdf-applicant-font-stepper__btn {
+  appearance: none;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: #020617;
+  color: #e5e7eb;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+}
+
+.pdf-applicant-font-stepper__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pdf-applicant-font-stepper__btn:not(:disabled):hover {
+  background: #111827;
+  border-color: #3b82f6;
+}
+
+.pdf-applicant-field-foot {
+  font-size: 12px;
+  color: #cbd5e1;
+  margin: 6px 0 4px;
+}
+
+.pdf-applicant-field-foot--muted {
+  color: #94a3b8;
+}
+
+.pdf-applicant-inline-hint {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.pdf-engine-editor__mapping-table {
+  margin: 0 0 12px;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+.pdf-engine-editor__mapping-table-head,
+.pdf-engine-editor__mapping-table-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 8px 10px;
+  align-items: center;
+}
+
+.pdf-engine-editor__mapping-table-head {
+  background: #111827;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.pdf-engine-editor__mapping-table-row {
+  border-top: 1px solid #1e293b;
+  cursor: pointer;
+  color: #e5e7eb;
+}
+
+.pdf-engine-editor__mapping-table-row--active {
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.pdf-engine-editor__mapping-table-summary {
+  color: #93c5fd;
+}
+
+.pdf-engine-mapping-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.pdf-engine-mapping-controls--compact {
+  grid-template-columns: 1fr;
+}
+
+.pdf-engine-mapping-controls__label-text {
+  display: block;
+  margin-bottom: 4px;
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.pdf-engine-editor__mapping-block {
+  margin-top: 4px;
+}
+
+.pdf-applicant-form__customer-load {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  background: #111827;
+}
+
+.pdf-applicant-form__load-customer-btn {
+  align-self: flex-start;
+}
+
+.pdf-applicant-form__overwrite {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.pdf-applicant-form__customer-load-hint {
+  margin: 0;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.pdf-applicant-form__car-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  row-gap: 6px;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid #1e293b;
+}
+
+.pdf-applicant-form__car-picker-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  flex-shrink: 0;
+}
+
+.pdf-applicant-form__car-picker-select {
+  flex: 1;
+  min-width: 140px;
+  max-width: 420px;
+  background-color: #020617;
+  color: #f8fafc;
+  border: 1px solid #334155;
+}
+
+.pdf-applicant-form__car-picker-empty,
+.pdf-applicant-form__car-picker-single {
+  margin: 0;
+  font-size: 12px;
+  color: #e5e7eb;
+}
+
+.pdf-applicant-form__car-picker-single strong {
+  color: #f8fafc;
+  font-weight: 700;
+}
+
+.pdf-applicant-form__car-picker-sub {
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.pdf-applicant-form__customer-context {
+  margin: 0;
+  font-size: 13px;
+  color: #e5e7eb;
+}
+
+.pdf-applicant-form__customer-context--muted {
+  color: #94a3b8;
+}
+
+.pdf-applicant-form__customer-link {
+  margin-left: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #60a5fa;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.pdf-applicant-form__customer-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pdf-applicant-form__customer-search {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.pdf-applicant-form__customer-search-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.pdf-applicant-form__customer-search-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.pdf-applicant-form__customer-search-error {
+  margin: 0;
+  font-size: 12px;
+  color: #ef4444;
+}
+
+.pdf-applicant-form__customer-search-empty {
+  margin: 0;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.pdf-applicant-form__customer-search-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.pdf-applicant-form__customer-search-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #1f2937;
+}
+
+.pdf-applicant-form__customer-search-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: #f8fafc;
+}
+
+.pdf-applicant-form__customer-search-phone {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.pdf-applicant-form__customer-search-pick {
+  flex-shrink: 0;
+}
+
+.pdf-engine-page--mobile .pdf-engine-mapping-controls {
+  grid-template-columns: 1fr;
+}
+
+.pdf-document-detail-page--mobile .pdf-applicant-form__customer-load {
+  margin-bottom: 10px;
+}
+

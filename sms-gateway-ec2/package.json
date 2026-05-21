@@ -1,0 +1,13 @@
+{
+  "name": "insurance-sms-gateway-ec2",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "EC2 SMS 중계 최소 서버 — GET /health, 본문 POST는 기존 알리고 등과 연동해 구현",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

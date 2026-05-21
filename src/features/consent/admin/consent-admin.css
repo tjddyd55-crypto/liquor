@@ -1,0 +1,214 @@
+/* 동의서 템플릿 관리 — consent-flow 토큰 재사용 */
+
+.consent-admin {
+  --consent-bg: #0f1115;
+  --consent-card: #14171c;
+  --consent-text: #ffffff;
+  --consent-sub: #94a3b8;
+  --consent-brand: #3b82f6;
+  --consent-border: #2a3038;
+
+  min-height: 100vh;
+  background: var(--consent-bg);
+  color: var(--consent-text);
+}
+
+.consent-admin__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 16px 48px;
+}
+
+.consent-admin__title {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.consent-admin__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.consent-admin__table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--consent-border);
+  border-radius: 12px;
+  background: var(--consent-card);
+}
+
+.consent-admin table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.consent-admin th,
+.consent-admin td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--consent-border);
+}
+
+.consent-admin th {
+  color: var(--consent-sub);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.consent-admin tr:last-child td {
+  border-bottom: none;
+}
+
+.consent-admin__link {
+  color: #93c5fd;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.consent-admin__link:hover {
+  text-decoration: underline;
+}
+
+.consent-admin__form-grid {
+  display: grid;
+  gap: 16px;
+  max-width: 720px;
+}
+
+.consent-admin__fieldset {
+  border: 1px solid var(--consent-border);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--consent-card);
+}
+
+.consent-admin__fieldset legend {
+  padding: 0 8px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.consent-admin label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--consent-sub);
+}
+
+.consent-admin input[type='text'],
+.consent-admin input[type='number'],
+.consent-admin select {
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--consent-border);
+  background: #1a1f26;
+  color: var(--consent-text);
+  font-size: 15px;
+}
+
+.consent-admin__coord-hint {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--consent-sub);
+  line-height: 1.5;
+}
+
+.consent-admin__overlay-wrap {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  border: 1px dashed var(--consent-border);
+  border-radius: 8px;
+  overflow: auto;
+  background: #0a0c0f;
+}
+
+.consent-admin__overlay-wrap canvas.consent-admin__pdf-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  cursor: crosshair;
+}
+
+.consent-admin__overlay-wrap canvas.consent-admin__mark-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+.consent-admin__field-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.consent-admin__field-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--consent-border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  background: #1a1f26;
+}
+
+.consent-admin__err {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgb(127 29 29 / 0.35);
+  border: 1px solid rgb(248 113 113 / 0.4);
+  color: #fecaca;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.consent-admin__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--consent-brand);
+  color: #fff;
+}
+
+.consent-admin__btn:active {
+  opacity: 0.85;
+}
+
+.consent-admin__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.consent-admin__btn--ghost {
+  background: #334155;
+  color: var(--consent-text);
+}
+
+.consent-admin__btn--danger {
+  background: transparent;
+  border: 1px solid rgb(248 113 113 / 0.5);
+  color: #fecaca;
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+}

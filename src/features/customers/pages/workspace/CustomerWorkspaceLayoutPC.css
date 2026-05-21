@@ -1,0 +1,176 @@
+.customer-workspace-layout__title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.customer-workspace-layout__claim-link-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.customer-header-app-link-compact {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+/* 모바일 목록 카드 펼침 내 앱 링크 줄: 스타일은 index.css `.customers-page--mobile .customer-mobile-expanded-app-link` 에 통합(항상 로드). */
+
+.customer-workspace-layout__claim-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+
+.customer-workspace-layout__claim-status::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.customer-workspace-layout__claim-status--connected {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.customer-workspace-layout__claim-status--disconnected {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.customer-workspace-layout__claim-copy-result {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.customer-workspace-layout__right-header--meta-only {
+  justify-content: flex-start;
+}
+
+.customer-workspace-layout__tab-row {
+  flex-shrink: 0;
+  padding: 8px 12px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+}
+
+.customer-workspace-layout__tab-row .customer-workspace-layout__actions {
+  margin-left: 0;
+  justify-content: flex-start;
+}
+
+.customer-workspace-layout__app-link-strip {
+  padding: 8px 12px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+}
+
+.customer-workspace-app-link-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+
+.customer-workspace-app-link-bar__loading {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.customer-workspace-app-link-bar__pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--bg-card) 88%, var(--text-muted));
+}
+
+.customer-workspace-app-link-bar__pill--ok {
+  border-color: color-mix(in srgb, var(--success) 40%, var(--border-subtle));
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+}
+
+.customer-workspace-app-link-bar__pill--pending {
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border-subtle));
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.customer-workspace-app-link-bar__pill--expired {
+  border-color: color-mix(in srgb, var(--danger) 40%, var(--border-subtle));
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+.customer-workspace-app-link-bar__code {
+  font-size: 12px;
+  color: var(--text-secondary);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customer-workspace-app-link-bar__url {
+  flex: 1 1 220px;
+  min-width: 160px;
+  max-width: 480px;
+  font-size: 12px;
+}
+
+.customer-workspace-app-link-bar__actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.customer-workspace-app-link-bar__hint {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.customer-workspace-app-link-bar__err {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 11px;
+  color: var(--danger);
+}
+
+.workspace-mobile-outlet-modal__app-link {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+}
+
+@media (max-width: 1280px) {
+  .customer-workspace-layout__claim-copy-result {
+    display: none;
+  }
+}
