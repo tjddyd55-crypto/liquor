@@ -583,7 +583,10 @@ async function main() {
           else fail('liquor customer file delete refresh', stillListed ? 'still listed' : String(detailAfter.status))
         }
       } else {
-        fail('liquor customer file presign pdf', `${presignPdf.status}`)
+        fail(
+          'liquor customer file presign pdf',
+          `${presignPdf.status} ${presignPdf.json?.message ?? presignPdf.json?.raw ?? JSON.stringify(presignPdf.json).slice(0, 120)}`,
+        )
       }
     }
   }
