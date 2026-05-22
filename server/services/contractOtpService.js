@@ -10,6 +10,7 @@ import {
 import { normalizeKrMobile, validateKrMobileDigits } from '../lib/phoneNormalize.js'
 import { maskKrMobileForDisplay } from '../utils/maskKrMobile.js'
 import { sendContractSelfSmsOtp } from './contractSelfSmsSend.js'
+import { isExplicitSmsDebugResponseEnabled } from '../lib/smsDebugExposure.js'
 
 const TERMINAL_SEND_SESSION = new Set(['expired', 'cancelled', 'completed'])
 
@@ -298,15 +299,21 @@ export async function contractOtpSend(pool, opts) {
 
     await client.query('COMMIT')
 
+    /** @type {Record<string, unknown>} */
+    const data = {
+      identitySessionId: identityRow?.id ?? identityId,
+      maskedPhone,
+      expiresInSeconds: ttlSec,
+    }
+    if (isExplicitSmsDebugResponseEnabled()) {
+      data.debugCode = code
+    }
+
     return {
       httpStatus: 200,
       payload: {
         success: true,
-        data: {
-          identitySessionId: identityRow?.id ?? identityId,
-          maskedPhone,
-          expiresInSeconds: ttlSec,
-        },
+        data,
       },
     }
   } catch (e) {
