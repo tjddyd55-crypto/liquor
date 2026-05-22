@@ -16,6 +16,7 @@ import {
 import {
   computeLiquorSupportContractBalance,
   parseLiquorRepaymentAmount,
+  recalculateLiquorSupportContractBalance,
   syncLiquorRepaymentBalancesForContract,
 } from '../services/liquorCustomerBalance.js'
 import { createAttachPlatformContext } from '../lib/platformRbac.js'
