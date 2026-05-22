@@ -75,3 +75,21 @@ export const LIQUOR_CONTACT_ROLE_OPTIONS = [
   '전자서명 수신자',
   '기타',
 ] as const
+
+export const LIQUOR_FILE_LINK_TARGET_LABELS: Record<string, string> = {
+  customer: '고객 전체',
+  support_contract: '지원계약',
+  repayment: '상환내역',
+  support_item: '지원물품',
+  other: '기타',
+}
+
+export const LIQUOR_FILE_LINK_TARGET_OPTIONS = [
+  'customer',
+  'support_contract',
+  'repayment',
+  'support_item',
+  'other',
+] as const
+
+export type LiquorFileLinkTarget = (typeof LIQUOR_FILE_LINK_TARGET_OPTIONS)[number]

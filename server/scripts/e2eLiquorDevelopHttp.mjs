@@ -434,6 +434,157 @@ async function main() {
       })
       if (note.status === 201) pass('liquor note add')
       else fail('liquor note add', `${note.status}`)
+
+      const docPdfBuf = await makeTinyPdfBuffer(`liquor-doc-${tag}`)
+      const presignPdf = await api(`/liquor/customers/${bizCustomerId}/files/presign`, {
+        token: userToken,
+        method: 'POST',
+        body: {
+          fileName: `e2e-doc-${tag}.pdf`,
+          contentType: 'application/pdf',
+          sizeBytes: docPdfBuf.length,
+        },
+      })
+      const presignData = presignPdf.json?.data ?? {}
+      if (presignPdf.status === 201 && presignData.uploadUrl) {
+        pass('liquor customer file presign pdf')
+        const objectKey = String(presignData.objectKey ?? '')
+        if (objectKey.includes('liquor/customer-files/')) pass('liquor customer file r2 prefix')
+        else fail('liquor customer file r2 prefix', objectKey.slice(0, 48))
+
+        const putPdf = await fetch(presignData.uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/pdf', ...(presignData.putHeaders ?? {}) },
+          body: docPdfBuf,
+        })
+        if (putPdf.ok) pass('liquor customer file r2 put pdf')
+        else fail('liquor customer file r2 put pdf', String(putPdf.status))
+
+        const confirmPdf = await api(`/liquor/customers/${bizCustomerId}/files`, {
+          token: userToken,
+          method: 'POST',
+          body: {
+            fileId: presignData.fileId,
+            objectKey: presignData.objectKey,
+            fileName: `e2e-doc-${tag}.pdf`,
+            size: docPdfBuf.length,
+            mimeType: 'application/pdf',
+            documentKind: 'business_registration',
+            title: `E2E Doc ${tag}`,
+            linkTarget: 'customer',
+          },
+        })
+        const fileLinkId = confirmPdf.json?.data?.id ?? null
+        if (confirmPdf.status === 201 && fileLinkId) pass('liquor customer file confirm customer', String(fileLinkId))
+        else fail('liquor customer file confirm customer', String(confirmPdf.status))
+
+        if (contractId) {
+          const presignContract = await api(`/liquor/customers/${bizCustomerId}/files/presign`, {
+            token: userToken,
+            method: 'POST',
+            body: {
+              fileName: `e2e-contract-${tag}.pdf`,
+              contentType: 'application/pdf',
+              sizeBytes: docPdfBuf.length,
+            },
+          })
+          const pcData = presignContract.json?.data ?? {}
+          if (presignContract.status === 201 && pcData.uploadUrl) {
+            const putContract = await fetch(pcData.uploadUrl, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/pdf', ...(pcData.putHeaders ?? {}) },
+              body: docPdfBuf,
+            })
+            if (putContract.ok) {
+              const confirmContract = await api(`/liquor/customers/${bizCustomerId}/files`, {
+                token: userToken,
+                method: 'POST',
+                body: {
+                  fileId: pcData.fileId,
+                  objectKey: pcData.objectKey,
+                  fileName: `e2e-contract-${tag}.pdf`,
+                  size: docPdfBuf.length,
+                  mimeType: 'application/pdf',
+                  documentKind: 'support_contract',
+                  title: `E2E Contract Doc ${tag}`,
+                  linkTarget: 'support_contract',
+                  targetId: contractId,
+                },
+              })
+              const contractLinkId = confirmContract.json?.data?.id ?? null
+              const linked =
+                confirmContract.status === 201 &&
+                Number(confirmContract.json?.data?.supportContractId ?? confirmContract.json?.data?.support_contract_id) ===
+                  Number(contractId)
+              if (linked && contractLinkId) pass('liquor customer file confirm contract', String(contractLinkId))
+              else fail('liquor customer file confirm contract', String(confirmContract.status))
+              if (contractLinkId) {
+                await api(`/liquor/customers/${bizCustomerId}/files/${contractLinkId}`, {
+                  token: userToken,
+                  method: 'DELETE',
+                })
+              }
+            } else {
+              fail('liquor customer file r2 put contract pdf', String(putContract.status))
+            }
+          } else {
+            fail('liquor customer file presign contract pdf', String(presignContract.status))
+          }
+        }
+
+        const pngBuf = Buffer.from(
+          'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+          'base64',
+        )
+        const presignImg = await api(`/liquor/customers/${bizCustomerId}/files/presign`, {
+          token: userToken,
+          method: 'POST',
+          body: {
+            fileName: `e2e-store-${tag}.png`,
+            contentType: 'image/png',
+            sizeBytes: pngBuf.length,
+          },
+        })
+        const imgData = presignImg.json?.data ?? {}
+        if (presignImg.status === 201 && imgData.uploadUrl) {
+          const putImg = await fetch(imgData.uploadUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'image/png', ...(imgData.putHeaders ?? {}) },
+            body: pngBuf,
+          })
+          if (putImg.ok) pass('liquor customer file r2 put png')
+          else fail('liquor customer file r2 put png', String(putImg.status))
+        } else {
+          fail('liquor customer file presign png', String(presignImg.status))
+        }
+
+        if (fileLinkId) {
+          const detailFiles = await api(`/liquor/customers/${bizCustomerId}/detail`, { token: userToken })
+          const listed = (detailFiles.json?.data?.files ?? []).some((f) => Number(f.id) === Number(fileLinkId))
+          if (detailFiles.status === 200 && listed) pass('liquor customer file list refresh')
+          else fail('liquor customer file list refresh', String(detailFiles.status))
+
+          const dl = await api(`/liquor/customers/${bizCustomerId}/files/${fileLinkId}/download`, {
+            token: userToken,
+          })
+          if (dl.status === 200 && dl.json?.data?.downloadUrl) pass('liquor customer file download')
+          else fail('liquor customer file download', String(dl.status))
+
+          const delFile = await api(`/liquor/customers/${bizCustomerId}/files/${fileLinkId}`, {
+            token: userToken,
+            method: 'DELETE',
+          })
+          if (delFile.status === 200) pass('liquor customer file delete')
+          else fail('liquor customer file delete', String(delFile.status))
+
+          const detailAfter = await api(`/liquor/customers/${bizCustomerId}/detail`, { token: userToken })
+          const stillListed = (detailAfter.json?.data?.files ?? []).some((f) => Number(f.id) === Number(fileLinkId))
+          if (detailAfter.status === 200 && !stillListed) pass('liquor customer file delete refresh')
+          else fail('liquor customer file delete refresh', stillListed ? 'still listed' : String(detailAfter.status))
+        }
+      } else {
+        fail('liquor customer file presign pdf', `${presignPdf.status}`)
+      }
     }
   }
 

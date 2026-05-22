@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { FormButton, FormInput, FormSelect, FormTextarea } from '../../../components/form'
 import type { CustomerRecord } from '../../customers/domain/types'
 import { LiquorCustomerContactsSection } from './LiquorCustomerContactsSection'
+import { LiquorCustomerFilesSection } from './LiquorCustomerFilesSection'
 import { LiquorSupportContractsSection } from './LiquorSupportContractsSection'
 import {
   createLiquorCustomerNote,
@@ -16,7 +17,6 @@ import {
 import {
   formatLiquorWon,
   LIQUOR_ACCOUNT_STATUS_LABELS,
-  LIQUOR_DOCUMENT_KIND_LABELS,
   LIQUOR_ITEM_KIND_LABELS,
   LIQUOR_PARTY_TYPE_LABELS,
 } from './liquorCustomerUi'
@@ -317,7 +317,17 @@ export default function LiquorCustomerDetailPanel({ customer, token, editing = f
       case 'liquor_items':
         return <LiquorItemsTab customerId={customer.id} token={token} items={detail?.supportItems ?? []} onChanged={reload} />
       case 'liquor_files':
-        return <LiquorFilesTab files={detail?.files ?? []} />
+        return (
+          <LiquorCustomerFilesSection
+            customerId={customer.id}
+            token={token}
+            files={detail?.files ?? []}
+            contracts={supportContracts}
+            repayments={detail?.repayments ?? []}
+            supportItems={detail?.supportItems ?? []}
+            onChanged={reload}
+          />
+        )
       case 'liquor_notes':
         return <LiquorNotesTab customerId={customer.id} token={token} notes={detail?.notes ?? []} onChanged={reload} />
       case 'liquor_signatures':
@@ -493,31 +503,6 @@ function LiquorItemsTab({
           지원물품 추가
         </FormButton>
       </div>
-    </div>
-  )
-}
-
-function LiquorFilesTab({ files }: { files: Array<Record<string, unknown>> }) {
-  return (
-    <div className="liquor-customer-panel__section">
-      {files.length === 0 ? (
-        <p className="liquor-customer-panel__muted">등록된 첨부문서가 없습니다. 공통 파일 저장소 연동은 추후 제공됩니다.</p>
-      ) : (
-        <ul className="liquor-customer-list">
-          {files.map((f) => (
-            <li key={String(f.id)} className="liquor-customer-list__item">
-              <strong>
-                {LIQUOR_DOCUMENT_KIND_LABELS[String(f.document_kind ?? f.documentKind ?? 'other')] ??
-                  String(f.document_kind ?? f.documentKind ?? 'other')}
-              </strong>
-              {String(f.title ?? '') ? ` · ${String(f.title)}` : ''}
-              <span className="liquor-customer-panel__muted">
-                {String(f.created_at ?? f.createdAt ?? '').slice(0, 16).replace('T', ' ')}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   )
 }

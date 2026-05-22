@@ -205,6 +205,14 @@ export async function ensureLiquorCustomerSchema(executor) {
     )
   `)
   await executor.query(`
+    ALTER TABLE liquor_customer_files
+    ADD COLUMN IF NOT EXISTS repayment_id BIGINT REFERENCES liquor_repayments(id) ON DELETE SET NULL
+  `)
+  await executor.query(`
+    ALTER TABLE liquor_customer_files
+    ADD COLUMN IF NOT EXISTS support_item_id BIGINT REFERENCES liquor_support_items(id) ON DELETE SET NULL
+  `)
+  await executor.query(`
     CREATE INDEX IF NOT EXISTS liquor_customer_files_customer_idx
     ON liquor_customer_files (customer_id, document_kind)
   `)

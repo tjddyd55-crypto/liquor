@@ -19,6 +19,7 @@ import {
   refreshLiquorRepaymentBalanceAfter,
 } from '../services/liquorCustomerBalance.js'
 import { createAttachPlatformContext } from '../lib/platformRbac.js'
+import { registerLiquorCustomerFileApi } from './liquorCustomerFileApi.js'
 
 function num(v) {
   const n = Number(v)
@@ -182,7 +183,18 @@ export function registerLiquorCustomerApi(apiRouter, ctx) {
         pool.query(`SELECT * FROM liquor_customer_contacts WHERE customer_id = $1 ORDER BY sort_order, id`, [customerId]),
         pool.query(`SELECT * FROM liquor_support_contracts WHERE customer_id = $1 ORDER BY support_date DESC NULLS LAST, id DESC`, [customerId]),
         pool.query(`SELECT * FROM liquor_support_items WHERE customer_id = $1 ORDER BY supported_on DESC NULLS LAST, id DESC`, [customerId]),
-        pool.query(`SELECT * FROM liquor_customer_files WHERE customer_id = $1 ORDER BY created_at DESC`, [customerId]),
+        pool.query(
+          `
+          SELECT lcf.*, f.original_name, f.display_name, f.file_size, f.mime_type, f.status AS file_status,
+                 u.display_name AS uploaded_by_name
+          FROM liquor_customer_files lcf
+          JOIN files f ON f.id = lcf.file_id AND f.deleted_at IS NULL
+          LEFT JOIN users u ON u.id = lcf.uploaded_by_user_id
+          WHERE lcf.customer_id = $1
+          ORDER BY lcf.created_at DESC
+          `,
+          [customerId],
+        ),
         pool.query(`SELECT * FROM liquor_customer_notes WHERE customer_id = $1 ORDER BY created_at DESC`, [customerId]),
       ])
       const contractIds = contractsR.rows.map((c) => c.id)
@@ -720,4 +732,6 @@ function validateContactNameOrPhone(name, phone) {
       handleDbError(e, req, res)
     }
   })
+
+  registerLiquorCustomerFileApi(apiRouter, { pool, requireAuth, handleDbError, chain })
 }
