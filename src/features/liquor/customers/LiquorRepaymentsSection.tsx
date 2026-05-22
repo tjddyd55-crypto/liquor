@@ -16,6 +16,7 @@ import {
   LIQUOR_REPAYMENT_METHOD_OPTIONS,
 } from './liquorCustomerUi'
 import { mapLiquorSupportContract } from './liquorSupportContractClient'
+import { LiquorRepaymentImportSection } from './LiquorRepaymentImportSection'
 
 type Props = {
   customerId: number
@@ -392,6 +393,13 @@ export function LiquorRepaymentsSection({
       ) : (
         <p className="liquor-customer-panel__muted">먼저 지원계약을 추가하세요.</p>
       )}
+
+      <LiquorRepaymentImportSection
+        token={token}
+        defaultCustomerId={customerId}
+        defaultContracts={contracts}
+        onChanged={onChanged}
+      />
     </div>
   )
 }

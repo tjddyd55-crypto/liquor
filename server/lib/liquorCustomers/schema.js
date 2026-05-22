@@ -236,4 +236,7 @@ export async function ensureLiquorCustomerSchema(executor) {
     CREATE INDEX IF NOT EXISTS liquor_customer_notes_customer_idx
     ON liquor_customer_notes (customer_id, created_at DESC)
   `)
+
+  const { ensureLiquorRepaymentImportSchema } = await import('../liquorRepayments/schema.js')
+  await ensureLiquorRepaymentImportSchema(executor)
 }

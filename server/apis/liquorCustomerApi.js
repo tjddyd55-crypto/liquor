@@ -21,6 +21,7 @@ import {
 } from '../services/liquorCustomerBalance.js'
 import { createAttachPlatformContext } from '../lib/platformRbac.js'
 import { registerLiquorCustomerFileApi } from './liquorCustomerFileApi.js'
+import { registerLiquorRepaymentImportApi } from './liquorRepaymentImportApi.js'
 
 function num(v) {
   const n = Number(v)
@@ -841,4 +842,5 @@ function validateContactNameOrPhone(name, phone) {
   })
 
   registerLiquorCustomerFileApi(apiRouter, { pool, requireAuth, handleDbError, chain })
+  registerLiquorRepaymentImportApi(apiRouter, { pool, handleDbError, chain })
 }

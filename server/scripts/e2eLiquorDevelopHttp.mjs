@@ -5,6 +5,7 @@
 import { randomBytes, randomInt } from 'node:crypto'
 import fs from 'node:fs'
 import { PDFDocument, StandardFonts } from 'pdf-lib'
+import * as XLSX from 'xlsx'
 
 const BASE = String(process.env.E2E_LIQUOR_BASE_URL ?? 'https://app-develop-a3aa.up.railway.app').replace(/\/$/, '')
 const API = `${BASE}/backend/api`
@@ -39,6 +40,44 @@ async function makeTinyPdfBuffer(label = 'liquor-e2e') {
   const font = await doc.embedFont(StandardFonts.Helvetica)
   page.drawText(label, { x: 50, y: 100, size: 12, font })
   return Buffer.from(await doc.save())
+}
+
+function buildRepaymentImportXlsx(dataRows) {
+  const ws = XLSX.utils.aoa_to_sheet([
+    ['거래일자', '입금액', '입금자명', '적요'],
+    ...dataRows.map((r) => [r.date, r.amount, r.depositor, r.desc ?? '']),
+  ])
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, '입금')
+  return Buffer.from(XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }))
+}
+
+async function uploadRepaymentImport(token, dataRows, fileName) {
+  const buf = buildRepaymentImportXlsx(dataRows)
+  const form = new FormData()
+  form.append(
+    'file',
+    new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+    fileName,
+  )
+  return api('/liquor/repayment-import/batches/upload', { token, method: 'POST', formData: form })
+}
+
+function importRowDepositor(row) {
+  return String(row.depositorName ?? row.depositor_name ?? '')
+}
+
+function importRowStatus(row) {
+  return String(row.matchStatus ?? row.match_status ?? '')
+}
+
+async function listImportRows(token, batchId) {
+  const r = await api(`/liquor/repayment-import/batches/${batchId}/rows`, { token })
+  return r.json?.data ?? []
+}
+
+function findImportRow(rows, depositor) {
+  return rows.find((row) => importRowDepositor(row) === depositor)
 }
 
 async function login(username, password) {
@@ -464,6 +503,198 @@ async function main() {
               'liquor repayment cancel recalc balance',
               `balance=${balanceAfterCancel} listed=${stillListed}`,
             )
+          }
+        }
+
+        // --- liquor repayment import (exact alias matching) ---
+        const importDateBase = '2026-04-01'
+        const uploadA1 = await uploadRepaymentImport(
+          userToken,
+          [{ date: importDateBase, amount: 10000, depositor: 'A', desc: `E2E A1 ${tag}` }],
+          `e2e-import-a1-${tag}.xlsx`,
+        )
+        const batchA1Id = uploadA1.json?.data?.batch?.id ?? uploadA1.json?.batch?.id ?? null
+        if (uploadA1.status === 201 && batchA1Id) pass('liquor repayment import upload batch1')
+        else fail('liquor repayment import upload batch1', `${uploadA1.status} ${uploadA1.json?.message ?? ''}`)
+
+        if (batchA1Id) {
+          const rowsA1 = await listImportRows(userToken, batchA1Id)
+          const rowA = findImportRow(rowsA1, 'A')
+          if (rowA && importRowStatus(rowA) === 'unmatched') pass('liquor repayment import A unmatched initially')
+          else fail('liquor repayment import A unmatched initially', importRowStatus(rowA ?? {}))
+
+          if (rowA?.id) {
+            const confirmA = await api(`/liquor/repayment-import/rows/${rowA.id}/confirm`, {
+              token: userToken,
+              method: 'POST',
+              body: { customerId: bizCustomerId, supportContractId: contractId, saveAlias: true },
+            })
+            if (confirmA.status === 200) pass('liquor repayment import confirm A + alias')
+            else fail('liquor repayment import confirm A + alias', `${confirmA.status} ${confirmA.json?.message ?? ''}`)
+          }
+
+          const uploadA2 = await uploadRepaymentImport(
+            userToken,
+            [
+              { date: '2026-04-02', amount: 11000, depositor: 'A', desc: `E2E A2 ${tag}` },
+              { date: '2026-04-03', amount: 12000, depositor: 'A-', desc: `E2E A- ${tag}` },
+            ],
+            `e2e-import-a2-${tag}.xlsx`,
+          )
+          const batchA2Id = uploadA2.json?.data?.batch?.id ?? null
+          if (uploadA2.status === 201 && batchA2Id) pass('liquor repayment import upload batch2')
+          else fail('liquor repayment import upload batch2', String(uploadA2.status))
+
+          if (batchA2Id) {
+            const rowsA2 = await listImportRows(userToken, batchA2Id)
+            const aExact = findImportRow(rowsA2, 'A')
+            const aDash = findImportRow(rowsA2, 'A-')
+            if (aExact && importRowStatus(aExact) === 'exact_alias_matched') {
+              pass('liquor repayment import A exact alias matched')
+            } else fail('liquor repayment import A exact alias matched', importRowStatus(aExact ?? {}))
+            if (aDash && importRowStatus(aDash) === 'unmatched') pass('liquor repayment import A- unmatched')
+            else fail('liquor repayment import A- unmatched', importRowStatus(aDash ?? {}))
+
+            if (aDash?.id) {
+              const confirmADash = await api(`/liquor/repayment-import/rows/${aDash.id}/confirm`, {
+                token: userToken,
+                method: 'POST',
+                body: { customerId: bizCustomerId, supportContractId: contractId, saveAlias: true },
+              })
+              if (confirmADash.status === 200) pass('liquor repayment import confirm A- + alias')
+              else fail('liquor repayment import confirm A- + alias', String(confirmADash.status))
+            }
+          }
+
+          const uploadB = await uploadRepaymentImport(
+            userToken,
+            [{ date: '2026-04-04', amount: 13000, depositor: 'B', desc: `E2E B ${tag}` }],
+            `e2e-import-b-${tag}.xlsx`,
+          )
+          const batchBId = uploadB.json?.data?.batch?.id ?? null
+          if (batchBId) {
+            const rowsB = await listImportRows(userToken, batchBId)
+            const rowB = findImportRow(rowsB, 'B')
+            if (rowB && importRowStatus(rowB) === 'unmatched') pass('liquor repayment import B unmatched initially')
+            else fail('liquor repayment import B unmatched initially', importRowStatus(rowB ?? {}))
+            if (rowB?.id) {
+              await api(`/liquor/repayment-import/rows/${rowB.id}/confirm`, {
+                token: userToken,
+                method: 'POST',
+                body: { customerId: bizCustomerId, supportContractId: contractId, saveAlias: true },
+              })
+            }
+          }
+
+          const uploadMix = await uploadRepaymentImport(
+            userToken,
+            [
+              { date: '2026-04-05', amount: 14000, depositor: 'A', desc: 'mix A' },
+              { date: '2026-04-06', amount: 15000, depositor: 'A-', desc: 'mix A-' },
+              { date: '2026-04-07', amount: 16000, depositor: 'B', desc: 'mix B' },
+              { date: '2026-04-08', amount: 17000, depositor: 'A상환', desc: 'mix' },
+              { date: '2026-04-09', amount: 18000, depositor: 'A_', desc: 'mix' },
+              { date: '2026-04-10', amount: 19000, depositor: '김철수상환', desc: 'mix' },
+            ],
+            `e2e-import-mix-${tag}.xlsx`,
+          )
+          const batchMixId = uploadMix.json?.data?.batch?.id ?? null
+          if (batchMixId) {
+            const rowsMix = await listImportRows(userToken, batchMixId)
+            const expectExact = ['A', 'A-', 'B']
+            const expectUnmatched = ['A상환', 'A_', '김철수상환']
+            let exactOk = expectExact.every((d) => importRowStatus(findImportRow(rowsMix, d) ?? {}) === 'exact_alias_matched')
+            let unmatchedOk = expectUnmatched.every((d) => importRowStatus(findImportRow(rowsMix, d) ?? {}) === 'unmatched')
+            if (exactOk) pass('liquor repayment import A A- B exact on mix batch')
+            else fail('liquor repayment import A A- B exact on mix batch', 'status mismatch')
+            if (unmatchedOk) pass('liquor repayment import unregistered aliases unmatched')
+            else fail('liquor repayment import unregistered aliases unmatched', 'status mismatch')
+          }
+
+          const dupUpload = await uploadRepaymentImport(
+            userToken,
+            [{ date: importDateBase, amount: 10000, depositor: 'A', desc: `E2E A1 ${tag}` }],
+            `e2e-import-dup-${tag}.xlsx`,
+          )
+          const batchDupId = dupUpload.json?.data?.batch?.id ?? null
+          if (batchDupId) {
+            const rowsDup = await listImportRows(userToken, batchDupId)
+            const dupRow = findImportRow(rowsDup, 'A')
+            if (dupRow && importRowStatus(dupRow) === 'duplicate') pass('liquor repayment import duplicate row')
+            else fail('liquor repayment import duplicate row', importRowStatus(dupRow ?? {}))
+          }
+
+          const rowsA1After = await listImportRows(userToken, batchA1Id)
+          const confirmedRow = findImportRow(rowsA1After, 'A')
+          if (confirmedRow?.id && importRowStatus(confirmedRow) === 'confirmed') {
+            const reconfirm = await api(`/liquor/repayment-import/rows/${confirmedRow.id}/confirm`, {
+              token: userToken,
+              method: 'POST',
+              body: { customerId: bizCustomerId, supportContractId: contractId, saveAlias: true },
+            })
+            if (reconfirm.status === 409) pass('liquor repayment import rejects re-confirm')
+            else fail('liquor repayment import rejects re-confirm', String(reconfirm.status))
+          }
+
+          const detailAfterImport = await api(`/liquor/customers/${bizCustomerId}/detail`, { token: userToken })
+          const repaymentsAfterImport = detailAfterImport.json?.data?.repayments ?? []
+          const importRepayments = repaymentsAfterImport.filter((r) =>
+            ['A', 'A-', 'B'].includes(String(r.depositor_name ?? r.depositorName ?? '')),
+          )
+          if (importRepayments.length >= 3) pass('liquor repayment import creates repayments', String(importRepayments.length))
+          else fail('liquor repayment import creates repayments', String(importRepayments.length))
+
+          const contractsAfterImport = detailAfterImport.json?.data?.supportContracts ?? []
+          const contractAfter = contractsAfterImport.find((c) => Number(c.id) === Number(contractId))
+          const balanceAfterImport = Number(contractAfter?.balanceAmount ?? contractAfter?.balance_amount ?? NaN)
+          // 990000 - 10000 - 12000 - 13000 = 955000
+          if (balanceAfterImport === 955000) pass('liquor repayment import recalc balance', '955000')
+          else fail('liquor repayment import recalc balance', String(balanceAfterImport))
+
+          const createBiz2 = await api('/customers', {
+            token: userToken,
+            method: 'POST',
+            body: { name: `E2E Biz2 ${tag}`, phone: `010${String(randomInt(10_000_000, 99_999_999))}` },
+          })
+          const biz2Id = createBiz2.json?.data?.id ?? createBiz2.json?.id ?? null
+          if (biz2Id) {
+            const contract2 = await api(`/liquor/customers/${biz2Id}/support-contracts`, {
+              token: userToken,
+              method: 'POST',
+              body: {
+                contractName: `E2E Contract2 ${tag}`,
+                supportType: 'liquor_loan',
+                supportAmount: 500000,
+                totalRepaymentPlannedAmount: 500000,
+                repaymentRequired: true,
+                status: 'repaying',
+              },
+            })
+            const contract2Id = contract2.json?.data?.id ?? contract2.json?.id ?? null
+            const uploadConflict = await uploadRepaymentImport(
+              userToken,
+              [{ date: '2026-04-11', amount: 20000, depositor: 'A', desc: 'conflict try' }],
+              `e2e-import-conflict-${tag}.xlsx`,
+            )
+            const batchConflictId = uploadConflict.json?.data?.batch?.id ?? null
+            if (batchConflictId && contract2Id) {
+              const rowsConflict = await listImportRows(userToken, batchConflictId)
+              const rowConflict = findImportRow(rowsConflict, 'A')
+              if (rowConflict && importRowStatus(rowConflict) === 'exact_alias_matched') {
+                pass('liquor repayment import conflict candidate exact for existing alias owner')
+              } else {
+                fail('liquor repayment import conflict candidate exact for existing alias owner', importRowStatus(rowConflict ?? {}))
+              }
+              if (rowConflict?.id) {
+                const aliasSaveConflict = await api(`/liquor/repayment-import/rows/${rowConflict.id}/confirm`, {
+                  token: userToken,
+                  method: 'POST',
+                  body: { customerId: biz2Id, supportContractId: contract2Id, saveAlias: true },
+                })
+                if (aliasSaveConflict.status === 409) pass('liquor repayment import alias conflict on other customer')
+                else fail('liquor repayment import alias conflict on other customer', String(aliasSaveConflict.status))
+              }
+            }
           }
         }
       }
