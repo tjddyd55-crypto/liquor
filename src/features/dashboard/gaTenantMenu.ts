@@ -6,7 +6,8 @@
 
 import { isAllowedForExpiredFrontend } from '../subscription/expiredAllowlist'
 import { canAccessContractSignatureAdminConsole } from '../contracts/testConsole/contractSignatureTestConsoleFlags'
-import { buildCommonCrmDashboardMenu, isCommonCrmIndustryShell } from './commonCrmIndustryMenu'
+import { buildCommonCrmDashboardMenu, isCommonCrmIndustryShell, LIQUOR_SIGNATURE_ADMIN_MENU } from './commonCrmIndustryMenu'
+import { canAccessLiquorSignatureAdminConsole } from '../liquor/signatureTemplates/liquorSignatureTemplateFlags'
 
 export type GaTenantMenuItem = { label: string; path: string }
 
@@ -328,17 +329,28 @@ export function buildAppMenuForSession(
       return itemsToEntries([CONTRACT_SIGNATURE_USER_SEND, CONTRACT_SIGNATURE_USER_HISTORY, ...GA_STAFF_MENU])
     }
     if (role === 'GA_ADMIN' || role === 'USER') {
+      const liquorShell = isCommonCrmIndustryShell(crmIndustryCode)
       const entries =
-        isCommonCrmIndustryShell(crmIndustryCode) ?
-          buildCommonCrmDashboardMenu({ includeUserContractSignatures: role === 'USER' })
+        liquorShell ?
+          buildCommonCrmDashboardMenu({
+            includeUserContractSignatures: role === 'USER',
+            includeAdminSignatureTemplates:
+              role === 'GA_ADMIN' && canAccessLiquorSignatureAdminConsole(role),
+          })
         : buildGaTenantDashboardMenu(gaCode, gaName, {
             includeUserContractSignatures: role === 'USER',
           })
-      if (role === 'GA_ADMIN') {
+      if (role === 'GA_ADMIN' && !liquorShell) {
         const testEntry = contractSignatureAdminMenuIfEnabled('GA_ADMIN')
         if (testEntry) {
           entries.push({ type: 'link', label: testEntry.label, path: testEntry.path })
         }
+        entries.push(
+          { type: 'divider' },
+          { type: 'link', label: AUDIT_LOG_ENTRY.label, path: AUDIT_LOG_ENTRY.path },
+        )
+      }
+      if (role === 'GA_ADMIN' && liquorShell) {
         entries.push(
           { type: 'divider' },
           { type: 'link', label: AUDIT_LOG_ENTRY.label, path: AUDIT_LOG_ENTRY.path },

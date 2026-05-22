@@ -1,18 +1,22 @@
 /**
- * 보험·정부지원 전용 메뉴를 제외한 공통 CRM shell 메뉴(주류회사 등).
- * 전자서명은 공통 contracts 모듈(/contracts/signatures/*)을 재사용한다.
+ * 주류회사 CRM 전용 menu — 공통 contracts(/contracts/signatures/*) 와 분리.
  */
 
 import type { GaTenantDashboardMenuEntry } from './gaTenantMenu'
 
-const CONTRACT_SIGNATURE_USER_SEND = {
+const LIQUOR_SIGNATURE_USER_SEND = {
   label: '전자서명 발송',
-  path: '/contracts/signatures/send',
+  path: '/liquor/signatures/send',
 } as const
 
-const CONTRACT_SIGNATURE_USER_HISTORY = {
+const LIQUOR_SIGNATURE_USER_HISTORY = {
   label: '전자서명 발송내역',
-  path: '/contracts/signatures/history',
+  path: '/liquor/signatures/history',
+} as const
+
+export const LIQUOR_SIGNATURE_ADMIN_MENU = {
+  label: '전자서명 템플릿 관리',
+  path: '/liquor/signature-templates',
 } as const
 
 /** 공통 CRM shell을 쓰는 업종 코드 (주류회사 CRM) */
@@ -24,27 +28,33 @@ export function isCommonCrmIndustryShell(industryCode: string | null | undefined
 type BuildCommonCrmDashboardMenuOptions = {
   /** USER 역할에게만 전자서명 블록을 붙인다. */
   includeUserContractSignatures?: boolean
+  /** GA_ADMIN 에게 전자서명 템플릿 관리 메뉴 */
+  includeAdminSignatureTemplates?: boolean
 }
 
 /** 주류회사 CRM — 고객관리·전자서명·팀·내정보 중심의 최소 shell */
 export function buildCommonCrmDashboardMenu(
   options: BuildCommonCrmDashboardMenuOptions = {},
 ): GaTenantDashboardMenuEntry[] {
-  const { includeUserContractSignatures = false } = options
+  const { includeUserContractSignatures = false, includeAdminSignatureTemplates = false } = options
 
-  const userContractSignatures: GaTenantDashboardMenuEntry[] = [
+  const userLiquorSignatures: GaTenantDashboardMenuEntry[] = [
     { type: 'section', label: '전자서명' },
     {
       type: 'link',
-      label: CONTRACT_SIGNATURE_USER_SEND.label,
-      path: CONTRACT_SIGNATURE_USER_SEND.path,
+      label: LIQUOR_SIGNATURE_USER_SEND.label,
+      path: LIQUOR_SIGNATURE_USER_SEND.path,
     },
     {
       type: 'link',
-      label: CONTRACT_SIGNATURE_USER_HISTORY.label,
-      path: CONTRACT_SIGNATURE_USER_HISTORY.path,
+      label: LIQUOR_SIGNATURE_USER_HISTORY.label,
+      path: LIQUOR_SIGNATURE_USER_HISTORY.path,
     },
   ]
+
+  const adminSignatureEntry: GaTenantDashboardMenuEntry[] = includeAdminSignatureTemplates
+    ? [{ type: 'link', label: LIQUOR_SIGNATURE_ADMIN_MENU.label, path: LIQUOR_SIGNATURE_ADMIN_MENU.path }]
+    : []
 
   return [
     { type: 'section', label: '할일 및 알림' },
@@ -54,7 +64,8 @@ export function buildCommonCrmDashboardMenu(
     { type: 'section', label: '고객관리' },
     { type: 'link', label: '고객리스트', path: '/customers' },
 
-    ...(includeUserContractSignatures ? userContractSignatures : []),
+    ...(includeUserContractSignatures ? userLiquorSignatures : []),
+    ...adminSignatureEntry,
 
     { type: 'section', label: '팀관리' },
     { type: 'link', label: '팀원리스트', path: '/team/members' },

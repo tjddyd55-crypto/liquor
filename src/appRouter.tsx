@@ -118,6 +118,13 @@ import ContractSignatureTestConsolePage from './features/contracts/testConsole/C
 import { ContractSignatureUserSendRoute } from './features/contracts/userSend/ContractSignatureUserSendRoute'
 import ContractSignatureSendPage from './features/contracts/userSend/ContractSignatureSendPage'
 import ContractSignatureHistoryPage from './features/contracts/userHistory/ContractSignatureHistoryPage'
+import LiquorSignPage from './features/liquor/publicSignature/LiquorSignPage'
+import LiquorSignDocumentPage from './features/liquor/publicSignature/LiquorSignDocumentPage'
+import { LiquorSignatureUserSendRoute } from './features/liquor/signatures/LiquorSignatureUserSendRoute'
+import LiquorSignatureSendPage from './features/liquor/signatures/LiquorSignatureSendPage'
+import LiquorSignatureHistoryPage from './features/liquor/signatures/LiquorSignatureHistoryPage'
+import { LiquorSignatureTemplateRoute } from './features/liquor/signatureTemplates/LiquorSignatureTemplateRoute'
+import LiquorSignatureTemplatesPage from './features/liquor/signatureTemplates/LiquorSignatureTemplatesPage'
 import GovernmentLoginPage from './features/government-support/pages/GovernmentLoginPage'
 import GovernmentSignupPage from './features/government-support/pages/GovernmentSignupPage'
 import GovernmentJoinPage from './features/government-support/pages/GovernmentJoinPage'
@@ -296,6 +303,11 @@ export const appRouter = createBrowserRouter([
       {
         path: 'contracts/sign/:linkCode/documents/:documentInstanceId',
         element: <ContractSignDocumentPage />,
+      },
+      { path: 'liquor/sign/:linkCode', element: <LiquorSignPage /> },
+      {
+        path: 'liquor/sign/:linkCode/documents/:documentInstanceId',
+        element: <LiquorSignDocumentPage />,
       },
       { path: 'government/sign/:token', element: <GovernmentSignPage /> },
       {
@@ -549,6 +561,21 @@ export const appRouter = createBrowserRouter([
                   { path: 'admin/pdf-templates', element: <PdfTemplateListPage /> },
                   { path: 'admin/pdf-templates/new', element: <PdfTemplateEditorPage /> },
                   { path: 'admin/pdf-templates/:id', element: <PdfTemplateEditorPage /> },
+                ],
+              },
+              {
+                element: <LiquorSignatureUserSendRoute />,
+                children: [
+                  { path: 'liquor/signatures/send', element: <LiquorSignatureSendPage /> },
+                  { path: 'liquor/signatures/history', element: <LiquorSignatureHistoryPage /> },
+                ],
+              },
+              {
+                element: <LiquorSignatureTemplateRoute />,
+                children: [
+                  { path: 'liquor/signature-templates', element: <LiquorSignatureTemplatesPage /> },
+                  { path: 'liquor/signature-templates/new', element: <LiquorSignatureTemplatesPage /> },
+                  { path: 'liquor/signature-templates/:id/edit', element: <LiquorSignatureTemplatesPage /> },
                 ],
               },
               {

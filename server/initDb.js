@@ -3281,6 +3281,8 @@ export async function initDb() {
   await ensureSubscriptionSchema(pool)
   await ensureSignatureSchema(pool)
   await ensurePdfTemplateSchema(pool)
+  const { ensureLiquorSignatureSchema } = await import('./lib/liquorSignatures/schema.js')
+  await ensureLiquorSignatureSchema(pool)
   const { ensureGovSignatureSchema } = await import('./lib/governmentSignatures/schema.js')
   await ensureGovSignatureSchema(pool)
   await ensureContractSelfSmsSchema(pool)

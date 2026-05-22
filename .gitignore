@@ -9,6 +9,10 @@ lerna-debug.log*
 
 node_modules
 .env
+.env.production
+.env.local
+.e2e-liquor-local.env
+.e2e-liquor-last-run.json
 dist
 release
 dist-ssr

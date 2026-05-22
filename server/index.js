@@ -84,6 +84,7 @@ import { registerCrmCustomerTemplateAdminApi } from './registerCrmCustomerTempla
 import { registerGovernmentSupportApi } from './registerGovernmentSupportApi.js'
 import { registerGovernmentOperationsApi } from './registerGovernmentOperationsApi.js'
 import { registerGovernmentSignatureApi } from './registerGovernmentSignatureApi.js'
+import { registerLiquorSignatureApi } from './registerLiquorSignatureApi.js'
 import { registerContractPublicOtpApi } from './apis/contractPublicOtpApi.js'
 import { registerContractPublicApi } from './apis/contractPublicApi.js'
 import { registerContractAdminApi } from './apis/contractAdminApi.js'
@@ -940,6 +941,10 @@ async function requireAuth(req, res, next) {
       customerTenantDbId: customerScope.tenantDbId,
       tenantMembershipRole: tenantMembershipRoleStr,
       membershipType: membershipTypeStr,
+      tenant_industry_code:
+        decoded.tenantIndustryCode ?? decoded.tenant_industry_code ?? null,
+      crm_industry_code:
+        decoded.crmIndustryCode ?? decoded.crm_industry_code ?? decoded.tenantIndustryCode ?? decoded.tenant_industry_code ?? null,
     }
 
     if (role === 'INSURER_MANAGER' || role === 'LOSS_ADJUSTER') {
@@ -1472,6 +1477,13 @@ registerCrmCustomerTemplateAdminApi(apiRouter, { pool, requireAuth, requireSuper
 registerGovernmentSupportApi(apiRouter, { pool, requireAuth, handleDbError })
 registerGovernmentOperationsApi(apiRouter, { pool, requireAuth, handleDbError })
 registerGovernmentSignatureApi(apiRouter, { pool, requireAuth, handleDbError })
+registerLiquorSignatureApi(apiRouter, {
+  pool,
+  requireAuth,
+  forbidInsurerManagerApi,
+  handleDbError,
+  isSuperAdminRole,
+})
 
 registerSubscriptionEndpoints(apiRouter, { requireAuth })
 
