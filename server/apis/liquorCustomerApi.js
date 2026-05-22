@@ -309,7 +309,7 @@ export function registerLiquorCustomerApi(apiRouter, ctx) {
         UPDATE customers SET crm_extension = jsonb_set(
           jsonb_set(COALESCE(crm_extension, '{"v":1,"fields":{}}'::jsonb), '{fields,liquor.partyType}', to_jsonb($2::text), true),
           '{fields,liquor.accountStatus}', to_jsonb($3::text), true
-        ), updated_at = NOW()
+        )
         WHERE id = $1
         `,
         [customerId, partyType === 'business' ? 'business' : 'individual', String(b.accountStatus ?? b.account_status ?? 'active')],
