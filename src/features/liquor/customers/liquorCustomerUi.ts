@@ -92,4 +92,20 @@ export const LIQUOR_FILE_LINK_TARGET_OPTIONS = [
   'other',
 ] as const
 
-export type LiquorFileLinkTarget = (typeof LIQUOR_FILE_LINK_TARGET_OPTIONS)[number]
+export const LIQUOR_REPAYMENT_METHOD_LABELS: Record<string, string> = {
+  cash: '현금',
+  bank_transfer: '계좌이체',
+  card: '카드',
+  sales_offset: '매출차감',
+  goods_return: '물품반납',
+  other: '기타',
+}
+
+export const LIQUOR_REPAYMENT_METHOD_OPTIONS = [
+  'cash',
+  'bank_transfer',
+  'card',
+  'sales_offset',
+  'goods_return',
+  'other',
+] as const

@@ -17,44 +17,79 @@ export function computeLiquorSupportContractBalance(input) {
 }
 
 /**
+ * 유효 상환내역 기준으로 계약·각 상환 row balance_after 를 동기화한다.
  * @param {import('pg').Pool | import('pg').PoolClient} executor
  * @param {number | string} contractId
  */
-export async function recalculateLiquorSupportContractBalance(executor, contractId) {
-  const sum = await executor.query(
-    `SELECT COALESCE(SUM(amount), 0)::numeric AS total FROM liquor_repayments WHERE support_contract_id = $1`,
-    [contractId],
-  )
-  const repaid = Number(sum.rows[0]?.total ?? 0)
+export async function syncLiquorRepaymentBalancesForContract(executor, contractId) {
   const cur = await executor.query(
     `SELECT total_repayment_planned_amount, adjustment_amount FROM liquor_support_contracts WHERE id = $1 LIMIT 1`,
     [contractId],
   )
   const row = cur.rows[0]
   if (!row) return null
-  const balance = computeLiquorSupportContractBalance({
-    totalRepaymentPlannedAmount: row.total_repayment_planned_amount,
-    repaidAmount: repaid,
-    adjustmentAmount: row.adjustment_amount,
+
+  const planned = Number(row.total_repayment_planned_amount) || 0
+  const adjustment = Number(row.adjustment_amount) || 0
+
+  const repRows = await executor.query(
+    `
+    SELECT id, amount
+    FROM liquor_repayments
+    WHERE support_contract_id = $1 AND deleted_at IS NULL
+    ORDER BY repaid_on ASC NULLS LAST, id ASC
+    `,
+    [contractId],
+  )
+
+  let cumulative = 0
+  for (const r of repRows.rows) {
+    cumulative += Number(r.amount) || 0
+    const balanceAfter = computeLiquorSupportContractBalance({
+      totalRepaymentPlannedAmount: planned,
+      repaidAmount: cumulative,
+      adjustmentAmount: adjustment,
+    })
+    await executor.query(
+      `UPDATE liquor_repayments SET balance_after = $2, updated_at = NOW() WHERE id = $1`,
+      [r.id, balanceAfter],
+    )
+  }
+
+  const balanceAmount = computeLiquorSupportContractBalance({
+    totalRepaymentPlannedAmount: planned,
+    repaidAmount: cumulative,
+    adjustmentAmount: adjustment,
   })
   await executor.query(
     `UPDATE liquor_support_contracts SET repaid_amount = $2, balance_amount = $3, updated_at = NOW() WHERE id = $1`,
-    [contractId, repaid, balance],
+    [contractId, cumulative, balanceAmount],
   )
-  return { repaidAmount: repaid, balanceAmount: balance }
+  return { repaidAmount: cumulative, balanceAmount }
 }
 
 /**
  * @param {import('pg').Pool | import('pg').PoolClient} executor
  * @param {number | string} contractId
- * @param {number | string} repaymentId
  */
-export async function refreshLiquorRepaymentBalanceAfter(executor, contractId, repaymentId) {
-  const bal = await recalculateLiquorSupportContractBalance(executor, contractId)
-  if (!bal) return null
-  await executor.query(
-    `UPDATE liquor_repayments SET balance_after = $2, updated_at = NOW() WHERE id = $1`,
-    [repaymentId, bal.balanceAmount],
-  )
-  return bal
+export async function recalculateLiquorSupportContractBalance(executor, contractId) {
+  return syncLiquorRepaymentBalancesForContract(executor, contractId)
+}
+
+/**
+ * @param {import('pg').Pool | import('pg').PoolClient} executor
+ * @param {number | string} contractId
+ * @param {number | string} _repaymentId
+ */
+export async function refreshLiquorRepaymentBalanceAfter(executor, contractId, _repaymentId) {
+  return syncLiquorRepaymentBalancesForContract(executor, contractId)
+}
+
+/**
+ * @param {unknown} raw
+ */
+export function parseLiquorRepaymentAmount(raw) {
+  const n = Number(String(raw ?? '').replace(/,/g, '').trim())
+  if (!Number.isFinite(n) || n < 0) return null
+  return Math.round(n * 100) / 100
 }

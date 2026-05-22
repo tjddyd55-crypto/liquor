@@ -454,6 +454,110 @@
   color: #b91c1c;
 }
 
+.liquor-repayment__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.liquor-repayment {
+  border: 1px solid var(--border-subtle, #e5e7eb);
+  border-radius: 8px;
+  background: var(--surface-elevated, #fff);
+  overflow: hidden;
+}
+
+.liquor-repayment__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.liquor-repayment__summary {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.liquor-repayment__amount {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.liquor-repayment__meta {
+  color: var(--text-muted, #6b7280);
+  font-size: 0.8rem;
+}
+
+.liquor-repayment__memo,
+.liquor-repayment__files {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.liquor-repayment__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.liquor-repayment__edit {
+  padding: 0.75rem;
+  border-top: 1px solid var(--border-subtle, #e5e7eb);
+  background: var(--surface-muted, #f9fafb);
+}
+
+.liquor-repayment__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.liquor-repayment__field--wide {
+  grid-column: 1 / -1;
+}
+
+.liquor-repayment__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.liquor-repayment__create {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-subtle, #e5e7eb);
+}
+
+.liquor-repayment__create-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.liquor-repayment__msg {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+}
+
+.liquor-repayment__msg--ok {
+  color: #047857;
+}
+
+.liquor-repayment__msg--err {
+  color: #b91c1c;
+}
+
 @media (max-width: 768px) {
   .liquor-customer-panel__tabs {
     overflow-x: auto;
@@ -485,6 +589,15 @@
   }
 
   .liquor-customer-file__toolbar {
+    width: 100%;
+  }
+
+  .liquor-repayment__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .liquor-repayment__toolbar {
     width: 100%;
   }
 }

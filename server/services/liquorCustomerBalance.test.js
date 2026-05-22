@@ -1,4 +1,4 @@
-import { computeLiquorSupportContractBalance } from '../services/liquorCustomerBalance.js'
+import { computeLiquorSupportContractBalance, parseLiquorRepaymentAmount } from '../services/liquorCustomerBalance.js'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
@@ -19,4 +19,11 @@ test('computeLiquorSupportContractBalance: planned - repaid + adjustment', () =>
     }),
     290000,
   )
+})
+
+test('parseLiquorRepaymentAmount rejects negative and non-finite values', () => {
+  assert.equal(parseLiquorRepaymentAmount(1000), 1000)
+  assert.equal(parseLiquorRepaymentAmount('1,500.5'), 1500.5)
+  assert.equal(parseLiquorRepaymentAmount(-1), null)
+  assert.equal(parseLiquorRepaymentAmount('abc'), null)
 })

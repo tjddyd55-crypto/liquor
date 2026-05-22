@@ -4,10 +4,10 @@ import { FormButton, FormInput, FormSelect, FormTextarea } from '../../../compon
 import type { CustomerRecord } from '../../customers/domain/types'
 import { LiquorCustomerContactsSection } from './LiquorCustomerContactsSection'
 import { LiquorCustomerFilesSection } from './LiquorCustomerFilesSection'
+import { LiquorRepaymentsSection } from './LiquorRepaymentsSection'
 import { LiquorSupportContractsSection } from './LiquorSupportContractsSection'
 import {
   createLiquorCustomerNote,
-  createLiquorRepayment,
   createLiquorSupportItem,
   fetchLiquorCustomerDetail,
   saveLiquorCustomerProfile,
@@ -306,12 +306,13 @@ export default function LiquorCustomerDetailPanel({ customer, token, editing = f
         )
       case 'liquor_repayments':
         return (
-          <LiquorRepaymentsTab
+          <LiquorRepaymentsSection
             customerId={customer.id}
             token={token}
             contracts={supportContracts}
             repayments={detail?.repayments ?? []}
             onChanged={reload}
+            onOpenFilesTab={() => setTab('liquor_files')}
           />
         )
       case 'liquor_items':
@@ -394,67 +395,6 @@ export default function LiquorCustomerDetailPanel({ customer, token, editing = f
       <div className="liquor-customer-panel__body" role="tabpanel">
         {tabContent}
       </div>
-    </div>
-  )
-}
-
-function LiquorRepaymentsTab({
-  customerId,
-  token,
-  contracts,
-  repayments,
-  onChanged,
-}: {
-  customerId: number
-  token: string
-  contracts: Array<Record<string, unknown>>
-  repayments: Array<Record<string, unknown>>
-  onChanged: () => Promise<void>
-}) {
-  const [contractId, setContractId] = useState('')
-  const [amount, setAmount] = useState('')
-  return (
-    <div className="liquor-customer-panel__section">
-      <ul className="liquor-customer-list">
-        {repayments.map((r) => (
-          <li key={String(r.id)} className="liquor-customer-list__item">
-            {String(r.repaid_on ?? r.repaidOn ?? '—')} · {formatLiquorWon(Number(r.amount ?? 0))} · 잔액{' '}
-            {formatLiquorWon(Number(r.balance_after ?? r.balanceAfter ?? 0))}
-          </li>
-        ))}
-      </ul>
-      {contracts.length > 0 ? (
-        <div className="liquor-customer-inline-form liquor-customer-inline-form--stack">
-          <FormSelect value={contractId} onChange={(e) => setContractId(e.target.value)}>
-            <option value="">지원계약 선택</option>
-            {contracts.map((c) => (
-              <option key={String(c.id)} value={String(c.id)}>
-                {String(c.contractName ?? c.contract_name ?? c.id)}
-              </option>
-            ))}
-          </FormSelect>
-          <FormInput placeholder="상환금액" value={amount} onChange={(e) => setAmount(e.target.value)} />
-          <FormButton
-            type="button"
-            onClick={() => {
-              const cid = Number(contractId)
-              if (!cid) return
-              void createLiquorRepayment(token, customerId, cid, {
-                amount: Number(amount) || 0,
-                method: 'bank_transfer',
-                repaidOn: new Date().toISOString().slice(0, 10),
-              }).then(() => {
-                setAmount('')
-                return onChanged()
-              })
-            }}
-          >
-            상환 등록
-          </FormButton>
-        </div>
-      ) : (
-        <p className="liquor-customer-panel__muted">먼저 지원계약을 추가하세요.</p>
-      )}
     </div>
   )
 }

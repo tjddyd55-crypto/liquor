@@ -147,6 +147,10 @@ export async function ensureLiquorCustomerSchema(executor) {
     CREATE INDEX IF NOT EXISTS liquor_repayments_contract_idx
     ON liquor_repayments (support_contract_id, repaid_on DESC)
   `)
+  await executor.query(`
+    ALTER TABLE liquor_repayments
+    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ
+  `)
 
   await executor.query(`
     CREATE TABLE IF NOT EXISTS liquor_support_items (

@@ -59,19 +59,6 @@ export async function saveLiquorCustomerProfile(
   return res.data!
 }
 
-export async function createLiquorRepayment(
-  token: string,
-  customerId: number,
-  contractId: number,
-  body: Record<string, unknown>,
-) {
-  return apiRequest(`/api/liquor/customers/${customerId}/support-contracts/${contractId}/repayments`, {
-    method: 'POST',
-    token,
-    body,
-  })
-}
-
 export async function createLiquorSupportItem(token: string, customerId: number, body: Record<string, unknown>) {
   return apiRequest(`/api/liquor/customers/${customerId}/support-items`, { method: 'POST', token, body })
 }

@@ -15,8 +15,8 @@ import {
 } from '../lib/liquorCustomers/residentIdCrypto.js'
 import {
   computeLiquorSupportContractBalance,
-  recalculateLiquorSupportContractBalance,
-  refreshLiquorRepaymentBalanceAfter,
+  parseLiquorRepaymentAmount,
+  syncLiquorRepaymentBalancesForContract,
 } from '../services/liquorCustomerBalance.js'
 import { createAttachPlatformContext } from '../lib/platformRbac.js'
 import { registerLiquorCustomerFileApi } from './liquorCustomerFileApi.js'
@@ -201,7 +201,15 @@ export function registerLiquorCustomerApi(apiRouter, ctx) {
       let repayments = []
       if (contractIds.length > 0) {
         const repR = await pool.query(
-          `SELECT * FROM liquor_repayments WHERE support_contract_id = ANY($1::bigint[]) ORDER BY repaid_on DESC NULLS LAST, id DESC`,
+          `
+          SELECT lr.*,
+                 u.display_name AS processed_by_name,
+                 (SELECT COUNT(*)::int FROM liquor_customer_files lcf WHERE lcf.repayment_id = lr.id) AS linked_file_count
+          FROM liquor_repayments lr
+          LEFT JOIN users u ON u.id = lr.processed_by_user_id
+          WHERE lr.support_contract_id = ANY($1::bigint[]) AND lr.deleted_at IS NULL
+          ORDER BY lr.repaid_on DESC NULLS LAST, lr.id DESC
+          `,
           [contractIds],
         )
         repayments = repR.rows
@@ -604,7 +612,16 @@ function validateContactNameOrPhone(name, phone) {
         res.status(404).json({ ok: false, message: '지원계약을 찾을 수 없습니다.' })
         return
       }
+      if (!(await assertLiquorCustomerAccess(pool, customerId, gaId))) {
+        res.status(404).json({ ok: false, message: '고객을 찾을 수 없습니다.' })
+        return
+      }
       const b = req.body ?? {}
+      const amount = parseLiquorRepaymentAmount(b.amount)
+      if (amount == null) {
+        res.status(400).json({ ok: false, message: '상환금액은 0 이상이어야 합니다.' })
+        return
+      }
       await client.query('BEGIN')
       const r = await client.query(
         `INSERT INTO liquor_repayments (
@@ -616,7 +633,7 @@ function validateContactNameOrPhone(name, phone) {
           customerId,
           gaId,
           b.repaidOn ?? b.repaid_on ?? null,
-          num(b.amount),
+          amount,
           String(b.method ?? 'other'),
           String(b.depositorName ?? b.depositor_name ?? ''),
           String(b.depositAccount ?? b.deposit_account ?? ''),
@@ -624,7 +641,7 @@ function validateContactNameOrPhone(name, phone) {
           String(b.memo ?? ''),
         ],
       )
-      const bal = await refreshLiquorRepaymentBalanceAfter(client, contractId, r.rows[0].id)
+      const bal = await syncLiquorRepaymentBalancesForContract(client, contractId)
       await client.query('COMMIT')
       res.status(201).json({ ok: true, data: { ...r.rows[0], balanceAfter: bal?.balanceAmount ?? 0 } })
     } catch (e) {
@@ -635,25 +652,114 @@ function validateContactNameOrPhone(name, phone) {
     }
   })
 
+  apiRouter.patch(
+    '/liquor/customers/:customerId/support-contracts/:contractId/repayments/:repaymentId',
+    ...chain,
+    async (req, res) => {
+      const client = await pool.connect()
+      try {
+        const customerId = parseId(req.params.customerId)
+        const contractId = parseId(req.params.contractId)
+        const repaymentId = parseId(req.params.repaymentId)
+        const gaId = resolveLiquorGaId(req)
+        if (!customerId || !contractId || !repaymentId || gaId == null) {
+          res.status(404).json({ ok: false, message: '상환내역을 찾을 수 없습니다.' })
+          return
+        }
+        if (!(await assertLiquorCustomerAccess(pool, customerId, gaId))) {
+          res.status(404).json({ ok: false, message: '고객을 찾을 수 없습니다.' })
+          return
+        }
+        const b = req.body ?? {}
+        if (b.amount != null) {
+          const amount = parseLiquorRepaymentAmount(b.amount)
+          if (amount == null) {
+            res.status(400).json({ ok: false, message: '상환금액은 0 이상이어야 합니다.' })
+            return
+          }
+        }
+        await client.query('BEGIN')
+        const cur = await client.query(
+          `
+          SELECT id FROM liquor_repayments
+          WHERE id = $1 AND support_contract_id = $2 AND customer_id = $3 AND ga_id = $4 AND deleted_at IS NULL
+          LIMIT 1
+          `,
+          [repaymentId, contractId, customerId, gaId],
+        )
+        if (!cur.rowCount) {
+          await client.query('ROLLBACK')
+          res.status(404).json({ ok: false, message: '상환내역을 찾을 수 없습니다.' })
+          return
+        }
+        const r = await client.query(
+          `
+          UPDATE liquor_repayments SET
+            repaid_on = COALESCE($3, repaid_on),
+            amount = COALESCE($4, amount),
+            method = COALESCE($5, method),
+            depositor_name = COALESCE($6, depositor_name),
+            deposit_account = COALESCE($7, deposit_account),
+            memo = COALESCE($8, memo),
+            updated_at = NOW()
+          WHERE id = $1 AND support_contract_id = $2 AND deleted_at IS NULL
+          RETURNING *
+          `,
+          [
+            repaymentId,
+            contractId,
+            b.repaidOn ?? b.repaid_on ?? null,
+            b.amount != null ? parseLiquorRepaymentAmount(b.amount) : null,
+            b.method != null ? String(b.method) : null,
+            b.depositorName != null ? String(b.depositorName) : b.depositor_name != null ? String(b.depositor_name) : null,
+            b.depositAccount != null ? String(b.depositAccount) : b.deposit_account != null ? String(b.deposit_account) : null,
+            b.memo != null ? String(b.memo) : null,
+          ],
+        )
+        const bal = await syncLiquorRepaymentBalancesForContract(client, contractId)
+        await client.query('COMMIT')
+        res.json({ ok: true, data: { ...r.rows[0], balanceAfter: bal?.balanceAmount ?? 0 } })
+      } catch (e) {
+        await client.query('ROLLBACK')
+        handleDbError(e, req, res)
+      } finally {
+        client.release()
+      }
+    },
+  )
+
   apiRouter.delete('/liquor/customers/:customerId/support-contracts/:contractId/repayments/:repaymentId', ...chain, async (req, res) => {
     const client = await pool.connect()
     try {
+      const customerId = parseId(req.params.customerId)
       const contractId = parseId(req.params.contractId)
       const repaymentId = parseId(req.params.repaymentId)
       const gaId = resolveLiquorGaId(req)
-      if (!contractId || !repaymentId || gaId == null) {
+      if (!customerId || !contractId || !repaymentId || gaId == null) {
         res.status(404).json({ ok: false, message: '상환내역을 찾을 수 없습니다.' })
         return
       }
+      if (!(await assertLiquorCustomerAccess(pool, customerId, gaId))) {
+        res.status(404).json({ ok: false, message: '고객을 찾을 수 없습니다.' })
+        return
+      }
       await client.query('BEGIN')
-      await client.query(`DELETE FROM liquor_repayments WHERE id = $1 AND support_contract_id = $2 AND ga_id = $3`, [
-        repaymentId,
-        contractId,
-        gaId,
-      ])
-      await recalculateLiquorSupportContractBalance(client, contractId)
+      const upd = await client.query(
+        `
+        UPDATE liquor_repayments SET deleted_at = NOW(), updated_at = NOW()
+        WHERE id = $1 AND support_contract_id = $2 AND customer_id = $3 AND ga_id = $4 AND deleted_at IS NULL
+        RETURNING id
+        `,
+        [repaymentId, contractId, customerId, gaId],
+      )
+      if (!upd.rowCount) {
+        await client.query('ROLLBACK')
+        res.status(404).json({ ok: false, message: '상환내역을 찾을 수 없습니다.' })
+        return
+      }
+      const bal = await syncLiquorRepaymentBalancesForContract(client, contractId)
       await client.query('COMMIT')
-      res.json({ ok: true })
+      res.json({ ok: true, data: { balanceAmount: bal?.balanceAmount ?? 0, repaidAmount: bal?.repaidAmount ?? 0 } })
     } catch (e) {
       await client.query('ROLLBACK')
       handleDbError(e, req, res)

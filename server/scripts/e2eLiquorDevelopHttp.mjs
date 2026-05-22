@@ -391,17 +391,42 @@ async function main() {
             body: { amount: 300000, method: 'bank_transfer', repaidOn: new Date().toISOString().slice(0, 10) },
           },
         )
-        if (repayment.status === 201) pass('liquor repayment add')
+        const repaymentId = repayment.json?.data?.id ?? repayment.json?.id ?? null
+        if (repayment.status === 201 && repaymentId) pass('liquor repayment add', String(repaymentId))
         else fail('liquor repayment add', `${repayment.status}`)
+
+        const repaymentReject = await api(
+          `/liquor/customers/${bizCustomerId}/support-contracts/${contractId}/repayments`,
+          {
+            token: userToken,
+            method: 'POST',
+            body: { amount: -1000, method: 'bank_transfer', repaidOn: '2026-03-01' },
+          },
+        )
+        if (repaymentReject.status === 400) pass('liquor repayment rejects negative amount')
+        else fail('liquor repayment rejects negative amount', String(repaymentReject.status))
+
+        if (repaymentId) {
+          const patchRep = await api(
+            `/liquor/customers/${bizCustomerId}/support-contracts/${contractId}/repayments/${repaymentId}`,
+            {
+              token: userToken,
+              method: 'PATCH',
+              body: { amount: 400000, method: 'cash', depositorName: `E2E Dep ${tag}` },
+            },
+          )
+          if (patchRep.status === 200) pass('liquor repayment patch edit')
+          else fail('liquor repayment patch edit', `${patchRep.status}`)
+        }
 
         const detailBal = await api(`/liquor/customers/${bizCustomerId}/detail`, { token: userToken })
         const contracts = detailBal.json?.data?.supportContracts ?? []
         const updated = contracts.find((c) => Number(c.id) === Number(contractId))
         const balance = Number(updated?.balanceAmount ?? updated?.balance_amount ?? NaN)
-        if (detailBal.status === 200 && balance === 700000) {
-          pass('liquor balance auto calc', '700000')
+        if (detailBal.status === 200 && balance === 600000) {
+          pass('liquor balance auto calc', '600000')
         } else {
-          fail('liquor balance auto calc', `expected 700000 got ${balance}`)
+          fail('liquor balance auto calc', `expected 600000 got ${balance}`)
         }
 
         const patchAdj = await api(`/liquor/customers/${bizCustomerId}/support-contracts/${contractId}`, {
@@ -409,13 +434,37 @@ async function main() {
           method: 'PATCH',
           body: { adjustmentAmount: -10000, adjustmentReason: 'E2E adjustment' },
         })
-        if (patchAdj.status === 200 && Number(patchAdj.json?.data?.balanceAmount ?? patchAdj.json?.data?.balance_amount) === 690000) {
-          pass('liquor support contract adjustment balance', '690000')
+        if (patchAdj.status === 200 && Number(patchAdj.json?.data?.balanceAmount ?? patchAdj.json?.data?.balance_amount) === 590000) {
+          pass('liquor support contract adjustment balance', '590000')
         } else {
           fail(
             'liquor support contract adjustment balance',
             String(patchAdj.json?.data?.balanceAmount ?? patchAdj.status),
           )
+        }
+
+        if (repaymentId) {
+          const cancelRep = await api(
+            `/liquor/customers/${bizCustomerId}/support-contracts/${contractId}/repayments/${repaymentId}`,
+            { token: userToken, method: 'DELETE' },
+          )
+          if (cancelRep.status === 200) pass('liquor repayment cancel')
+          else fail('liquor repayment cancel', `${cancelRep.status}`)
+
+          const detailAfterCancel = await api(`/liquor/customers/${bizCustomerId}/detail`, { token: userToken })
+          const contractsAfter = detailAfterCancel.json?.data?.supportContracts ?? []
+          const afterUpdated = contractsAfter.find((c) => Number(c.id) === Number(contractId))
+          const balanceAfterCancel = Number(afterUpdated?.balanceAmount ?? afterUpdated?.balance_amount ?? NaN)
+          const repaymentsAfter = detailAfterCancel.json?.data?.repayments ?? []
+          const stillListed = repaymentsAfter.some((r) => Number(r.id) === Number(repaymentId))
+          if (detailAfterCancel.status === 200 && balanceAfterCancel === 990000 && !stillListed) {
+            pass('liquor repayment cancel recalc balance', '990000')
+          } else {
+            fail(
+              'liquor repayment cancel recalc balance',
+              `balance=${balanceAfterCancel} listed=${stillListed}`,
+            )
+          }
         }
       }
 
