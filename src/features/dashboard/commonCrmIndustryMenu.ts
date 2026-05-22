@@ -14,6 +14,11 @@ const LIQUOR_SIGNATURE_USER_HISTORY = {
   path: '/liquor/signatures/history',
 } as const
 
+const LIQUOR_TENANT_COMPANY_PROFILE_MENU = {
+  label: '주류업체정보',
+  path: '/liquor/settings/company-profile',
+} as const
+
 export const LIQUOR_SIGNATURE_ADMIN_MENU = {
   label: '전자서명 템플릿 관리',
   path: '/liquor/signature-templates',
@@ -71,6 +76,13 @@ export function buildCommonCrmDashboardMenu(
     { type: 'link', label: '팀원리스트', path: '/team/members' },
     { type: 'link', label: '팀 게시판', path: '/team/posts' },
     { type: 'link', label: '팀 자료', path: '/team/files' },
+
+    { type: 'section', label: '설정' },
+    {
+      type: 'link',
+      label: LIQUOR_TENANT_COMPANY_PROFILE_MENU.label,
+      path: LIQUOR_TENANT_COMPANY_PROFILE_MENU.path,
+    },
 
     { type: 'section', label: '내정보' },
     { type: 'link', label: '내 저장공간', path: '/storage' },

@@ -194,6 +194,40 @@ async function main() {
   if (String(crmIndustry).toLowerCase() === 'liquor') pass('session crm_industry_code', 'liquor')
   else fail('session crm_industry_code', String(crmIndustry || '(empty)'))
 
+  const tenantProfileBefore = await api('/liquor/tenant/company-profile', { token: userToken })
+  if (tenantProfileBefore.status === 200) pass('liquor tenant company profile GET')
+  else fail('liquor tenant company profile GET', String(tenantProfileBefore.status))
+
+  const tenantBusinessName = `E2E Tenant Co ${tag}`
+  const tenantSave = await api('/liquor/tenant/company-profile', {
+    token: userToken,
+    method: 'PUT',
+    body: {
+      businessName: tenantBusinessName,
+      representativeName: 'E2E Tenant Rep',
+      signatureSenderName: 'E2E Sender',
+      signatureSenderPhone: '0211112222',
+    },
+  })
+  if (tenantSave.status === 200) pass('liquor tenant company profile save')
+  else fail('liquor tenant company profile save', `${tenantSave.status} ${tenantSave.json?.message ?? ''}`)
+
+  const tenantProfileAfter = await api('/liquor/tenant/company-profile', { token: userToken })
+  const savedBusinessName = String(tenantProfileAfter.json?.data?.business_name ?? tenantProfileAfter.json?.data?.businessName ?? '')
+  if (tenantProfileAfter.status === 200 && savedBusinessName === tenantBusinessName) {
+    pass('liquor tenant company profile persist', savedBusinessName)
+  } else {
+    fail('liquor tenant company profile persist', savedBusinessName || String(tenantProfileAfter.status))
+  }
+
+  const tenantPartialSave = await api('/liquor/tenant/company-profile', {
+    token: userToken,
+    method: 'PUT',
+    body: { businessName: tenantBusinessName },
+  })
+  if (tenantPartialSave.status === 200) pass('liquor tenant company profile partial save')
+  else fail('liquor tenant company profile partial save', String(tenantPartialSave.status))
+
   const customersBefore = await api('/customers', { token: userToken })
   if (customersBefore.status === 200) pass('customers API list', 'ok')
   else fail('customers API list', String(customersBefore.status))
