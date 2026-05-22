@@ -321,6 +321,13 @@ export function registerLiquorCustomerApi(apiRouter, ctx) {
   })
 
   // --- contacts ---
+function validateContactNameOrPhone(name, phone) {
+  if (!String(name ?? '').trim() && !String(phone ?? '').trim()) {
+    return { ok: false, message: '이름 또는 연락처 중 하나는 필요합니다.' }
+  }
+  return { ok: true }
+}
+
   apiRouter.post('/liquor/customers/:customerId/contacts', ...chain, async (req, res) => {
     try {
       const customerId = parseId(req.params.customerId)
@@ -330,6 +337,13 @@ export function registerLiquorCustomerApi(apiRouter, ctx) {
         return
       }
       const b = req.body ?? {}
+      const name = String(b.name ?? '')
+      const phone = String(b.phone ?? '')
+      const valid = validateContactNameOrPhone(name, phone)
+      if (!valid.ok) {
+        res.status(400).json({ ok: false, message: valid.message })
+        return
+      }
       const r = await pool.query(
         `INSERT INTO liquor_customer_contacts (customer_id, ga_id, name, birth_date, phone, job_title, role_label, email, is_signature_recipient, memo, sort_order)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
@@ -363,6 +377,22 @@ export function registerLiquorCustomerApi(apiRouter, ctx) {
         return
       }
       const b = req.body ?? {}
+      const cur = await pool.query(
+        `SELECT * FROM liquor_customer_contacts WHERE id = $1 AND customer_id = $2 AND ga_id = $3 LIMIT 1`,
+        [contactId, customerId, gaId],
+      )
+      if (!cur.rowCount) {
+        res.status(404).json({ ok: false, message: '담당자를 찾을 수 없습니다.' })
+        return
+      }
+      const row = cur.rows[0]
+      const nextName = b.name != null ? String(b.name) : row.name
+      const nextPhone = b.phone != null ? String(b.phone) : row.phone
+      const valid = validateContactNameOrPhone(nextName, nextPhone)
+      if (!valid.ok) {
+        res.status(400).json({ ok: false, message: valid.message })
+        return
+      }
       const r = await pool.query(
         `UPDATE liquor_customer_contacts SET
           name = COALESCE($3, name), birth_date = COALESCE($4, birth_date), phone = COALESCE($5, phone),

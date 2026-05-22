@@ -2,13 +2,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FormButton, FormInput, FormSelect, FormTextarea } from '../../../components/form'
 import type { CustomerRecord } from '../../customers/domain/types'
+import { LiquorCustomerContactsSection } from './LiquorCustomerContactsSection'
 import { LiquorSupportContractsSection } from './LiquorSupportContractsSection'
 import {
-  createLiquorContact,
   createLiquorCustomerNote,
   createLiquorRepayment,
   createLiquorSupportItem,
-  deleteLiquorContact,
   fetchLiquorCustomerDetail,
   saveLiquorCustomerProfile,
   type LiquorCustomerDetail,
@@ -289,7 +288,7 @@ export default function LiquorCustomerDetailPanel({ customer, token, editing = f
         )
       case 'liquor_contacts':
         return (
-          <LiquorContactsTab
+          <LiquorCustomerContactsSection
             customerId={customer.id}
             token={token}
             contacts={detail?.contacts ?? []}
@@ -384,54 +383,6 @@ export default function LiquorCustomerDetailPanel({ customer, token, editing = f
       </div>
       <div className="liquor-customer-panel__body" role="tabpanel">
         {tabContent}
-      </div>
-    </div>
-  )
-}
-
-function LiquorContactsTab({
-  customerId,
-  token,
-  contacts,
-  onChanged,
-}: {
-  customerId: number
-  token: string
-  contacts: Array<Record<string, unknown>>
-  onChanged: () => Promise<void>
-}) {
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  return (
-    <div className="liquor-customer-panel__section">
-      <ul className="liquor-customer-list">
-        {contacts.map((c) => (
-          <li key={String(c.id)} className="liquor-customer-list__item">
-            <strong>{String(c.name ?? '')}</strong> · {String(c.phone ?? '')} · {String(c.role_label ?? c.roleLabel ?? '')}
-            <FormButton
-              type="button"
-              onClick={() => void deleteLiquorContact(token, customerId, Number(c.id)).then(onChanged)}
-            >
-              삭제
-            </FormButton>
-          </li>
-        ))}
-      </ul>
-      <div className="liquor-customer-inline-form">
-        <FormInput placeholder="이름" value={name} onChange={(e) => setName(e.target.value)} />
-        <FormInput placeholder="연락처" value={phone} onChange={(e) => setPhone(e.target.value)} />
-        <FormButton
-          type="button"
-          onClick={() =>
-            void createLiquorContact(token, customerId, { name, phone }).then(() => {
-              setName('')
-              setPhone('')
-              return onChanged()
-            })
-          }
-        >
-          담당자 추가
-        </FormButton>
       </div>
     </div>
   )

@@ -66,3 +66,12 @@ export function formatLiquorWon(n: number): string {
   if (!Number.isFinite(n)) return '—'
   return `${n.toLocaleString('ko-KR')}원`
 }
+
+export const LIQUOR_CONTACT_ROLE_OPTIONS = [
+  '대표자',
+  '운영 담당자',
+  '결제 담당자',
+  '서류 담당자',
+  '전자서명 수신자',
+  '기타',
+] as const

@@ -304,8 +304,44 @@ async function main() {
         method: 'POST',
         body: { name: `E2E Contact ${tag}`, phone: '01011112222', roleLabel: '매장담당' },
       })
-      if (contact.status === 201) pass('liquor contact add')
+      const contactId = contact.json?.data?.id ?? contact.json?.id ?? null
+      if (contact.status === 201 && contactId) pass('liquor contact add', String(contactId))
       else fail('liquor contact add', `${contact.status}`)
+
+      if (contactId) {
+        const contactReject = await api(`/liquor/customers/${bizCustomerId}/contacts`, {
+          token: userToken,
+          method: 'POST',
+          body: { name: '', phone: '' },
+        })
+        if (contactReject.status === 400) pass('liquor contact requires name or phone')
+        else fail('liquor contact requires name or phone', String(contactReject.status))
+
+        const patchContact = await api(`/liquor/customers/${bizCustomerId}/contacts/${contactId}`, {
+          token: userToken,
+          method: 'PATCH',
+          body: {
+            roleLabel: '전자서명 수신자',
+            isSignatureRecipient: true,
+            jobTitle: '대리',
+            email: `e2e-${tag}@example.com`,
+          },
+        })
+        if (patchContact.status === 200 && patchContact.json?.data?.is_signature_recipient === true) {
+          pass('liquor contact patch edit')
+        } else if (patchContact.status === 200 && patchContact.json?.data?.isSignatureRecipient === true) {
+          pass('liquor contact patch edit')
+        } else {
+          fail('liquor contact patch edit', `${patchContact.status}`)
+        }
+
+        const delContact = await api(`/liquor/customers/${bizCustomerId}/contacts/${contactId}`, {
+          token: userToken,
+          method: 'DELETE',
+        })
+        if (delContact.status === 200) pass('liquor contact delete')
+        else fail('liquor contact delete', `${delContact.status}`)
+      }
 
       const contract = await api(`/liquor/customers/${bizCustomerId}/support-contracts`, {
         token: userToken,
