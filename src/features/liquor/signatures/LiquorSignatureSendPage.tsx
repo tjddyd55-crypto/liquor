@@ -9,6 +9,13 @@ import '../signatureTemplates/liquor-signature-console.css'
 import './liquor-signature-send-mobile.css'
 import { useAuth } from '../../auth/AuthProvider'
 import { ApiError } from '../../../lib/apiClient'
+import { fetchLiquorTenantCompanyProfile } from '../settings/liquorTenantCompanyProfileClient'
+import {
+  buildLiquorConfirmationSenderDefaults,
+  buildLiquorSenderFieldDefaults,
+  buildLiquorTenantCompanyContext,
+  type LiquorTenantCompanyContext,
+} from '../settings/liquorTenantSignatureDefaults'
 import { EvidenceStatusPanel } from '../signatureTemplates/components/EvidenceStatusPanel'
 import { SendSessionPanel } from '../signatureTemplates/components/SendSessionPanel'
 import type { CreateSendSessionResult, SendSessionDetail } from '../signatureTemplates/liquorSignatureTemplateClient'
@@ -244,6 +251,7 @@ export default function LiquorSignatureSendPage() {
   const [attachmentDrafts, setAttachmentDrafts] = useState<SendAttachmentDraftRow[]>([])
   const [attachmentUploadBusy, setAttachmentUploadBusy] = useState(false)
   const attachmentFileInputRef = useRef<HTMLInputElement>(null)
+  const [tenantCompanyCtx, setTenantCompanyCtx] = useState<LiquorTenantCompanyContext | null>(null)
 
   const [confirmationTemplateFields, setConfirmationTemplateFields] = useState<UserContractConfirmationFieldRow[]>([])
   const [confirmationFieldsLoading, setConfirmationFieldsLoading] = useState(false)
@@ -283,6 +291,28 @@ export default function LiquorSignatureSendPage() {
   useEffect(() => {
     void reloadTemplates()
   }, [reloadTemplates])
+
+  useEffect(() => {
+    if (!t) {
+      setTenantCompanyCtx(null)
+      return
+    }
+    let cancelled = false
+    void fetchLiquorTenantCompanyProfile(t)
+      .then((profile) => {
+        if (!cancelled) {
+          setTenantCompanyCtx(buildLiquorTenantCompanyContext(profile))
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setTenantCompanyCtx(null)
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [t])
 
   const executeCustomerSearch = useCallback(async () => {
     if (!t) {
@@ -355,10 +385,30 @@ export default function LiquorSignatureSendPage() {
   }, [t, sessionDetail?.id, lastCreated?.id])
 
   useEffect(() => {
-    setSenderVals({})
     setConfirmationDrafts([])
     setAttachmentDrafts([])
-  }, [selectedTemplateId])
+    const tpl = templates.find((x) => x.id === selectedTemplateId)
+    if (!tpl?.senderFieldsForSend?.length) {
+      setSenderVals({})
+      return
+    }
+    setSenderVals((prev) => {
+      const defaults = buildLiquorSenderFieldDefaults(tpl.senderFieldsForSend, tenantCompanyCtx)
+      const merged: Record<string, string | boolean> = { ...defaults }
+      for (const d of tpl.senderFieldsForSend) {
+        const fk = d.fieldKey
+        const cur = prev[fk]
+        if (d.fieldType === 'checkbox') {
+          if (cur !== undefined) merged[fk] = Boolean(cur)
+          continue
+        }
+        if (String(cur ?? '').trim() !== '') {
+          merged[fk] = String(cur)
+        }
+      }
+      return merged
+    })
+  }, [selectedTemplateId, templates, tenantCompanyCtx])
 
   useEffect(() => {
     if (!t || !selectedTemplateId) {
@@ -385,10 +435,16 @@ export default function LiquorSignatureSendPage() {
           return
         }
         setConfirmationTemplateFields(rows)
+        const senderDefaults = buildLiquorConfirmationSenderDefaults(rows, tenantCompanyCtx)
         setConfirmationFieldValues((prev) => {
           const next: Record<string, string> = {}
           for (const f of rows) {
-            next[f.fieldKey] = prev[f.fieldKey] ?? ''
+            const kept = String(prev[f.fieldKey] ?? '').trim()
+            if (kept) {
+              next[f.fieldKey] = prev[f.fieldKey] ?? ''
+              continue
+            }
+            next[f.fieldKey] = senderDefaults[f.fieldKey] ?? ''
           }
           return next
         })
@@ -408,7 +464,7 @@ export default function LiquorSignatureSendPage() {
     return () => {
       cancelled = true
     }
-  }, [t, selectedTemplateId, templates])
+  }, [t, selectedTemplateId, templates, tenantCompanyCtx])
 
   const senderPrefillSatisfied = (tpl: UserLiquorSignatureTemplateItem | null | undefined): boolean => {
     const defs = tpl?.senderFieldsForSend
