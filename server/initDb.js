@@ -50,8 +50,8 @@ async function ensureBootstrapAdminUser() {
     const id = randomUUID()
     await pool.query(
       `
-      INSERT INTO users (id, username, password_hash, role, ga_id)
-      VALUES ($1, $2, $3, 'SUPER_ADMIN', $4)
+      INSERT INTO users (id, username, password_hash, role, ga_id, invited_by_user_id)
+      VALUES ($1, $2, $3, 'SUPER_ADMIN', $4, $1)
       `,
       [id, username, hash, gaId],
     )
@@ -62,7 +62,7 @@ async function ensureBootstrapAdminUser() {
   await pool.query(
     `
     UPDATE users
-    SET password_hash = $1, role = 'SUPER_ADMIN', ga_id = $3
+    SET password_hash = $1, role = 'SUPER_ADMIN', ga_id = $3, invited_by_user_id = COALESCE(invited_by_user_id, id)
     WHERE username = $2
     `,
     [hash, username, gaId],
