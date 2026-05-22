@@ -1,5 +1,6 @@
 import { isSmsProviderConfigured, sendVerificationCode } from './smsService.js'
 import { maskKrMobileForDisplay } from '../utils/maskKrMobile.js'
+import { isExplicitSmsDebugResponseEnabled } from '../lib/smsDebugExposure.js'
 
 const RUNNING_IN_PRODUCTION =
   process.env.NODE_ENV === 'production' || Boolean(process.env.RAILWAY_ENVIRONMENT)
@@ -31,6 +32,19 @@ export async function sendContractSelfSmsOtp(p) {
   if (RUNNING_IN_PRODUCTION && contractOtpSmsMockEnabled()) {
     console.error('[contract OTP SMS] CONTRACT_OTP_SMS_MOCK must not be enabled in production')
     return { ok: false, error: 'sms_mock_forbidden' }
+  }
+
+  if (isExplicitSmsDebugResponseEnabled()) {
+    const res = await sendVerificationCode({
+      phoneNumber: phoneDigits,
+      code,
+      purpose,
+      clientIp,
+    })
+    if (!res.success) {
+      return { ok: false, error: 'sms_send_failed' }
+    }
+    return { ok: true, mock: Boolean(res.test) }
   }
 
   if (!RUNNING_IN_PRODUCTION && (contractOtpSmsMockEnabled() || !isSmsProviderConfigured())) {
