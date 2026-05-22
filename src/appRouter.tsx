@@ -127,6 +127,8 @@ import { LiquorSignatureTemplateRoute } from './features/liquor/signatureTemplat
 import LiquorSignatureTemplatesPage from './features/liquor/signatureTemplates/LiquorSignatureTemplatesPage'
 import { LiquorTenantSettingsRoute } from './features/liquor/settings/LiquorTenantSettingsRoute'
 import LiquorTenantCompanyProfilePage from './features/liquor/settings/LiquorTenantCompanyProfilePage'
+import { LiquorReceivablesRoute } from './features/liquor/receivables/LiquorReceivablesRoute'
+import LiquorReceivablesPage from './features/liquor/receivables/LiquorReceivablesPage'
 import GovernmentLoginPage from './features/government-support/pages/GovernmentLoginPage'
 import GovernmentSignupPage from './features/government-support/pages/GovernmentSignupPage'
 import GovernmentJoinPage from './features/government-support/pages/GovernmentJoinPage'
@@ -564,6 +566,10 @@ export const appRouter = createBrowserRouter([
                   { path: 'admin/pdf-templates/new', element: <PdfTemplateEditorPage /> },
                   { path: 'admin/pdf-templates/:id', element: <PdfTemplateEditorPage /> },
                 ],
+              },
+              {
+                element: <LiquorReceivablesRoute />,
+                children: [{ path: 'liquor/receivables', element: <LiquorReceivablesPage /> }],
               },
               {
                 element: <LiquorTenantSettingsRoute />,

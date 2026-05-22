@@ -4,6 +4,11 @@
 
 import type { GaTenantDashboardMenuEntry } from './gaTenantMenu'
 
+const LIQUOR_RECEIVABLES_MENU = {
+  label: '채권관리',
+  path: '/liquor/receivables',
+} as const
+
 const LIQUOR_SIGNATURE_USER_SEND = {
   label: '전자서명 발송',
   path: '/liquor/signatures/send',
@@ -68,6 +73,7 @@ export function buildCommonCrmDashboardMenu(
 
     { type: 'section', label: '고객관리' },
     { type: 'link', label: '고객리스트', path: '/customers' },
+    { type: 'link', label: LIQUOR_RECEIVABLES_MENU.label, path: LIQUOR_RECEIVABLES_MENU.path },
 
     ...(includeUserContractSignatures ? userLiquorSignatures : []),
     ...adminSignatureEntry,

@@ -697,6 +697,29 @@ async function main() {
             }
           }
         }
+
+        const recvSummary = await api('/liquor/receivables/summary', { token: userToken })
+        if (recvSummary.status === 200 && recvSummary.json?.data?.totalBalanceAmount != null) {
+          pass('liquor receivables summary')
+        } else fail('liquor receivables summary', String(recvSummary.status))
+
+        const recvContracts = await api('/liquor/receivables/contracts?hasBalance=yes', { token: userToken })
+        const contractRows = recvContracts.json?.data?.items ?? []
+        if (recvContracts.status === 200 && contractRows.length >= 1) {
+          pass('liquor receivables contracts list', String(contractRows.length))
+        } else fail('liquor receivables contracts list', String(recvContracts.status))
+
+        const recvImport = await api('/liquor/receivables/import-rows', { token: userToken })
+        const importReviewRows = recvImport.json?.data?.items ?? []
+        if (recvImport.status === 200) pass('liquor receivables import rows list', String(importReviewRows.length))
+        else fail('liquor receivables import rows list', String(recvImport.status))
+
+        const hasUnmatched = importReviewRows.some((r) => String(r.matchStatus ?? r.match_status) === 'unmatched')
+        if (importReviewRows.length === 0 || hasUnmatched) {
+          pass('liquor receivables import unmatched rows')
+        } else {
+          fail('liquor receivables import unmatched rows', 'no unmatched in review list')
+        }
       }
 
       const item = await api(`/liquor/customers/${bizCustomerId}/support-items`, {
@@ -760,6 +783,11 @@ async function main() {
         })
         if (patchRecovered.status === 200) pass('liquor support item status recovered')
         else fail('liquor support item status recovered', String(patchRecovered.status))
+
+        const recvItems = await api('/liquor/receivables/support-items', { token: userToken })
+        const itemRows = recvItems.json?.data?.items ?? []
+        if (recvItems.status === 200) pass('liquor receivables support items list', String(itemRows.length))
+        else fail('liquor receivables support items list', String(recvItems.status))
 
         const delItem = await api(`/liquor/customers/${bizCustomerId}/support-items/${itemId}`, {
           token: userToken,

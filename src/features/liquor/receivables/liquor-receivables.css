@@ -1,0 +1,194 @@
+.liquor-receivables {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem 2rem;
+  max-width: 1400px;
+}
+
+.liquor-receivables__header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.35rem;
+}
+
+.liquor-receivables__header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9375rem;
+}
+
+.liquor-receivables__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 0.75rem;
+}
+
+.liquor-receivables__card {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.875rem 1rem;
+  background: #fff;
+}
+
+.liquor-receivables__card-label {
+  display: block;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.liquor-receivables__card-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.liquor-receivables__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.liquor-receivables__tab {
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 0.375rem 0.75rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.liquor-receivables__tab--active {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+  font-weight: 500;
+}
+
+.liquor-receivables__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.liquor-receivables__filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  min-width: 8rem;
+}
+
+.liquor-receivables__filter--wide {
+  min-width: 12rem;
+  flex: 1;
+}
+
+.liquor-receivables__table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.liquor-receivables__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.liquor-receivables__table th,
+.liquor-receivables__table td {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.liquor-receivables__table th {
+  background: #f9fafb;
+  font-weight: 600;
+  font-size: 0.8125rem;
+}
+
+.liquor-receivables__cards-list {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.liquor-receivables__row-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.875rem 1rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.liquor-receivables__row-card-title {
+  font-weight: 600;
+}
+
+.liquor-receivables__row-card-meta {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.liquor-receivables__msg {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.liquor-receivables__msg--err {
+  color: #b91c1c;
+}
+
+.liquor-receivables__empty {
+  margin: 0;
+  padding: 1rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.liquor-receivables__link {
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.liquor-receivables__link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .liquor-receivables {
+    padding: 0.75rem 0.75rem 1.5rem;
+  }
+
+  .liquor-receivables__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .liquor-receivables__table-wrap {
+    display: none;
+  }
+
+  .liquor-receivables__cards-list {
+    display: flex;
+  }
+
+  .liquor-receivables__filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .liquor-receivables__filter,
+  .liquor-receivables__filter--wide {
+    min-width: 0;
+    width: 100%;
+  }
+}
