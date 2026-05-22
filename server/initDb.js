@@ -3283,6 +3283,8 @@ export async function initDb() {
   await ensurePdfTemplateSchema(pool)
   const { ensureLiquorSignatureSchema } = await import('./lib/liquorSignatures/schema.js')
   await ensureLiquorSignatureSchema(pool)
+  const { ensureLiquorCustomerSchema } = await import('./lib/liquorCustomers/schema.js')
+  await ensureLiquorCustomerSchema(pool)
   const { ensureGovSignatureSchema } = await import('./lib/governmentSignatures/schema.js')
   await ensureGovSignatureSchema(pool)
   await ensureContractSelfSmsSchema(pool)

@@ -2,7 +2,7 @@ import type { CustomerIndustryTemplate } from './customerTemplate.types'
 import { governmentCustomerTemplateV01 } from './government/governmentCustomerTemplateV01'
 import { gymCustomerTemplateV01 } from './gym/gymCustomerTemplateV01'
 import { insuranceCustomerTemplateV01 } from './insurance/insuranceCustomerTemplate'
-import { liquorCustomerTemplatePlaceholder } from './liquor/liquorCustomerTemplatePlaceholder'
+import { liquorCustomerTemplateV01 } from './liquor/liquorCustomerTemplateV01'
 
 /**
  * 코드에 선언된 업종별 고객 템플릿 전부(보험·국가지원·체육관·주류 placeholder).
@@ -12,5 +12,5 @@ export const STATIC_CUSTOMER_INDUSTRY_TEMPLATES: readonly CustomerIndustryTempla
   insuranceCustomerTemplateV01,
   governmentCustomerTemplateV01,
   gymCustomerTemplateV01,
-  liquorCustomerTemplatePlaceholder,
+  liquorCustomerTemplateV01,
 ])

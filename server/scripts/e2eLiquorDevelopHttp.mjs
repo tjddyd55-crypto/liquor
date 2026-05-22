@@ -51,6 +51,14 @@ async function main() {
   const tag = Date.now().toString(36)
   pass('target', BASE)
 
+  const healthRes = await fetch(`${BASE}/backend/health`)
+  if (healthRes.status === 200) pass('backend health', '200')
+  else fail('backend health', String(healthRes.status))
+
+  const signupRes = await fetch(`${BASE}/signup/liquor`)
+  if (signupRes.status === 200) pass('signup liquor page', '200')
+  else fail('signup liquor page', String(signupRes.status))
+
   if (!ADMIN_PASS) {
     fail('admin bootstrap password', 'E2E_LIQUOR_ADMIN_PASSWORD 또는 INSURANCE_ADMIN_BOOTSTRAP_PASSWORD 필요')
     summary()
@@ -196,8 +204,131 @@ async function main() {
     body: { name: `E2E Customer ${tag}`, phone },
   })
   const customerId = createCustomer.json?.data?.id ?? createCustomer.json?.id ?? null
-  if (createCustomer.status === 201 && customerId) pass('customer create placeholder', String(customerId))
-  else fail('customer create placeholder', `${createCustomer.status} ${createCustomer.json?.message ?? ''}`)
+  if (createCustomer.status === 201 && customerId) pass('customer create', String(customerId))
+  else fail('customer create', `${createCustomer.status} ${createCustomer.json?.message ?? ''}`)
+
+  if (customerId) {
+    const putIndividual = await api(`/liquor/customers/${customerId}/profile`, {
+      token: userToken,
+      method: 'PUT',
+      body: {
+        partyType: 'individual',
+        residentId: '9001011234567',
+        individualEmail: `e2e-ind-${tag}@example.invalid`,
+        memo: `E2E individual ${tag}`,
+        accountStatus: 'active',
+      },
+    })
+    if (putIndividual.status === 200 && putIndividual.json?.data?.partyType === 'individual') {
+      pass('liquor individual profile save')
+    } else {
+      fail('liquor individual profile save', `${putIndividual.status} ${putIndividual.json?.message ?? ''}`)
+    }
+
+    const detailInd = await api(`/liquor/customers/${customerId}/detail`, { token: userToken })
+    const masked = String(detailInd.json?.data?.profile?.residentIdMasked ?? '')
+    const plainInDetail = JSON.stringify(detailInd.json?.data?.profile ?? {})
+    if (detailInd.status === 200 && masked.includes('******') && !plainInDetail.includes('1234567')) {
+      pass('resident id masked in detail', masked)
+    } else {
+      fail('resident id masked in detail', masked || String(detailInd.status))
+    }
+
+    const createBizCustomer = await api('/customers', {
+      token: userToken,
+      method: 'POST',
+      body: { name: `E2E Biz ${tag}`, phone: `010${String(randomInt(10_000_000, 99_999_999))}` },
+    })
+    const bizCustomerId = createBizCustomer.json?.data?.id ?? createBizCustomer.json?.id ?? null
+    if (createBizCustomer.status === 201 && bizCustomerId) pass('business customer create', String(bizCustomerId))
+    else fail('business customer create', `${createBizCustomer.status}`)
+
+    if (bizCustomerId) {
+      const putBusiness = await api(`/liquor/customers/${bizCustomerId}/profile`, {
+        token: userToken,
+        method: 'PUT',
+        body: {
+          partyType: 'business',
+          businessRepresentativeName: `E2E Rep ${tag}`,
+          businessName: `E2E Biz Co ${tag}`,
+          businessRegistrationNumber: '1234567890',
+          businessAddress: '서울시 테스트구',
+          storePhone: '0212345678',
+          businessType: '도매',
+          businessItem: '주류',
+          accountStatus: 'active',
+        },
+      })
+      if (putBusiness.status === 200 && putBusiness.json?.data?.partyType === 'business') {
+        pass('liquor business profile save')
+      } else {
+        fail('liquor business profile save', `${putBusiness.status}`)
+      }
+
+      const contact = await api(`/liquor/customers/${bizCustomerId}/contacts`, {
+        token: userToken,
+        method: 'POST',
+        body: { name: `E2E Contact ${tag}`, phone: '01011112222', roleLabel: '매장담당' },
+      })
+      if (contact.status === 201) pass('liquor contact add')
+      else fail('liquor contact add', `${contact.status}`)
+
+      const contract = await api(`/liquor/customers/${bizCustomerId}/support-contracts`, {
+        token: userToken,
+        method: 'POST',
+        body: {
+          contractName: `E2E Contract ${tag}`,
+          supportType: 'liquor_loan',
+          supportAmount: 1000000,
+          totalRepaymentPlannedAmount: 1000000,
+          repaymentRequired: true,
+          status: 'repaying',
+        },
+      })
+      const contractId = contract.json?.data?.id ?? contract.json?.id ?? null
+      if (contract.status === 201 && contractId) pass('liquor support contract add', String(contractId))
+      else fail('liquor support contract add', `${contract.status}`)
+
+      if (contractId) {
+        const repayment = await api(
+          `/liquor/customers/${bizCustomerId}/support-contracts/${contractId}/repayments`,
+          {
+            token: userToken,
+            method: 'POST',
+            body: { amount: 300000, method: 'bank_transfer', repaidOn: new Date().toISOString().slice(0, 10) },
+          },
+        )
+        if (repayment.status === 201) pass('liquor repayment add')
+        else fail('liquor repayment add', `${repayment.status}`)
+
+        const detailBal = await api(`/liquor/customers/${bizCustomerId}/detail`, { token: userToken })
+        const contracts = detailBal.json?.data?.supportContracts ?? []
+        const updated = contracts.find((c) => Number(c.id) === Number(contractId))
+        const balance = Number(updated?.balanceAmount ?? updated?.balance_amount ?? NaN)
+        if (detailBal.status === 200 && balance === 700000) {
+          pass('liquor balance auto calc', '700000')
+        } else {
+          fail('liquor balance auto calc', `expected 700000 got ${balance}`)
+        }
+      }
+
+      const item = await api(`/liquor/customers/${bizCustomerId}/support-items`, {
+        token: userToken,
+        method: 'POST',
+        body: { itemKind: 'refrigerator', modelName: `E2E Fridge ${tag}`, quantity: 1, unitPrice: 500000 },
+      })
+      if (item.status === 201) pass('liquor support item add')
+      else fail('liquor support item add', `${item.status}`)
+
+      const note = await api(`/liquor/customers/${bizCustomerId}/notes`, {
+        token: userToken,
+        method: 'POST',
+        body: { body: `E2E note ${tag}` },
+      })
+      if (note.status === 201) pass('liquor note add')
+      else fail('liquor note add', `${note.status}`)
+    }
+  }
 
   const pdfBuf = await makeTinyPdfBuffer(`liquor-sig-${tag}`)
   const form = new FormData()

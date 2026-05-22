@@ -596,6 +596,7 @@ const CustomerListCard = memo(function CustomerListCard({
                     onOpenRelatedCustomer={onOpenRelatedCustomer}
                     crmIsInsuranceLayout={crmIsInsuranceLayout}
                     crmIndustryTemplate={crmIndustryTemplate}
+                    editing={editingId === c.id}
                   />
                 )}
               <div className="customer-expand-section-divider" role="presentation" />

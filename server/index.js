@@ -85,6 +85,7 @@ import { registerGovernmentSupportApi } from './registerGovernmentSupportApi.js'
 import { registerGovernmentOperationsApi } from './registerGovernmentOperationsApi.js'
 import { registerGovernmentSignatureApi } from './registerGovernmentSignatureApi.js'
 import { registerLiquorSignatureApi } from './registerLiquorSignatureApi.js'
+import { registerLiquorCustomerModule } from './registerLiquorCustomerApi.js'
 import { registerContractPublicOtpApi } from './apis/contractPublicOtpApi.js'
 import { registerContractPublicApi } from './apis/contractPublicApi.js'
 import { registerContractAdminApi } from './apis/contractAdminApi.js'
@@ -1484,6 +1485,7 @@ registerLiquorSignatureApi(apiRouter, {
   handleDbError,
   isSuperAdminRole,
 })
+registerLiquorCustomerModule(apiRouter, { pool, requireAuth, handleDbError })
 
 registerSubscriptionEndpoints(apiRouter, { requireAuth })
 

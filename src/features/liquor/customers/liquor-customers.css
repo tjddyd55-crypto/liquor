@@ -1,0 +1,155 @@
+.liquor-customer-panel {
+  margin-top: 0.75rem;
+  border: 1px solid var(--border-subtle, #e5e7eb);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface-elevated, #fff);
+}
+
+.liquor-customer-panel__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border-subtle, #e5e7eb);
+  background: var(--surface-muted, #f9fafb);
+}
+
+.liquor-customer-panel__tab {
+  border: none;
+  background: transparent;
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.liquor-customer-panel__tab--active {
+  background: var(--primary-soft, #dbeafe);
+  color: var(--primary-text, #1d4ed8);
+  font-weight: 600;
+}
+
+.liquor-customer-panel__body {
+  padding: 0.75rem;
+}
+
+.liquor-customer-panel__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.liquor-customer-panel__summary-meta,
+.liquor-customer-panel__core-hint {
+  color: var(--text-muted, #6b7280);
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.liquor-customer-panel__core-hint {
+  padding: 0.35rem 0.5rem;
+  background: var(--surface-muted, #f9fafb);
+  border-radius: 6px;
+}
+
+.liquor-customer-panel__muted {
+  color: var(--text-muted, #6b7280);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.liquor-customer-panel__error {
+  color: #b91c1c;
+  margin: 0;
+}
+
+.liquor-customer-panel__link {
+  color: var(--primary-text, #1d4ed8);
+}
+
+.liquor-customer-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.liquor-customer-summary-card {
+  border: 1px solid var(--border-subtle, #e5e7eb);
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.liquor-customer-summary-card strong {
+  font-size: 0.95rem;
+}
+
+.liquor-customer-summary-card--warn strong {
+  color: #b45309;
+}
+
+.liquor-customer-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.65rem;
+}
+
+.liquor-customer-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.liquor-customer-form-grid--wide {
+  grid-column: 1 / -1;
+}
+
+.liquor-customer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.liquor-customer-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border-subtle, #e5e7eb);
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.liquor-customer-inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.liquor-customer-inline-form--stack {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+@media (max-width: 768px) {
+  .liquor-customer-panel__tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .liquor-customer-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

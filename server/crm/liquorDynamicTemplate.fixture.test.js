@@ -11,13 +11,14 @@ test('fixture: 주류 동적 고객 템플릿 바디 normalize 통과 및 필드
   const { data } = out
   assert.equal(data.industryCode, 'liquor')
   assert.equal(data.status, 'active')
-  assert.equal(data.formFields.length, 3)
-  assert.equal(data.listColumns.length, 2)
-  assert.equal(data.detailTabs.length, 1)
-  assert.equal(data.detailTabs[0]?.fieldKeys.length, 3)
+  assert.equal(data.formFields.length, 5)
+  assert.equal(data.listColumns.length, 4)
+  assert.equal(data.detailTabs.length, 8)
+  assert.equal(data.detailTabs[0]?.featureBinding, 'dynamic.liquor_basic')
   assert.deepEqual(data.sharedFeatureBindings, [
     'crm-storage-files',
     'crm-consultations',
     'crm-inline-notes',
   ])
+  assert.ok(data.extensionFeatureBindings.includes('liquor-support-contracts'))
 })

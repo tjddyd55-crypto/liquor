@@ -20,6 +20,8 @@ import {
 } from '../utils/governmentCustomerStatusSummary'
 import GovernmentDetailStatusSummaryCard from './GovernmentDetailStatusSummaryCard'
 import GovernmentProgressReadSection from './GovernmentProgressReadSection'
+import LiquorCustomerDetailPanel from '../../liquor/customers/LiquorCustomerDetailPanel'
+import { isLiquorIndustryTemplate } from '../../liquor/customers/liquorCustomerUi'
 
 export type CustomerDetailInsuranceDisplay = {
   ageText: string
@@ -63,6 +65,7 @@ type CustomerDetailReadViewProps = {
   onOpenRelatedCustomer: (customerId: number, customerName?: string) => void
   crmIsInsuranceLayout: boolean
   crmIndustryTemplate: CustomerIndustryTemplate
+  editing?: boolean
 }
 
 export default function CustomerDetailReadView({
@@ -74,7 +77,23 @@ export default function CustomerDetailReadView({
   onOpenRelatedCustomer,
   crmIsInsuranceLayout,
   crmIndustryTemplate,
+  editing = false,
 }: CustomerDetailReadViewProps) {
+  if (!crmIsInsuranceLayout && isLiquorIndustryTemplate(crmIndustryTemplate) && token?.trim()) {
+    return (
+      <div className="customer-detail-read">
+        <LiquorCustomerDetailPanel customer={c} token={token} editing={editing} />
+        <CustomerRelationsStrip
+          customerId={c.id}
+          customerName={c.name}
+          token={token}
+          focusedCustomerId={expandedId}
+          onOpenCustomer={onOpenRelatedCustomer}
+        />
+      </div>
+    )
+  }
+
   if (!crmIsInsuranceLayout) {
     const dynTabs = [...crmIndustryTemplate.detailTabs]
       .filter((t) => t.visibleDefault !== false)
