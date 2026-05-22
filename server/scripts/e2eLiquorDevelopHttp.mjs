@@ -324,6 +324,29 @@ async function main() {
       else fail('liquor support contract add', `${contract.status}`)
 
       if (contractId) {
+        const patchEdit = await api(`/liquor/customers/${bizCustomerId}/support-contracts/${contractId}`, {
+          token: userToken,
+          method: 'PATCH',
+          body: {
+            status: 'repaying',
+            agreementStartOn: '2026-01-01',
+            agreementEndOn: '2026-12-31',
+            repaymentStartOn: '2026-02-01',
+            repaymentDueOn: '2027-01-01',
+            supportDescription: `E2E support ${tag}`,
+          },
+        })
+        if (patchEdit.status === 200) pass('liquor support contract patch edit')
+        else fail('liquor support contract patch edit', `${patchEdit.status}`)
+
+        const patchAdjReject = await api(`/liquor/customers/${bizCustomerId}/support-contracts/${contractId}`, {
+          token: userToken,
+          method: 'PATCH',
+          body: { adjustmentAmount: -5000 },
+        })
+        if (patchAdjReject.status === 400) pass('liquor support contract adjustment requires reason')
+        else fail('liquor support contract adjustment requires reason', String(patchAdjReject.status))
+
         const repayment = await api(
           `/liquor/customers/${bizCustomerId}/support-contracts/${contractId}/repayments`,
           {
@@ -343,6 +366,20 @@ async function main() {
           pass('liquor balance auto calc', '700000')
         } else {
           fail('liquor balance auto calc', `expected 700000 got ${balance}`)
+        }
+
+        const patchAdj = await api(`/liquor/customers/${bizCustomerId}/support-contracts/${contractId}`, {
+          token: userToken,
+          method: 'PATCH',
+          body: { adjustmentAmount: -10000, adjustmentReason: 'E2E adjustment' },
+        })
+        if (patchAdj.status === 200 && Number(patchAdj.json?.data?.balanceAmount ?? patchAdj.json?.data?.balance_amount) === 690000) {
+          pass('liquor support contract adjustment balance', '690000')
+        } else {
+          fail(
+            'liquor support contract adjustment balance',
+            String(patchAdj.json?.data?.balanceAmount ?? patchAdj.status),
+          )
         }
       }
 

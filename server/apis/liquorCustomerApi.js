@@ -487,7 +487,23 @@ export function registerLiquorCustomerApi(apiRouter, ctx) {
       const row = cur.rows[0]
       const planned = b.totalRepaymentPlannedAmount != null ? num(b.totalRepaymentPlannedAmount) : num(row.total_repayment_planned_amount)
       const adjustment = b.adjustmentAmount != null ? num(b.adjustmentAmount) : num(row.adjustment_amount)
-      const repaid = num(row.repaid_amount)
+      const supportAmount = b.supportAmount != null ? num(b.supportAmount) : num(row.support_amount)
+      if (planned < 0 || supportAmount < 0) {
+        res.status(400).json({ ok: false, message: '금액은 0 이상이어야 합니다.' })
+        return
+      }
+      const adjustmentChanged =
+        b.adjustmentAmount != null && Math.abs(num(b.adjustmentAmount) - num(row.adjustment_amount)) > 0.0001
+      if (adjustmentChanged) {
+        const reason = String(b.adjustmentReason ?? b.adjustment_reason ?? '').trim()
+        if (!reason) {
+          res.status(400).json({ ok: false, message: '조정금액 변경 시 조정사유를 입력해 주세요.' })
+          return
+        }
+      }
+      await recalculateLiquorSupportContractBalance(pool, contractId)
+      const fresh = await pool.query(`SELECT repaid_amount FROM liquor_support_contracts WHERE id = $1 LIMIT 1`, [contractId])
+      const repaid = num(fresh.rows[0]?.repaid_amount ?? row.repaid_amount)
       const balance = computeLiquorSupportContractBalance({
         totalRepaymentPlannedAmount: planned,
         repaidAmount: repaid,

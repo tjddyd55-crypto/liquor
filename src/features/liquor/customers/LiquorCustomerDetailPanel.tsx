@@ -2,11 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FormButton, FormInput, FormSelect, FormTextarea } from '../../../components/form'
 import type { CustomerRecord } from '../../customers/domain/types'
+import { LiquorSupportContractsSection } from './LiquorSupportContractsSection'
 import {
   createLiquorContact,
   createLiquorCustomerNote,
   createLiquorRepayment,
-  createLiquorSupportContract,
   createLiquorSupportItem,
   deleteLiquorContact,
   fetchLiquorCustomerDetail,
@@ -17,11 +17,9 @@ import {
 import {
   formatLiquorWon,
   LIQUOR_ACCOUNT_STATUS_LABELS,
-  LIQUOR_CONTRACT_STATUS_LABELS,
   LIQUOR_DOCUMENT_KIND_LABELS,
   LIQUOR_ITEM_KIND_LABELS,
   LIQUOR_PARTY_TYPE_LABELS,
-  LIQUOR_SUPPORT_TYPE_LABELS,
 } from './liquorCustomerUi'
 import './liquor-customers.css'
 
@@ -300,7 +298,12 @@ export default function LiquorCustomerDetailPanel({ customer, token, editing = f
         )
       case 'liquor_support':
         return (
-          <LiquorSupportTab customerId={customer.id} token={token} contracts={supportContracts} onChanged={reload} />
+          <LiquorSupportContractsSection
+            customerId={customer.id}
+            token={token}
+            contracts={supportContracts}
+            onChanged={reload}
+          />
         )
       case 'liquor_repayments':
         return (
@@ -428,71 +431,6 @@ function LiquorContactsTab({
           }
         >
           담당자 추가
-        </FormButton>
-      </div>
-    </div>
-  )
-}
-
-function LiquorSupportTab({
-  customerId,
-  token,
-  contracts,
-  onChanged,
-}: {
-  customerId: number
-  token: string
-  contracts: Array<Record<string, unknown>>
-  onChanged: () => Promise<void>
-}) {
-  const [contractName, setContractName] = useState('')
-  const [supportAmount, setSupportAmount] = useState('')
-  const [supportType, setSupportType] = useState('liquor_loan')
-  return (
-    <div className="liquor-customer-panel__section">
-      <ul className="liquor-customer-list">
-        {contracts.map((c) => (
-          <li key={String(c.id)} className="liquor-customer-list__item">
-            <strong>{String(c.contractName ?? c.contract_name ?? '')}</strong>
-            {' · '}
-            {LIQUOR_SUPPORT_TYPE_LABELS[String(c.supportType ?? c.support_type ?? '')] ?? String(c.supportType ?? '')}
-            {' · '}
-            {formatLiquorWon(Number(c.supportAmount ?? c.support_amount ?? 0))}
-            {' · '}
-            {LIQUOR_CONTRACT_STATUS_LABELS[String(c.status ?? '')] ?? String(c.status ?? '')}
-            {' · 잔액 '}
-            {formatLiquorWon(Number(c.balanceAmount ?? c.balance_amount ?? 0))}
-          </li>
-        ))}
-      </ul>
-      <div className="liquor-customer-inline-form liquor-customer-inline-form--stack">
-        <FormInput placeholder="지원계약명" value={contractName} onChange={(e) => setContractName(e.target.value)} />
-        <FormSelect value={supportType} onChange={(e) => setSupportType(e.target.value)}>
-          {Object.entries(LIQUOR_SUPPORT_TYPE_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </FormSelect>
-        <FormInput placeholder="지원금액" value={supportAmount} onChange={(e) => setSupportAmount(e.target.value)} />
-        <FormButton
-          type="button"
-          onClick={() =>
-            void createLiquorSupportContract(token, customerId, {
-              contractName,
-              supportType,
-              supportAmount: Number(supportAmount) || 0,
-              totalRepaymentPlannedAmount: Number(supportAmount) || 0,
-              repaymentRequired: true,
-              status: 'draft',
-            }).then(() => {
-              setContractName('')
-              setSupportAmount('')
-              return onChanged()
-            })
-          }
-        >
-          지원계약 추가
         </FormButton>
       </div>
     </div>

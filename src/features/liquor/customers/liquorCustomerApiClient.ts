@@ -67,10 +67,6 @@ export async function deleteLiquorContact(token: string, customerId: number, con
   return apiRequest(`/api/liquor/customers/${customerId}/contacts/${contactId}`, { method: 'DELETE', token })
 }
 
-export async function createLiquorSupportContract(token: string, customerId: number, body: Record<string, unknown>) {
-  return apiRequest(`/api/liquor/customers/${customerId}/support-contracts`, { method: 'POST', token, body })
-}
-
 export async function createLiquorRepayment(
   token: string,
   customerId: number,
