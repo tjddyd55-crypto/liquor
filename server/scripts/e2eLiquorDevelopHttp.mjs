@@ -702,10 +702,78 @@ async function main() {
       const item = await api(`/liquor/customers/${bizCustomerId}/support-items`, {
         token: userToken,
         method: 'POST',
-        body: { itemKind: 'refrigerator', modelName: `E2E Fridge ${tag}`, quantity: 1, unitPrice: 500000 },
+        body: {
+          itemKind: 'refrigerator',
+          modelName: `E2E Fridge ${tag}`,
+          quantity: 2,
+          unitPrice: 500000,
+          status: 'in_use',
+          ownershipType: 'company_owned',
+        },
       })
-      if (item.status === 201) pass('liquor support item add')
+      const itemId = item.json?.data?.id ?? item.json?.id ?? null
+      if (item.status === 201 && itemId) pass('liquor support item add', String(itemId))
       else fail('liquor support item add', `${item.status}`)
+
+      if (itemId) {
+        const itemReject = await api(`/liquor/customers/${bizCustomerId}/support-items`, {
+          token: userToken,
+          method: 'POST',
+          body: { itemKind: 'refrigerator', quantity: 1, unitPrice: -100 },
+        })
+        if (itemReject.status === 400) pass('liquor support item rejects negative unit price')
+        else fail('liquor support item rejects negative unit price', String(itemReject.status))
+
+        const patchItem = await api(`/liquor/customers/${bizCustomerId}/support-items/${itemId}`, {
+          token: userToken,
+          method: 'PATCH',
+          body: {
+            itemKind: 'other',
+            itemKindOther: `E2E Cooler ${tag}`,
+            modelName: `E2E Updated ${tag}`,
+            quantity: 3,
+            unitPrice: 400000,
+            totalAmount: 1200000,
+            status: 'recovery_scheduled',
+            recoveryRequired: true,
+            recoveryDueOn: '2026-06-01',
+          },
+        })
+        if (patchItem.status === 200 && String(patchItem.json?.data?.itemKind ?? patchItem.json?.data?.item_kind) === 'other') {
+          pass('liquor support item patch edit')
+        } else {
+          fail('liquor support item patch edit', `${patchItem.status}`)
+        }
+
+        const recoveredReject = await api(`/liquor/customers/${bizCustomerId}/support-items/${itemId}`, {
+          token: userToken,
+          method: 'PATCH',
+          body: { status: 'recovered' },
+        })
+        if (recoveredReject.status === 400) pass('liquor support item recovered requires date')
+        else fail('liquor support item recovered requires date', String(recoveredReject.status))
+
+        const patchRecovered = await api(`/liquor/customers/${bizCustomerId}/support-items/${itemId}`, {
+          token: userToken,
+          method: 'PATCH',
+          body: { status: 'recovered', recoveredOn: '2026-06-15', memo: 'E2E recovered' },
+        })
+        if (patchRecovered.status === 200) pass('liquor support item status recovered')
+        else fail('liquor support item status recovered', String(patchRecovered.status))
+
+        const delItem = await api(`/liquor/customers/${bizCustomerId}/support-items/${itemId}`, {
+          token: userToken,
+          method: 'DELETE',
+        })
+        if (delItem.status === 200) pass('liquor support item soft delete')
+        else fail('liquor support item soft delete', String(delItem.status))
+
+        const detailAfterItemDel = await api(`/liquor/customers/${bizCustomerId}/detail`, { token: userToken })
+        const itemsAfter = detailAfterItemDel.json?.data?.supportItems ?? []
+        const stillListed = itemsAfter.some((row) => Number(row.id) === Number(itemId))
+        if (detailAfterItemDel.status === 200 && !stillListed) pass('liquor support item hidden after delete')
+        else fail('liquor support item hidden after delete', `listed=${stillListed}`)
+      }
 
       const note = await api(`/liquor/customers/${bizCustomerId}/notes`, {
         token: userToken,

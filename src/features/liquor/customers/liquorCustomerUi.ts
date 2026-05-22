@@ -47,6 +47,52 @@ export const LIQUOR_ITEM_KIND_LABELS: Record<string, string> = {
   other: '기타',
 }
 
+export const LIQUOR_ITEM_KIND_OPTIONS = [
+  'refrigerator',
+  'upright_freezer',
+  'ice_maker',
+  'horizontal_stocker',
+  'signboard',
+  'display_shelf',
+  'other',
+] as const
+
+export const LIQUOR_ITEM_STATUS_LABELS: Record<string, string> = {
+  planned: '지원예정',
+  installed: '설치완료',
+  in_use: '사용중',
+  broken: '고장',
+  recovery_scheduled: '회수예정',
+  recovered: '회수완료',
+  lost: '분실',
+  disposed: '폐기',
+}
+
+export const LIQUOR_ITEM_STATUS_OPTIONS = [
+  'planned',
+  'installed',
+  'in_use',
+  'broken',
+  'recovery_scheduled',
+  'recovered',
+  'lost',
+  'disposed',
+] as const
+
+export const LIQUOR_OWNERSHIP_TYPE_LABELS: Record<string, string> = {
+  company_owned: '주류업체 소유',
+  customer_owned: '거래처 소유',
+  transfer_after_contract: '계약기간 후 이전',
+  other: '기타',
+}
+
+export const LIQUOR_OWNERSHIP_TYPE_OPTIONS = [
+  'company_owned',
+  'customer_owned',
+  'transfer_after_contract',
+  'other',
+] as const
+
 export const LIQUOR_DOCUMENT_KIND_LABELS: Record<string, string> = {
   business_registration: '사업자등록증',
   id_card: '신분증',

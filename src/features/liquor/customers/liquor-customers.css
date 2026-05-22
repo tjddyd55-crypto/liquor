@@ -741,6 +741,137 @@
   color: #9ca3af;
 }
 
+.liquor-support-item__list {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.liquor-support-item__card {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.875rem 1rem;
+  background: #fff;
+}
+
+.liquor-support-item__header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.liquor-support-item__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.liquor-support-item__kind {
+  font-weight: 600;
+}
+
+.liquor-support-item__model {
+  font-size: 0.9375rem;
+}
+
+.liquor-support-item__meta,
+.liquor-support-item__files {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.liquor-support-item__files--muted {
+  font-size: 0.8125rem;
+}
+
+.liquor-support-item__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.liquor-support-item__edit,
+.liquor-support-item__create {
+  margin-top: 0.75rem;
+}
+
+.liquor-support-item__create-title {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.liquor-support-item__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+}
+
+.liquor-support-item__field--wide {
+  grid-column: 1 / -1;
+}
+
+.liquor-support-item__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.liquor-support-item__hint {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #b45309;
+}
+
+.liquor-support-item__msg {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+}
+
+.liquor-support-item__msg--ok {
+  color: #047857;
+}
+
+.liquor-support-item__msg--err {
+  color: #b91c1c;
+}
+
+.liquor-doc-actions {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.liquor-doc-actions__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.liquor-doc-actions__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.liquor-doc-action {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.liquor-doc-action__hint {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
 @media (max-width: 768px) {
   .liquor-customer-panel__tabs {
     overflow-x: auto;
@@ -781,6 +912,15 @@
   }
 
   .liquor-repayment__toolbar {
+    width: 100%;
+  }
+
+  .liquor-support-item__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .liquor-support-item__toolbar {
     width: 100%;
   }
 }

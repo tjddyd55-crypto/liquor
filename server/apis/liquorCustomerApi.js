@@ -22,6 +22,14 @@ import {
 import { createAttachPlatformContext } from '../lib/platformRbac.js'
 import { registerLiquorCustomerFileApi } from './liquorCustomerFileApi.js'
 import { registerLiquorRepaymentImportApi } from './liquorRepaymentImportApi.js'
+import {
+  LIQUOR_ITEM_KINDS,
+  LIQUOR_ITEM_STATUSES,
+  LIQUOR_OWNERSHIP_TYPES,
+  resolveLiquorSupportItemAmounts,
+  supportItemToDto,
+  validateLiquorSupportItemBusinessRules,
+} from '../lib/liquorCustomers/liquorSupportItems.js'
 
 function num(v) {
   const n = Number(v)
@@ -184,7 +192,16 @@ export function registerLiquorCustomerApi(apiRouter, ctx) {
         pool.query(`SELECT * FROM liquor_customer_profiles WHERE customer_id = $1 LIMIT 1`, [customerId]),
         pool.query(`SELECT * FROM liquor_customer_contacts WHERE customer_id = $1 ORDER BY sort_order, id`, [customerId]),
         pool.query(`SELECT * FROM liquor_support_contracts WHERE customer_id = $1 ORDER BY support_date DESC NULLS LAST, id DESC`, [customerId]),
-        pool.query(`SELECT * FROM liquor_support_items WHERE customer_id = $1 ORDER BY supported_on DESC NULLS LAST, id DESC`, [customerId]),
+        pool.query(
+          `
+          SELECT si.*,
+                 (SELECT COUNT(*)::int FROM liquor_customer_files lcf WHERE lcf.support_item_id = si.id) AS linked_file_count
+          FROM liquor_support_items si
+          WHERE si.customer_id = $1 AND si.deleted_at IS NULL
+          ORDER BY si.supported_on DESC NULLS LAST, si.id DESC
+          `,
+          [customerId],
+        ),
         pool.query(
           `
           SELECT lcf.*, f.original_name, f.display_name, f.file_size, f.mime_type, f.status AS file_status,
@@ -229,7 +246,7 @@ export function registerLiquorCustomerApi(apiRouter, ctx) {
           contacts: contactsR.rows,
           supportContracts: contractsR.rows.map(contractToDto),
           repayments,
-          supportItems: itemsR.rows,
+          supportItems: itemsR.rows.map(supportItemToDto),
           files: filesR.rows,
           notes: notesR.rows,
           summary: {
@@ -780,9 +797,42 @@ function validateContactNameOrPhone(name, phone) {
         return
       }
       const b = req.body ?? {}
-      const qty = Math.max(1, num(b.quantity))
-      const unit = num(b.unitPrice ?? b.unit_price)
-      const total = b.totalAmount != null ? num(b.totalAmount) : qty * unit
+      const amounts = resolveLiquorSupportItemAmounts(b)
+      if (!amounts.ok) {
+        res.status(400).json({ ok: false, message: amounts.message })
+        return
+      }
+      const itemKind = String(b.itemKind ?? b.item_kind ?? 'other')
+      if (!LIQUOR_ITEM_KINDS.includes(itemKind)) {
+        res.status(400).json({ ok: false, message: '물품종류가 올바르지 않습니다.' })
+        return
+      }
+      const status = String(b.status ?? 'planned')
+      if (!LIQUOR_ITEM_STATUSES.includes(status)) {
+        res.status(400).json({ ok: false, message: '상태가 올바르지 않습니다.' })
+        return
+      }
+      const ownershipType = String(b.ownershipType ?? b.ownership_type ?? '')
+      if (ownershipType && !LIQUOR_OWNERSHIP_TYPES.includes(ownershipType)) {
+        res.status(400).json({ ok: false, message: '소유권 구분이 올바르지 않습니다.' })
+        return
+      }
+      const rules = validateLiquorSupportItemBusinessRules(b)
+      if (!rules.ok) {
+        res.status(400).json({ ok: false, message: rules.message })
+        return
+      }
+      const supportContractId = parseId(b.supportContractId ?? b.support_contract_id)
+      if (supportContractId) {
+        const cR = await pool.query(
+          `SELECT id FROM liquor_support_contracts WHERE id = $1 AND customer_id = $2 AND ga_id = $3 LIMIT 1`,
+          [supportContractId, customerId, gaId],
+        )
+        if (!cR.rowCount) {
+          res.status(400).json({ ok: false, message: '지원계약을 찾을 수 없습니다.' })
+          return
+        }
+      }
       const r = await pool.query(
         `INSERT INTO liquor_support_items (
           customer_id, support_contract_id, ga_id, item_kind, item_kind_other, model_name, manufacturer,
@@ -791,27 +841,193 @@ function validateContactNameOrPhone(name, phone) {
         ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19) RETURNING *`,
         [
           customerId,
-          b.supportContractId ?? b.support_contract_id ?? null,
+          supportContractId,
           gaId,
-          String(b.itemKind ?? b.item_kind ?? 'other'),
+          itemKind,
           String(b.itemKindOther ?? b.item_kind_other ?? ''),
           String(b.modelName ?? b.model_name ?? ''),
           String(b.manufacturer ?? ''),
-          qty,
-          unit,
-          total,
+          amounts.quantity,
+          amounts.unitPrice,
+          amounts.totalAmount,
           b.supportedOn ?? b.supported_on ?? null,
           b.installedOn ?? b.installed_on ?? null,
           String(b.installLocation ?? b.install_location ?? ''),
-          String(b.ownershipType ?? b.ownership_type ?? ''),
+          ownershipType,
           Boolean(b.recoveryRequired ?? b.recovery_required),
           b.recoveryDueOn ?? b.recovery_due_on ?? null,
           b.recoveredOn ?? b.recovered_on ?? null,
-          String(b.status ?? 'planned'),
+          status,
           String(b.memo ?? ''),
         ],
       )
-      res.status(201).json({ ok: true, data: r.rows[0] })
+      res.status(201).json({ ok: true, data: supportItemToDto(r.rows[0]) })
+    } catch (e) {
+      handleDbError(e, req, res)
+    }
+  })
+
+  apiRouter.patch('/liquor/customers/:customerId/support-items/:itemId', ...chain, async (req, res) => {
+    try {
+      const customerId = parseId(req.params.customerId)
+      const itemId = parseId(req.params.itemId)
+      const gaId = resolveLiquorGaId(req)
+      if (!customerId || !itemId || gaId == null || !(await assertLiquorCustomerAccess(pool, customerId, gaId))) {
+        res.status(404).json({ ok: false, message: '고객을 찾을 수 없습니다.' })
+        return
+      }
+      const existingR = await pool.query(
+        `SELECT * FROM liquor_support_items WHERE id = $1 AND customer_id = $2 AND ga_id = $3 AND deleted_at IS NULL LIMIT 1`,
+        [itemId, customerId, gaId],
+      )
+      if (!existingR.rowCount) {
+        res.status(404).json({ ok: false, message: '지원물품을 찾을 수 없습니다.' })
+        return
+      }
+      const existing = existingR.rows[0]
+      const b = req.body ?? {}
+      const amounts = resolveLiquorSupportItemAmounts(b, {
+        quantity: num(existing.quantity),
+        unitPrice: num(existing.unit_price),
+        totalAmount: num(existing.total_amount),
+      })
+      if (!amounts.ok) {
+        res.status(400).json({ ok: false, message: amounts.message })
+        return
+      }
+      const itemKind = b.itemKind != null || b.item_kind != null ? String(b.itemKind ?? b.item_kind) : String(existing.item_kind)
+      if (!LIQUOR_ITEM_KINDS.includes(itemKind)) {
+        res.status(400).json({ ok: false, message: '물품종류가 올바르지 않습니다.' })
+        return
+      }
+      const status = b.status != null ? String(b.status) : String(existing.status)
+      if (!LIQUOR_ITEM_STATUSES.includes(status)) {
+        res.status(400).json({ ok: false, message: '상태가 올바르지 않습니다.' })
+        return
+      }
+      const ownershipType =
+        b.ownershipType != null || b.ownership_type != null
+          ? String(b.ownershipType ?? b.ownership_type ?? '')
+          : String(existing.ownership_type ?? '')
+      if (ownershipType && !LIQUOR_OWNERSHIP_TYPES.includes(ownershipType)) {
+        res.status(400).json({ ok: false, message: '소유권 구분이 올바르지 않습니다.' })
+        return
+      }
+      const mergedRules = validateLiquorSupportItemBusinessRules(b, {
+        status,
+        recoveredOn: b.recoveredOn ?? b.recovered_on ?? existing.recovered_on,
+        memo: b.memo ?? existing.memo,
+      })
+      if (!mergedRules.ok) {
+        res.status(400).json({ ok: false, message: mergedRules.message })
+        return
+      }
+      let supportContractId = existing.support_contract_id
+      if (b.supportContractId !== undefined || b.support_contract_id !== undefined) {
+        const parsed = parseId(b.supportContractId ?? b.support_contract_id)
+        if (parsed) {
+          const cR = await pool.query(
+            `SELECT id FROM liquor_support_contracts WHERE id = $1 AND customer_id = $2 AND ga_id = $3 LIMIT 1`,
+            [parsed, customerId, gaId],
+          )
+          if (!cR.rowCount) {
+            res.status(400).json({ ok: false, message: '지원계약을 찾을 수 없습니다.' })
+            return
+          }
+          supportContractId = parsed
+        } else {
+          supportContractId = null
+        }
+      }
+      const r = await pool.query(
+        `
+        UPDATE liquor_support_items SET
+          support_contract_id = $2,
+          item_kind = $3,
+          item_kind_other = $4,
+          model_name = $5,
+          manufacturer = $6,
+          quantity = $7,
+          unit_price = $8,
+          total_amount = $9,
+          supported_on = $10,
+          installed_on = $11,
+          install_location = $12,
+          ownership_type = $13,
+          recovery_required = $14,
+          recovery_due_on = $15,
+          recovered_on = $16,
+          status = $17,
+          memo = $18,
+          updated_at = NOW()
+        WHERE id = $1
+        RETURNING *
+        `,
+        [
+          itemId,
+          supportContractId,
+          itemKind,
+          b.itemKindOther != null || b.item_kind_other != null
+            ? String(b.itemKindOther ?? b.item_kind_other ?? '')
+            : String(existing.item_kind_other ?? ''),
+          b.modelName != null || b.model_name != null
+            ? String(b.modelName ?? b.model_name ?? '')
+            : String(existing.model_name ?? ''),
+          b.manufacturer != null ? String(b.manufacturer) : String(existing.manufacturer ?? ''),
+          amounts.quantity,
+          amounts.unitPrice,
+          amounts.totalAmount,
+          b.supportedOn !== undefined || b.supported_on !== undefined
+            ? b.supportedOn ?? b.supported_on ?? null
+            : existing.supported_on,
+          b.installedOn !== undefined || b.installed_on !== undefined
+            ? b.installedOn ?? b.installed_on ?? null
+            : existing.installed_on,
+          b.installLocation != null || b.install_location != null
+            ? String(b.installLocation ?? b.install_location ?? '')
+            : String(existing.install_location ?? ''),
+          ownershipType,
+          b.recoveryRequired != null || b.recovery_required != null
+            ? Boolean(b.recoveryRequired ?? b.recovery_required)
+            : Boolean(existing.recovery_required),
+          b.recoveryDueOn !== undefined || b.recovery_due_on !== undefined
+            ? b.recoveryDueOn ?? b.recovery_due_on ?? null
+            : existing.recovery_due_on,
+          b.recoveredOn !== undefined || b.recovered_on !== undefined
+            ? b.recoveredOn ?? b.recovered_on ?? null
+            : existing.recovered_on,
+          status,
+          b.memo != null ? String(b.memo) : String(existing.memo ?? ''),
+        ],
+      )
+      res.json({ ok: true, data: supportItemToDto(r.rows[0]) })
+    } catch (e) {
+      handleDbError(e, req, res)
+    }
+  })
+
+  apiRouter.delete('/liquor/customers/:customerId/support-items/:itemId', ...chain, async (req, res) => {
+    try {
+      const customerId = parseId(req.params.customerId)
+      const itemId = parseId(req.params.itemId)
+      const gaId = resolveLiquorGaId(req)
+      if (!customerId || !itemId || gaId == null || !(await assertLiquorCustomerAccess(pool, customerId, gaId))) {
+        res.status(404).json({ ok: false, message: '고객을 찾을 수 없습니다.' })
+        return
+      }
+      const r = await pool.query(
+        `
+        UPDATE liquor_support_items SET deleted_at = NOW(), updated_at = NOW()
+        WHERE id = $1 AND customer_id = $2 AND ga_id = $3 AND deleted_at IS NULL
+        RETURNING id
+        `,
+        [itemId, customerId, gaId],
+      )
+      if (!r.rowCount) {
+        res.status(404).json({ ok: false, message: '지원물품을 찾을 수 없습니다.' })
+        return
+      }
+      res.json({ ok: true, data: { id: itemId } })
     } catch (e) {
       handleDbError(e, req, res)
     }

@@ -6,9 +6,9 @@ import { LiquorCustomerContactsSection } from './LiquorCustomerContactsSection'
 import { LiquorCustomerFilesSection } from './LiquorCustomerFilesSection'
 import { LiquorRepaymentsSection } from './LiquorRepaymentsSection'
 import { LiquorSupportContractsSection } from './LiquorSupportContractsSection'
+import { LiquorSupportItemsSection } from './LiquorSupportItemsSection'
 import {
   createLiquorCustomerNote,
-  createLiquorSupportItem,
   fetchLiquorCustomerDetail,
   saveLiquorCustomerProfile,
   type LiquorCustomerDetail,
@@ -17,7 +17,6 @@ import {
 import {
   formatLiquorWon,
   LIQUOR_ACCOUNT_STATUS_LABELS,
-  LIQUOR_ITEM_KIND_LABELS,
   LIQUOR_PARTY_TYPE_LABELS,
 } from './liquorCustomerUi'
 import './liquor-customers.css'
@@ -316,7 +315,17 @@ export default function LiquorCustomerDetailPanel({ customer, token, editing = f
           />
         )
       case 'liquor_items':
-        return <LiquorItemsTab customerId={customer.id} token={token} items={detail?.supportItems ?? []} onChanged={reload} />
+        return (
+          <LiquorSupportItemsSection
+            customerId={customer.id}
+            token={token}
+            items={detail?.supportItems ?? []}
+            contracts={supportContracts}
+            files={detail?.files ?? []}
+            onChanged={reload}
+            onOpenFilesTab={() => setTab('liquor_files')}
+          />
+        )
       case 'liquor_files':
         return (
           <LiquorCustomerFilesSection
@@ -394,54 +403,6 @@ export default function LiquorCustomerDetailPanel({ customer, token, editing = f
       </div>
       <div className="liquor-customer-panel__body" role="tabpanel">
         {tabContent}
-      </div>
-    </div>
-  )
-}
-
-function LiquorItemsTab({
-  customerId,
-  token,
-  items,
-  onChanged,
-}: {
-  customerId: number
-  token: string
-  items: Array<Record<string, unknown>>
-  onChanged: () => Promise<void>
-}) {
-  const [modelName, setModelName] = useState('')
-  return (
-    <div className="liquor-customer-panel__section">
-      <ul className="liquor-customer-list">
-        {items.map((it) => (
-          <li key={String(it.id)} className="liquor-customer-list__item">
-            {(LIQUOR_ITEM_KIND_LABELS[String(it.item_kind ?? it.itemKind ?? 'other')] ??
-              String(it.item_kind_other ?? it.itemKindOther ?? '')) ||
-              '—'}{' '}
-            · {String(it.model_name ?? it.modelName ?? '—')} · 수량 {String(it.quantity ?? 1)} ·{' '}
-            {formatLiquorWon(Number(it.total_amount ?? it.totalAmount ?? 0))}
-          </li>
-        ))}
-      </ul>
-      <div className="liquor-customer-inline-form">
-        <FormInput placeholder="모델명" value={modelName} onChange={(e) => setModelName(e.target.value)} />
-        <FormButton
-          type="button"
-          onClick={() =>
-            void createLiquorSupportItem(token, customerId, {
-              itemKind: 'refrigerator',
-              modelName,
-              quantity: 1,
-              unitPrice: 0,
-            }).then(() => {
-              setModelName('')
-              return onChanged()
-            })
-          }
-        >
-          지원물품 추가
-        </FormButton>
       </div>
     </div>
   )
