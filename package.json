@@ -50,7 +50,8 @@
     "e2e:government:reset-admin-password": "node server/scripts/e2eResetAdminPassword.mjs",
     "e2e:liquor:develop": "node server/scripts/e2eLiquorDevelopHttp.mjs",
     "e2e:liquor:mobile": "node server/scripts/e2eLiquorMobileViewport.mjs",
-    "e2e:liquor:mobile:install": "playwright install chromium"
+    "e2e:liquor:mobile:install": "playwright install chromium",
+    "e2e:liquor:readiness": "node server/scripts/e2eLiquorProductionReadiness.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1023.0",

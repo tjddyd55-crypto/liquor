@@ -2,6 +2,7 @@
  * Liquor develop E2E 공통 HTTP 유틸 (secret 미출력).
  */
 import fs from 'node:fs'
+import { execSync } from 'node:child_process'
 
 export const AUTH_STORAGE_KEY = 'insurance.auth.session'
 
@@ -118,4 +119,47 @@ export async function pickCustomerId(token) {
     if (detail.status === 200) return id
   }
   return null
+}
+
+/** 사용자 화면(body text)에 노출되면 안 되는 개발용 문구 */
+export const LIQUOR_FORBIDDEN_UI_TERMS = [
+  'mock OTP',
+  '테스트 절차',
+  'evidenceHash',
+  'generated_document',
+  'uploaded_pdf',
+  'source_type',
+  'document_kind',
+  'entityType',
+  'linkTarget',
+  'TODO',
+  '준비 중',
+  'placeholder(선택)',
+  'fieldKey(읽기 전용)',
+  '전자문서 (준비 중)',
+  'API 연동 예정',
+  'stub',
+  'disabled action',
+  'placeholder',
+]
+
+export function scanForbiddenUiText(bodyText) {
+  const text = String(bodyText ?? '')
+  const hits = []
+  for (const term of LIQUOR_FORBIDDEN_UI_TERMS) {
+    if (term === 'placeholder') {
+      if (/\bplaceholder\b/i.test(text)) hits.push(term)
+    } else if (text.includes(term)) {
+      hits.push(term)
+    }
+  }
+  return [...new Set(hits)]
+}
+
+export function getGitCommitHash() {
+  try {
+    return execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim()
+  } catch {
+    return '(unknown)'
+  }
 }
