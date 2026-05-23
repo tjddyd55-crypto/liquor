@@ -102,7 +102,7 @@ export const LIQUOR_DOCUMENT_KIND_LABELS: Record<string, string> = {
   loan_agreement: '차용증',
   goods_support_confirmation: '물품지원 확인서',
   repayment_confirmation: '상환확인서',
-  deposit_slip: '입금증',
+  deposit_slip: '입금확인서',
   store_photo: '매장사진',
   install_photo: '물품설치사진',
   other: '기타자료',

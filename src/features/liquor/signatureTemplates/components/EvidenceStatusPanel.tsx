@@ -30,8 +30,8 @@ export function EvidenceStatusPanel({ detail, loading, onRefresh, layout = 'desk
     ? '완료 확인서 PDF 다운로드'
     : '완료 계약서 PDF 다운로드'
   const signedCompleteDocPendingLabel = consoleIsConfirmation
-    ? '완료 확인서 PDF 준비 중'
-    : '완료 계약서 PDF 준비 중'
+    ? '완료 확인서 PDF를 아직 다운로드할 수 없습니다'
+    : '완료 계약서 PDF를 아직 다운로드할 수 없습니다'
   const completedDocPdfLabel = consoleIsConfirmation ? '완료 확인서 PDF' : '완료 계약서 PDF'
 
   async function downloadSignedPdf(docId: string) {
@@ -73,7 +73,7 @@ export function EvidenceStatusPanel({ detail, loading, onRefresh, layout = 'desk
         {!detail ? (
           <>
             <p className="contract-signature-console__empty-state-text">
-              발송 세션을 만든 뒤 새로고침하면 문서 상태와 evidence가 표시됩니다.
+              발송 세션을 만든 뒤 새로고침하면 문서 상태가 표시됩니다.
             </p>
             <FormButton
               htmlType="button"
@@ -93,8 +93,6 @@ export function EvidenceStatusPanel({ detail, loading, onRefresh, layout = 'desk
               const docs = detail.documents ?? []
               const done = docs.filter((d) => d.status === 'completed').length
               const total = Math.max(docs.length, 1)
-              const evPrefix =
-                docs.map((d) => d.evidence?.evidenceHashPrefix).find((p) => p && String(p).trim() !== '') ?? null
               const sentParts = formatStaffSessionDateParts(detail.sentAt ?? detail.createdAt)
               const doneParts = formatStaffSessionDateParts(detail.completedAt)
               const statusLabel = staffSendSessionDisplayLabel(detail.status)
@@ -129,16 +127,12 @@ export function EvidenceStatusPanel({ detail, loading, onRefresh, layout = 'desk
                       </dd>
                     </div>
                     <div>
-                      <dt>증빙</dt>
-                      <dd>{evPrefix && String(evPrefix).trim() !== '' ? String(evPrefix).trim() : '—'}</dd>
-                    </div>
-                    <div>
                       <dt>{completedDocPdfLabel}</dt>
-                      <dd>{anyPdfReady ? '다운로드 가능' : '준비 중 또는 없음'}</dd>
+                      <dd>{anyPdfReady ? '다운로드 가능' : '아직 다운로드할 수 없습니다'}</dd>
                     </div>
                     <div>
                       <dt>증빙 PDF</dt>
-                      <dd>{sessionCompleted ? '다운로드 가능' : '세션 완료 후'}</dd>
+                      <dd>{sessionCompleted ? '다운로드 가능' : '문서 완료 후'}</dd>
                     </div>
                   </div>
                   <div className="contract-mobile-action-grid">
@@ -161,9 +155,6 @@ export function EvidenceStatusPanel({ detail, loading, onRefresh, layout = 'desk
                       <div key={d.id} className="contract-mobile-doc-card">
                         <div className="contract-mobile-doc-card__title">{d.titleSnapshot}</div>
                         <div className="contract-signature-console__hint">문서 상태: {staffDocumentStatusLabel(d.status)}</div>
-                        <div className="contract-signature-console__hint" style={{ marginTop: 4 }}>
-                          evidence: {ev?.evidenceHashPrefix ?? '—'}
-                        </div>
                         <div className="contract-session-pdf-dl-stack" style={{ marginTop: 8 }}>
                           <FormButton
                             htmlType="button"
@@ -209,22 +200,6 @@ export function EvidenceStatusPanel({ detail, loading, onRefresh, layout = 'desk
                 </div>
               )
             })()}
-            <details style={{ marginTop: 14 }}>
-              <summary className="contract-signature-console__hint" style={{ cursor: 'pointer' }}>
-                테스트 절차 안내
-              </summary>
-              <ol className="contract-signature-console__ordered-list" style={{ marginTop: 8 }}>
-                <li>고객 공개 링크를 새 탭으로 엽니다.</li>
-                <li>마스킹된 번호가 맞는지 확인합니다.</li>
-                <li>인증번호 받기를 누릅니다.</li>
-                <li>개발 환경에서는 mock OTP 로그를 확인합니다.</li>
-                <li>인증번호를 입력합니다.</li>
-                <li>문서 상세에서 값을 입력합니다.</li>
-                <li>손사인을 저장합니다.</li>
-                <li>문서 완료를 진행합니다.</li>
-                <li>이 화면에서 상태 새로고침 후 evidenceHash(prefix)를 확인합니다.</li>
-              </ol>
-            </details>
           </>
         )}
       </div>
@@ -240,16 +215,27 @@ export function EvidenceStatusPanel({ detail, loading, onRefresh, layout = 'desk
       </div>
       {!detail ? (
         <p className="contract-signature-console__empty-state-text">
-          발송 세션을 만든 뒤 새로고침하면 문서·evidence 가 표시됩니다.
+          발송 세션을 만든 뒤 새로고침하면 문서 상태가 표시됩니다.
         </p>
       ) : (
         <div className="contract-signature-console__body-text">
           <h3 className="contract-signature-console__subsection-title">세션</h3>
           <ul className="contract-signature-console__unordered-list">
-            <li>status: {detail.status}</li>
-            <li>sentAt: {detail.sentAt ?? '—'}</li>
-            <li>completedAt: {detail.completedAt ?? '—'}</li>
-            <li>지정 휴대폰 인증 세션 ID: {detail.identitySessionId ?? '—'}</li>
+            <li>상태: {staffSendSessionDisplayLabel(detail.status)}</li>
+            <li>
+              발송일:{' '}
+              {(() => {
+                const parts = formatStaffSessionDateParts(detail.sentAt ?? detail.createdAt)
+                return parts ? `${parts.date} ${parts.time}` : '—'
+              })()}
+            </li>
+            <li>
+              완료일:{' '}
+              {(() => {
+                const parts = formatStaffSessionDateParts(detail.completedAt)
+                return parts ? `${parts.date} ${parts.time}` : '—'
+              })()}
+            </li>
           </ul>
           {detail.confirmationItems != null && detail.confirmationItems.length > 0 ? (
             <>
@@ -272,20 +258,13 @@ export function EvidenceStatusPanel({ detail, loading, onRefresh, layout = 'desk
               </ul>
             </>
           ) : null}
-          <h3 className="contract-signature-console__subsection-title">문서 / evidence</h3>
+          <h3 className="contract-signature-console__subsection-title">문서 목록</h3>
           <div className="contract-signature-console__scroll-x">
             <table className="pdf-engine-table contract-signature-console__table--compact">
               <thead>
                 <tr>
-                  <th>문서 ID</th>
-                  <th>제목 스냅샷</th>
-                  <th>문서 상태</th>
-                  <th>필수(정렬)</th>
-                  <th>evidenceHash(prefix)</th>
-                  <th>identityProvider</th>
-                  <th>identityLevel</th>
-                  <th>otpVerifiedAt</th>
-                  <th>signedAt</th>
+                  <th>문서명</th>
+                  <th>상태</th>
                   <th>{completedDocPdfLabel}</th>
                   <th>증빙 PDF</th>
                 </tr>
@@ -293,31 +272,19 @@ export function EvidenceStatusPanel({ detail, loading, onRefresh, layout = 'desk
               <tbody>
                 {detail.documents.map((d, idx) => {
                   const ev = d.evidence
-                  const hashShow = ev?.evidenceHash ?? '—'
                   const canDl = Boolean(ev?.hasSignedPdfFile)
                   const n = detail.documents.length
                   return (
                     <tr key={d.id}>
-                      <td>
-                        <code>{d.id.slice(0, 14)}…</code>
-                      </td>
                       <td>{d.titleSnapshot}</td>
-                      <td>{d.status}</td>
-                      <td>{d.sortOrder}</td>
-                      <td title={hashShow !== '—' ? `전체 해시(관리자): ${hashShow}` : undefined}>
-                        {ev?.evidenceHashPrefix ?? '—'}
-                      </td>
-                      <td>{ev?.identityProvider ?? '—'}</td>
-                      <td>{ev?.identityLevel ?? '—'}</td>
-                      <td>{ev?.otpVerifiedAt ?? '—'}</td>
-                      <td>{ev?.signedAt ?? '—'}</td>
+                      <td>{staffDocumentStatusLabel(d.status)}</td>
                       <td>
                         {d.status === 'completed' && canDl ? (
                           <FormButton htmlType="button" variant="secondary" size="sm" onClick={() => void downloadSignedPdf(d.id)}>
                             다운로드
                           </FormButton>
                         ) : d.status === 'completed' ? (
-                          <span className="contract-signature-console__hint">준비 중</span>
+                          <span className="contract-signature-console__hint">아직 다운로드할 수 없습니다</span>
                         ) : (
                           <span className="contract-signature-console__hint">—</span>
                         )}
@@ -347,24 +314,8 @@ export function EvidenceStatusPanel({ detail, loading, onRefresh, layout = 'desk
               </tbody>
             </table>
           </div>
-          <p className="contract-signature-console__footnote">
-            전체 <code>evidenceHash</code>는 행에 마우스를 올리면 툴팁으로 확인할 수 있습니다.
-          </p>
         </div>
       )}
-
-      <h3 className="contract-signature-console__subsection-title">테스트 절차 안내</h3>
-      <ol className="contract-signature-console__ordered-list">
-        <li>고객 공개 링크를 새 탭으로 엽니다.</li>
-        <li>마스킹된 번호가 맞는지 확인합니다.</li>
-        <li>인증번호 받기를 누릅니다.</li>
-        <li>개발 환경에서는 mock OTP 로그를 확인합니다.</li>
-        <li>인증번호를 입력합니다.</li>
-        <li>문서 상세에서 값을 입력합니다.</li>
-        <li>손사인을 저장합니다.</li>
-        <li>문서 완료를 진행합니다.</li>
-        <li>이 화면에서 상태 새로고침 후 evidenceHash(prefix)를 확인합니다.</li>
-      </ol>
     </div>
   )
 }

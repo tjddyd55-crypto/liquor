@@ -1,5 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { FormButton, FormInput, FormSelect, FormTextarea } from '../../../components/form'
+import { LiquorEntityDocumentActions } from './LiquorEntityDocumentActions'
+import { mapLiquorCustomerFile } from './liquorCustomerFileClient'
 import {
   createLiquorSupportContract,
   mapLiquorSupportContract,
@@ -17,7 +19,9 @@ type Props = {
   customerId: number
   token: string
   contracts: Array<Record<string, unknown>>
+  files?: Array<Record<string, unknown>>
   onChanged: () => Promise<void>
+  onOpenFilesTab?: () => void
 }
 
 type FormState = LiquorSupportContractInput & {
@@ -225,8 +229,22 @@ function SupportContractEditForm({
   )
 }
 
-export function LiquorSupportContractsSection({ customerId, token, contracts, onChanged }: Props) {
+export function LiquorSupportContractsSection({
+  customerId,
+  token,
+  contracts,
+  files = [],
+  onChanged,
+  onOpenFilesTab,
+}: Props) {
   const mapped = useMemo(() => contracts.map(mapLiquorSupportContract), [contracts])
+  const fileCountsByContract = useMemo(() => {
+    const counts = new Map<number, number>()
+    for (const f of files.map(mapLiquorCustomerFile)) {
+      if (f.supportContractId) counts.set(f.supportContractId, (counts.get(f.supportContractId) ?? 0) + 1)
+    }
+    return counts
+  }, [files])
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const [draft, setDraft] = useState<FormState | null>(null)
   const [baselineAdjustment, setBaselineAdjustment] = useState(0)
@@ -318,6 +336,7 @@ export function LiquorSupportContractsSection({ customerId, token, contracts, on
       <ul className="liquor-support-contract__list">
         {mapped.map((c) => {
           const open = expandedId === c.id
+          const linkedCount = fileCountsByContract.get(c.id) ?? 0
           return (
             <li key={c.id} className={'liquor-support-contract' + (open ? ' liquor-support-contract--open' : '')}>
               <button type="button" className="liquor-support-contract__summary" onClick={() => (open ? closeEdit() : openEdit(c))}>
@@ -330,11 +349,22 @@ export function LiquorSupportContractsSection({ customerId, token, contracts, on
                   {LIQUOR_CONTRACT_STATUS_LABELS[c.status] ?? c.status}
                   {' · 잔액 '}
                   {formatLiquorWon(c.balanceAmount)}
+                  {' · '}
+                  {linkedCount > 0 ? `첨부 ${linkedCount}건` : '문서 없음'}
                 </span>
                 <span className="liquor-support-contract__chevron" aria-hidden>
                   {open ? '▲' : '▼'}
                 </span>
               </button>
+              {!open ? (
+                <LiquorEntityDocumentActions
+                  entityType="support_contract"
+                  entityId={c.id}
+                  customerId={customerId}
+                  documentCounts={linkedCount}
+                  onNavigateToFiles={onOpenFilesTab}
+                />
+              ) : null}
               {open && draft ? (
                 <SupportContractEditForm
                   form={draft}

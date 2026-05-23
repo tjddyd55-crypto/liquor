@@ -503,6 +503,10 @@
   color: var(--text-muted, #6b7280);
 }
 
+.liquor-repayment__files--muted {
+  font-size: 0.75rem;
+}
+
 .liquor-repayment__toolbar {
   display: flex;
   flex-wrap: wrap;

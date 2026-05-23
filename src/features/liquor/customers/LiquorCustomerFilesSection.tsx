@@ -110,7 +110,7 @@ export function LiquorCustomerFilesSection({
     }
     setUploading(true)
     setMessage(null)
-    setProgress('업로드 준비 중…')
+    setProgress('업로드 중…')
     try {
       await uploadLiquorCustomerFile(
         token,

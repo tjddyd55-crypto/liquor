@@ -157,7 +157,7 @@ export async function uploadLiquorCustomerFile(
   meta: LiquorCustomerFileUploadInput,
   onProgress?: (message: string) => void,
 ): Promise<LiquorCustomerFile> {
-  onProgress?.('업로드 준비 중…')
+  onProgress?.('업로드 중…')
   const presign = await presignLiquorCustomerFile(token, customerId, {
     fileName: file.name,
     contentType: file.type || 'application/octet-stream',

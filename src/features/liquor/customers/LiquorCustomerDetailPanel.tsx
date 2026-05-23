@@ -300,7 +300,9 @@ export default function LiquorCustomerDetailPanel({ customer, token, editing = f
             customerId={customer.id}
             token={token}
             contracts={supportContracts}
+            files={detail?.files ?? []}
             onChanged={reload}
+            onOpenFilesTab={() => setTab('liquor_files')}
           />
         )
       case 'liquor_repayments':

@@ -222,7 +222,7 @@ export function LiquorSignatureTemplateConfirmationFieldsSection({
                 />
               </label>
               <label className="contract-signature-console__conf-label">
-                placeholder(선택)
+                입력 안내(선택)
                 <FormInput
                   value={createDraft.placeholder ?? ''}
                   disabled={busy}
@@ -303,7 +303,7 @@ export function LiquorSignatureTemplateConfirmationFieldsSection({
                   <div className="contract-signature-console__conf-card-title">항목 수정</div>
                   <div className="contract-signature-console__conf-stack">
                     <label className="contract-signature-console__conf-label">
-                      fieldKey(읽기 전용)
+                      항목 코드(읽기 전용)
                       <FormInput value={row.fieldKey} readOnly disabled className="field--readonly" />
                     </label>
                     <label className="contract-signature-console__conf-label">
@@ -373,7 +373,7 @@ export function LiquorSignatureTemplateConfirmationFieldsSection({
                       />
                     </label>
                     <label className="contract-signature-console__conf-label">
-                      placeholder
+                      입력 안내
                       <FormInput
                         value={editDraft.placeholder ?? ''}
                         disabled={busy}

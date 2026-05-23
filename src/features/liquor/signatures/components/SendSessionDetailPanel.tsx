@@ -8,7 +8,7 @@ import {
 import { buildCustomerPublicSignUrl } from '../liquorSignatureHistoryClient'
 import { SendSessionStatusBadge } from './SendSessionStatusBadge'
 import { formatStaffSessionDate, staffDocumentStatusLabel, staffSendSessionDisplayLabel } from '../sendSessionStaffDisplay'
-import { ContractTableDateCell, ContractTableHashCell } from './LiquorSignatureTableCells'
+import { ContractTableDateCell } from './LiquorSignatureTableCells'
 
 type Props = {
   open: boolean
@@ -105,7 +105,7 @@ export function SendSessionDetailPanel({
           {signedPdfDownloadLabel}
         </FormButton>
         {d.status === 'completed' && !ev?.hasSignedPdfFile ? (
-          <span className="contract-signature-console__hint contract-session-doc-pending">준비 중</span>
+          <span className="contract-signature-console__hint contract-session-doc-pending">아직 다운로드할 수 없습니다</span>
         ) : null}
       </div>
     )
@@ -195,9 +195,6 @@ export function SendSessionDetailPanel({
                       <div className="contract-signature-console__hint">
                         완료일: {d.completedAt ? formatStaffSessionDate(d.completedAt) : '—'}
                       </div>
-                      <div className="contract-signature-console__hint">
-                        증빙: <ContractTableHashCell prefix={ev?.evidenceHashPrefix ?? null} />
-                      </div>
                       <div className="contract-session-pdf-dl-stack" style={{ marginTop: 10 }}>
                         <FormButton
                           htmlType="button"
@@ -222,7 +219,9 @@ export function SendSessionDetailPanel({
                       </div>
                       {d.status === 'completed' && !ev?.hasSignedPdfFile ? (
                         <p className="contract-signature-console__hint" style={{ margin: '8px 0 0' }}>
-                          {isConfirmationSession ? '완료 확인서 PDF 준비 중입니다.' : '완료 계약서 PDF 준비 중입니다.'}
+                          {isConfirmationSession
+                            ? '완료 확인서 PDF를 아직 다운로드할 수 없습니다.'
+                            : '완료 계약서 PDF를 아직 다운로드할 수 없습니다.'}
                         </p>
                       ) : null}
                     </div>

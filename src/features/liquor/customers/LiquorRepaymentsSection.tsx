@@ -17,6 +17,7 @@ import {
 } from './liquorCustomerUi'
 import { mapLiquorSupportContract } from './liquorSupportContractClient'
 import { LiquorRepaymentImportSection } from './LiquorRepaymentImportSection'
+import { LiquorEntityDocumentActions } from './LiquorEntityDocumentActions'
 
 type Props = {
   customerId: number
@@ -225,18 +226,10 @@ export function LiquorRepaymentsSection({
                     {r.processedByName ? ` · 처리 ${r.processedByName}` : ''}
                   </span>
                   {r.linkedFileCount > 0 ? (
-                    <span className="liquor-repayment__files">
-                      첨부 {r.linkedFileCount}건
-                      {onOpenFilesTab ? (
-                        <>
-                          {' · '}
-                          <button type="button" className="liquor-customer-panel__link" onClick={onOpenFilesTab}>
-                            첨부문서 탭
-                          </button>
-                        </>
-                      ) : null}
-                    </span>
-                  ) : null}
+                    <span className="liquor-repayment__files">첨부 {r.linkedFileCount}건</span>
+                  ) : (
+                    <span className="liquor-repayment__files liquor-repayment__files--muted">문서 없음</span>
+                  )}
                   {r.memo.trim() ? <span className="liquor-repayment__memo">{r.memo.trim()}</span> : null}
                 </div>
                 <div className="liquor-repayment__toolbar">
@@ -248,6 +241,15 @@ export function LiquorRepaymentsSection({
                   </FormButton>
                 </div>
               </div>
+              {!editing ? (
+                <LiquorEntityDocumentActions
+                  entityType="repayment"
+                  entityId={r.id}
+                  customerId={customerId}
+                  documentCounts={r.linkedFileCount}
+                  onNavigateToFiles={onOpenFilesTab}
+                />
+              ) : null}
               {editing && draft ? (
                 <div className="liquor-repayment__edit">
                   <div className="liquor-customer-form-grid">

@@ -56,8 +56,8 @@ export function SendSessionPanel({
     ? '완료 확인서 PDF 다운로드'
     : '완료 계약서 PDF 다운로드'
   const signedCompleteDocPendingLabel = consoleIsConfirmation
-    ? '완료 확인서 PDF 준비 중'
-    : '완료 계약서 PDF 준비 중'
+    ? '완료 확인서 PDF를 아직 다운로드할 수 없습니다'
+    : '완료 계약서 PDF를 아직 다운로드할 수 없습니다'
   const completedDocColumnLabel = consoleIsConfirmation ? '완료 확인서 PDF' : '완료 계약서 PDF'
 
   const notifyDownloadError = (message: string) => {
@@ -380,7 +380,7 @@ export function SendSessionPanel({
                               다운로드
                             </FormButton>
                           ) : d.status === 'completed' ? (
-                            <span className="contract-signature-console__hint">준비 중</span>
+                            <span className="contract-signature-console__hint">아직 다운로드할 수 없습니다</span>
                           ) : (
                             <span className="contract-signature-console__hint">—</span>
                           )}

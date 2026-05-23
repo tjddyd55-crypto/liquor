@@ -393,9 +393,7 @@ export function LiquorSupportItemsSection({
                   {linkedCount > 0 ? (
                     <span className="liquor-support-item__files">첨부 {linkedCount}건</span>
                   ) : (
-                    <span className="liquor-support-item__files liquor-support-item__files--muted">
-                      첨부문서 탭에서 이 물품에 연결 가능
-                    </span>
+                    <span className="liquor-support-item__files liquor-support-item__files--muted">문서 없음</span>
                   )}
                 </div>
                 <div className="liquor-support-item__toolbar">
@@ -422,9 +420,7 @@ export function LiquorSupportItemsSection({
                   entityType="support_item"
                   entityId={item.id}
                   customerId={customerId}
-                  supportContractId={item.supportContractId}
                   documentCounts={linkedCount}
-                  disabled
                   onNavigateToFiles={onOpenFilesTab}
                 />
               ) : null}
