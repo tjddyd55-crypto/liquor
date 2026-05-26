@@ -17,6 +17,9 @@ node_modules
 test-results/
 playwright-report/
 playwright/.cache/
+.e2e-liquor-production-smoke.local.env
+.e2e-liquor-production-smoke-report.json
+.e2e-liquor-production-aligo.env
 .e2e-liquor-last-run.json
 dist
 release
